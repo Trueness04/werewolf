@@ -1,0 +1,18 @@
+{
+  "caption_keys": {
+    "rosta": "winner_rosta",
+    "wolf": "winner_wolf",
+    "ferqeTeem": "winner_ferqeTeem",
+    "qatel": "winner_qatel",
+    "lover": "winner_lover",
+    "monafeq": "winner_monafeq",
+    "nothing": "winner_nothing",
+    "joker": "winner_joker",
+    "Bomber": "winner_Bomber",
+    "Firefighter": "win_Firefighter",
+    "vampire": "win_vampire",
+    "black": "win_black",
+    "dinamit": "win_dinamit"
+  },
+  "bundle": "night"
+}

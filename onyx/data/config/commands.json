@@ -1,0 +1,20 @@
+{
+  "start_commands": {
+    "startgame": "Normal",
+    "startmighty": "Mighty",
+    "startwerewolf": "WereWolf",
+    "startmafia": "Mafia",
+    "starteasy": "Easy",
+    "startcoin": "Coin",
+    "startromantic": "Romantic",
+    "startvampire": "Vampire",
+    "startfoolish": "Foolish",
+    "startbomber": "Bomber"
+  },
+  "join": "join",
+  "force_start": "forcestart",
+  "extend": "extend",
+  "players": "players",
+  "kill_game": "killgame",
+  "start_payload_prefix": "joinToGAME_"
+}

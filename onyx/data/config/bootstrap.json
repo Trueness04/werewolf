@@ -1,0 +1,6 @@
+{
+  "seed_fullname": "Tester",
+  "seed_coins": 99999,
+  "sql_db_exists": "SELECT 1 FROM pg_database WHERE datname = :name",
+  "sql_create_db": "CREATE DATABASE \"{name}\""
+}

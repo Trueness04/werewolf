@@ -1,0 +1,18 @@
+{
+  "night_target": "n:{chat_id}:{actor}:{target}",
+  "night_yes": "n:{chat_id}:{actor}:yes",
+  "night_no": "n:{chat_id}:{actor}:no",
+  "prefix": "n:",
+  "handler_pattern": "^n:",
+  "day_target": "d:{chat_id}:{actor}:{target}",
+  "day_yes": "d:{chat_id}:{actor}:yes",
+  "day_no": "d:{chat_id}:{actor}:no",
+  "day_prefix": "d:",
+  "day_handler_pattern": "^d:",
+  "vote_target": "v:{chat_id}:{voter}:{target}",
+  "vote_prefix": "v:",
+  "vote_handler_pattern": "^v:",
+  "sheriff_shot": "s:{chat_id}:{actor}:{target}",
+  "sheriff_prefix": "s:",
+  "sheriff_handler_pattern": "^s:"
+}

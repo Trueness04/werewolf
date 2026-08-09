@@ -1,0 +1,20 @@
+{
+  "immediate": [
+    "role_Solh",
+    "role_Kadkhoda",
+    "role_Ahangar",
+    "role_KhabGozar"
+  ],
+  "deferred": [
+    "role_tofangdar",
+    "role_Spy"
+  ],
+  "target_type": {
+    "role_Solh": "yes_no",
+    "role_Kadkhoda": "yes_no",
+    "role_Ahangar": "yes_no",
+    "role_KhabGozar": "yes_no",
+    "role_tofangdar": "single_target",
+    "role_Spy": "single_target"
+  }
+}

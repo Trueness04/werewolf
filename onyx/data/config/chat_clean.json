@@ -1,0 +1,9 @@
+{
+  "cjk": "[\\u3040-\\u30ff\\u3400-\\u9fff]",
+  "camel": "\\b[A-Z][a-z]+[A-Z][A-Za-z]+\\b",
+  "latin_word": "[A-Za-z]{3,}",
+  "space": "\\s+",
+  "min_persian_chars": 8,
+  "min_persian_ratio": 0.55,
+  "max_len": 220
+}

@@ -1,0 +1,25 @@
+{
+  "base_wolves": [
+    "role_wolf",
+    "role_WhiteWolf",
+    "role_Alpha",
+    "role_Tolle",
+    "role_Wolfx",
+    "role_WolfGorgine"
+  ],
+  "wolf_dependents": [
+    "role_WolfJadogar",
+    "role_Honey",
+    "role_enchanter",
+    "role_WhiteWolf",
+    "role_forestQueen",
+    "role_Khaen",
+    "role_NefrinShode"
+  ],
+  "villager_inject": "role_villager",
+  "no_inject": [
+    "role_NefrinShode",
+    "role_Khaen",
+    "role_Mast"
+  ]
+}

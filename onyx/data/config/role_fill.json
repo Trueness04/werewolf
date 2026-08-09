@@ -1,0 +1,7 @@
+{
+  "max_villager_ratio": 0.35,
+  "min_specials": 2,
+  "min_villagers": 1,
+  "small_game_max_players": 8,
+  "small_game_tolerance": 12
+}

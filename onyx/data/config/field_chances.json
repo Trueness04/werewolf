@@ -1,0 +1,13 @@
+{
+  "alpha_convert": 20,
+  "enchanter_convert": 30,
+  "forest_queen_convert": 10,
+  "hunter_kill_wolf_base": 30,
+  "hunter_kill_wolf_per_extra": 20,
+  "sk_vs_wolf_kill_chance": 80,
+  "huntsman_trap_chance": 50,
+  "lilis_block_chance": 60,
+  "cub_extend_seconds": 45,
+  "royce_extend_seconds": 30,
+  "sheriff_shot_seconds": 45
+}

@@ -1,0 +1,36 @@
+{
+  "default_by_team": {
+    "villager": "rosta",
+    "wolf": "wolf",
+    "cult": "ferqeTeem",
+    "solo": "rosta"
+  },
+  "by_role": {
+    "role_wolf": "wolf",
+    "role_WhiteWolf": "wolf",
+    "role_mighty_white_wolf": "wolf",
+    "role_Qatel": "qatel",
+    "role_ferqe": "ferqeTeem",
+    "role_vampire": "vampire",
+    "role_dynamite": "dinamit",
+    "role_joker": "joker",
+    "role_harley": "joker",
+    "role_firefighter": "Firefighter",
+    "role_monafeq": "monafeq",
+    "role_BlackKnight": "black",
+    "role_BrideTheDead": "black",
+    "role_dian": "black"
+  },
+  "count_as_rosta": [
+    "role_WolfJadogar",
+    "role_Honey",
+    "role_enchanter"
+  ],
+  "hostile_buckets": [
+    "wolf",
+    "Firefighter",
+    "black",
+    "ferqeTeem",
+    "vampire"
+  ]
+}

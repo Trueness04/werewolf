@@ -1,0 +1,93 @@
+{
+  "DisabledVampireMode": "Vampire mode is disabled in this group.",
+  "NotBotEnableGifOnGroup": "Bot cannot send GIFs in this group.",
+  "StartBot": "Please start the bot first.",
+  "GameStartOnGroup": "Start the game only in a group.",
+  "ban_ever": "You are permanently banned.",
+  "ban_to": "You are banned until {0}.",
+  "PleaseStartBot": "Please start the bot in private chat.",
+  "PlayerStartedGame": [
+    "{0} has started a game! Join to get in on the fun... and probably die :P",
+    "A new game has been started by {0}! Join to get eaten!"
+  ],
+  "startAtGame_Normal": [
+    "{0} has started a game! Join to get in on the fun... and probably die :P",
+    "A new game has been started by {0}! Join to get eaten!"
+  ],
+  "startAtGame_WereWolf": [
+    "{0} has started a game! Join to get in on the fun... and probably die :P",
+    "A new game has been started by {0}! Join to get eaten!"
+  ],
+  "startAtGame_Mighty": [
+    "{0} has started a game! Join to get in on the fun... and probably die :P",
+    "A new game has been started by {0}! Join to get eaten!"
+  ],
+  "startAtGame_Easy": [
+    "{0} has started a game! Join to get in on the fun... and probably die :P",
+    "A new game has been started by {0}! Join to get eaten!"
+  ],
+  "startAtGame_coin": [
+    "{0} has started a game! Join to get in on the fun... and probably die :P",
+    "A new game has been started by {0}! Join to get eaten!"
+  ],
+  "startAtGame_Romantic": [
+    "{0} has started a game! Join to get in on the fun... and probably die :P",
+    "A new game has been started by {0}! Join to get eaten!"
+  ],
+  "startAtGame_Vampire": [
+    "{0} has started a game! Join to get in on the fun... and probably die :P",
+    "A new game has been started by {0}! Join to get eaten!"
+  ],
+  "startAtGame_Foolish": [
+    "{0} has started a game! Join to get in on the fun... and probably die :P",
+    "A new game has been started by {0}! Join to get eaten!"
+  ],
+  "startAtGame_Bomber": [
+    "{0} has started a game! Join to get in on the fun... and probably die :P",
+    "A new game has been started by {0}! Join to get eaten!"
+  ],
+  "StartGameFooter": "Tap /modeinfo for this game type.",
+  "player": "Players: {0}",
+  "OnlyJoinTheGameTime": "Only {0} left to join.",
+  "MinuteLeftToJoin": "1 minute left to Join",
+  "SecondsLeftToJoin": "{0} seconds left to Join",
+  "minuts": "one minute",
+  "minut": "minute",
+  "Secend": "{0} seconds",
+  "StarterMessage": "{0}, please remember that you will have to join with the button as well.",
+  "GameStart": "The game has started!",
+  "StartingGameWait": "Game is starting, please wait while I assign roles",
+  "NotStartGameForPlayer": "Not enough players, cancelling game!",
+  "NotEnoughPlayers": "Not enough players, cancelling game!",
+  "ErrorStartGame_Balance": "Role balance failed. Game cancelled.",
+  "GameNotCreate": "No game has been created yet.",
+  "startLastGame": "A join lobby is open. Join here:",
+  "PlayerJoined": "{0} has joined the game. {1} players, {2} minimum, {3} max",
+  "HaveJoined": "{0} joined the game in the last 30 seconds.",
+  "Join_Message": "{0} joined the game in the last 30 seconds.",
+  "GameStarted": "Game is starting, please wait while I assign roles",
+  "playerList": "Player list:",
+  "AllowExtendForAdmin": "Only admins can extend join time.",
+  "NotAllowUserminusExtend": "Only admins may reduce join time.",
+  "YouInGame": "You are already in another game.",
+  "AlreadyJoined": "You've already joined!",
+  "NoJoinGameRunning": "You can't join now! The game is already running.",
+  "NotAllowToJoin": "You are not allowed to join this group.",
+  "NotNameAllow": "Name \"{0}\" is already taken.",
+  "MaxPlayer": "Sorry, max player limit has been reached!",
+  "PlayerLimitReached": "Sorry, max player limit has been reached!",
+  "NotFoundGameId": "Valid game not found.",
+  "JoinTheGame": "You have successfully joined the game in {0}",
+  "YouJoined": "You have successfully joined the game in {0}",
+  "joinToGame": "Join",
+  "JoinChallenge": "Join challenge",
+  "StartLastChallenge": "Challenge lobby is open:",
+  "NotAnogthCoin": "Not enough coins.",
+  "MinCoin": "{0} coins were deducted.",
+  "NotAllowForUser": "You are not allowed to do this.",
+  "players_header_zero": "Players: 0",
+  "ai_players_joined": "{0} AI players joined the game.",
+  "game_killed": "Game cancelled by admin.",
+  "phase_player_list": "Living players ({0}):\n{1}",
+  "phase_dead_list": "Dead players ({0}):\n{1}"
+}
