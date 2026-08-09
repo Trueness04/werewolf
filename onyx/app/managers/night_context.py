@@ -94,16 +94,158 @@ async def build_night_context(
             await flag("check_night_done")
         ),
         "phoenix_heals": heals,
+        "magic_heals": await _magic_heals(
+            chat_id,
+            keys,
+            enriched,
+        ),
+        "magic_ghosts": await _magic_ghosts(
+            chat_id,
+            keys,
+            enriched,
+        ),
         "franc_guard": set(),
         "huntsman_trap": None,
         "alpha_dead": bool(await flag("alpha_dead")),
         "enchanter_mark": await flag("enchanter_mark"),
+        "honey_user": await flag("honey_user"),
+        "beta_masks": _load_str_map(
+            await flag("beta_masks")
+        ),
+        "dozd_target": await flag("dozd_target"),
+        "dozd_alpha_hit": await flag("dozd_alpha_hit"),
+        "darneshan_mark_target": await flag(
+            "darneshan_mark_target"
+        ),
+        "darneshan_mark_by": await flag(
+            "darneshan_mark_by"
+        ),
+        "blood_moon_active": bool(
+            await flag("blood_moon_active")
+        ),
+        "enchanter_list": _load_str_list(
+            await flag("enchanter_list")
+        ),
+        "ice_prev": await flag("ice_prev"),
         "vampire_convert": await flag("vampire_convert"),
+        "die_cult": bool(await flag("die_cult")),
+        "convert_cult": bool(await flag("convert_cult")),
+        "franc_night_ok": bool(
+            await flag("franc_night_ok")
+        ),
+        "royce_selectd2": bool(
+            await flag("royce_selectd2")
+        ),
+        "princess_prison": (
+            {str(p)}
+            if (p := await flag("princess_prison"))
+            else set()
+        ),
+        "find_ghost": bool(await flag("find_ghost")),
+        "firefighter_oils": _load_oils(
+            await flag("firefighter_list")
+        ),
+        "ice_marked": _load_int_set(
+            await flag("ice_marked")
+        ),
+        "die_fire_and_ice": bool(
+            await flag("die_fire_and_ice")
+        ),
+        "blood_revealed": bool(
+            await flag("blood_revealed")
+        ),
+        "dead_bloodthirsty": bool(
+            await flag("dead_bloodthirsty")
+        ),
+        "archer_send_for": int(
+            (await flag("archer_send_for")) or "0"
+        ),
+        "bomber_parts": _load_int_set(
+            await flag("bomber_parts")
+        ),
+        "dinamit_finds": int(
+            (await flag("dinamit_finds")) or "0"
+        ),
+        "joker_books": int(
+            (await flag("joker_books")) or "0"
+        ),
+        "harley_free_book": bool(
+            await flag("harley_free_book")
+        ),
+        "hamzad_model": (
+            int(m)
+            if (m := await flag("hamzad_model"))
+            else None
+        ),
+        "lover_pair": await flag("lover_pair"),
+        "sweetheart_love_team": await flag(
+            "sweetheart_love_team"
+        ),
         "flags_out": {},
         "deaths": set(),
         "seer_notes": [],
         "messages": [],
+        "dm_messages": [],
+        "death_pvs": {},
         "stop_night": False,
         "defer_day": False,
         "extend_seconds": 0,
     }
+
+
+def _load_oils(raw: str | None) -> list[int]:
+    """Parse firefighter oil list from Redis."""
+    if not raw:
+        return []
+    try:
+        data = json.loads(raw)
+    except json.JSONDecodeError:
+        return []
+    return [int(x) for x in data]
+
+
+def _load_int_set(raw: str | None) -> set[int]:
+    """Parse JSON int list into a set."""
+    if not raw:
+        return set()
+    try:
+        data = json.loads(raw)
+    except json.JSONDecodeError:
+        return set()
+    return {int(x) for x in data}
+
+
+async def _magic_heals(
+    chat_id: int,
+    keys: RedisKeySpace,
+    players: list[dict],
+) -> set[int]:
+    """Users with MajikHil active tonight."""
+    from app.managers.magic_effects import heal_field
+
+    redis = await get_redis()
+    flags = keys.game_flags(chat_id)
+    out: set[int] = set()
+    for p in players:
+        uid = int(p["user_id"])
+        if await redis.hget(flags, heal_field(uid)):
+            out.add(uid)
+    return out
+
+
+async def _magic_ghosts(
+    chat_id: int,
+    keys: RedisKeySpace,
+    players: list[dict],
+) -> set[int]:
+    """Users hidden by MajikGhost."""
+    from app.managers.magic_effects import ghost_field
+
+    redis = await get_redis()
+    flags = keys.game_flags(chat_id)
+    out: set[int] = set()
+    for p in players:
+        uid = int(p["user_id"])
+        if await redis.hget(flags, ghost_field(uid)):
+            out.add(uid)
+    return out

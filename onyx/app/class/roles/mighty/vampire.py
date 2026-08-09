@@ -1,4 +1,4 @@
-"""Mighty stub role: VampireRole."""
+"""Mighty role shell: VampireRole."""
 
 from __future__ import annotations
 
@@ -6,8 +6,9 @@ from ..base_role import BaseRole
 
 
 class VampireRole(BaseRole):
-    """Mighty role stub; filled later."""
+    """Vampire; night resolve is pipeline-driven."""
 
     async def resolve(self, ctx: dict) -> None:
-        """Not implemented for Mighty yet."""
-        raise NotImplementedError(self.role_id)
+        """No-op; vampire_resolve handles the slot."""
+        _ = ctx
+        return None

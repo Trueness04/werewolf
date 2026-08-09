@@ -38,13 +38,43 @@ class NightVillage:
         self._lang = lang
         self._registry = _Registry()
 
-    def seer_label(self, role_id: str) -> str:
+    def seer_label(
+        self,
+        role_id: str,
+        *,
+        target_id: int | None = None,
+        ctx: dict | None = None,
+    ) -> str:
         """Masked role label for seer / fool."""
         if not role_id:
             return ""
+        if ctx is not None and target_id is not None:
+            honey = str(
+                ctx.get("honey_user")
+                or (ctx.get("flags") or {}).get(
+                    "honey_user"
+                )
+                or ""
+            )
+            if honey == str(target_id):
+                role_id = "role_wolf"
+            masks = ctx.get("beta_masks") or {}
+            if str(target_id) in masks:
+                role_id = str(masks[str(target_id)])
         if role_id in {"role_Khaen", "role_NefrinShode"}:
             role_id = "role_Shahzade"
-        if role_id == "role_WhiteWolf":
+        if role_id in {
+            "role_WhiteWolf",
+            "role_mighty_white_wolf",
+            "role_Gorgname",
+            "role_Tolle",
+            "role_WolfGorgine",
+            "role_Alpha",
+            "role_iceWolf",
+            "role_betaWolf",
+            "role_Honey",
+            "role_enchanter",
+        }:
             role_id = "role_wolf"
         mk = self._registry.definition(role_id)[
             "message_keys"
@@ -122,6 +152,12 @@ class NightVillage:
                 continue
             role = str(host.get("role") or "")
             team = str(host.get("team") or "")
+            if role == "role_qhost":
+                ctx["find_ghost"] = True
+                ctx.setdefault("flags_out", {})[
+                    "find_ghost"
+                ] = "1"
+                ctx["messages"].append("GhostFinde")
             if team == "wolf" or role == "role_Qatel":
                 ctx["deaths"].add(int(item["user_id"]))
                 ctx["messages"].append(

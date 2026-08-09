@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from sqlalchemy import BigInteger, Boolean, String, Text
+from sqlalchemy import BigInteger, Boolean, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.database.base import Base
@@ -19,11 +19,19 @@ class GroupRow(Base):
     )
     status: Mapped[str] = mapped_column(String(32))
     lang: Mapped[str] = mapped_column(String(8))
+    text_mode: Mapped[str] = mapped_column(
+        String(32),
+        default="general",
+    )
     pin_player_message: Mapped[bool] = mapped_column(
         Boolean,
         default=False,
     )
     allow_extend: Mapped[bool] = mapped_column(
+        Boolean,
+        default=True,
+    )
+    allow_flee: Mapped[bool] = mapped_column(
         Boolean,
         default=True,
     )
@@ -39,7 +47,23 @@ class GroupRow(Base):
         Boolean,
         default=True,
     )
+    max_players: Mapped[int] = mapped_column(
+        Integer,
+        default=0,
+    )
+    secret_vote: Mapped[bool] = mapped_column(
+        Boolean,
+        default=False,
+    )
+    mute_die: Mapped[bool] = mapped_column(
+        Boolean,
+        default=False,
+    )
     start_gif: Mapped[str | None] = mapped_column(
         String(256),
         nullable=True,
+    )
+    sponsor_lock: Mapped[bool] = mapped_column(
+        Boolean,
+        default=False,
     )

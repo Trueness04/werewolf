@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>اونیکس</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <header class="top">
+    <strong class="brand">اونیکس</strong>
+    <nav class="tabs">
+      <button data-view="feed" class="active">فید</button>
+      <button data-view="ranks">رنک</button>
+      <button data-view="shop">شاپ</button>
+      <button data-view="hero">هیرو</button>
+      <button data-view="achievements">دستاورد</button>
+      <button data-view="tournament">تورنمنت</button>
+      <button data-view="online">آنلاین</button>
+      <button data-view="challenge">چالش</button>
+      <button data-view="profile">پروفایل</button>
+      <button data-view="admin" id="adminTab" hidden>مدیریت</button>
+    </nav>
+  </header>
+  <main id="app"></main>
+  <script src="/static/app.js"></script>
+</body>
+</html>

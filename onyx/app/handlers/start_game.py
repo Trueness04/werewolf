@@ -55,7 +55,6 @@ async def handle_start_game(
     chat = update.effective_chat
     if user is None or chat is None:
         return
-    tm = deps.texts()
     state_manager = deps.state_mgr()
     try:
         state = await state_manager.get_group_state(
@@ -69,6 +68,35 @@ async def handle_start_game(
     if group is None:
         return
     lang = deps.group_lang(group)
+    tm = deps.texts()
+    if getattr(group, "sponsor_lock", False):
+        from app.managers.sudo import is_sudo
+        from app.database.models.admin import SponsorRow
+        from app.database.session import session_scope
+        from sqlalchemy import select
+
+        allowed = is_sudo(user.id)
+        if not allowed:
+            async with session_scope() as session:
+                sp = (
+                    await session.execute(
+                        select(SponsorRow).where(
+                            SponsorRow.user_id == user.id,
+                            SponsorRow.active.is_(True),
+                        )
+                    )
+                ).scalar_one_or_none()
+                allowed = sp is not None
+        if not allowed:
+            await context.bot.send_message(
+                chat_id=chat.id,
+                text=tm.get(
+                    "SponsorLockBlocked",
+                    lang,
+                    bundle="lobby",
+                ),
+            )
+            return
     if await deps.ban_block(
         update,
         user.id,
@@ -177,6 +205,16 @@ async def _start_new(
         mode,
         user.id,
         fullname,
+    )
+    from app.managers.next_game_manager import (
+        NextGameManager,
+    )
+
+    await NextGameManager().announce_and_clear(
+        deps.bridge(context),
+        tm,
+        chat.id,
+        lang,
     )
     url = deps.join_url(chat.id)
     keyboard = build_join_keyboard(tm, lang, url)

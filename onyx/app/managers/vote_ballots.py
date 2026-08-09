@@ -88,7 +88,11 @@ class VoteBallots:
             int(p["user_id"]): str(p["fullname"])
             for p in players
         }
-        if self._settings.secret_vote:
+        from app.managers.group_flags import (
+            group_secret_vote,
+        )
+
+        if await group_secret_vote(chat_id):
             alive = len(players)
             voters = set()
             for raw in (
@@ -121,6 +125,13 @@ class VoteBallots:
                 ),
             )
         await self.maybe_early_end(chat_id)
+        from app.managers.afk_vote import clear_dont_vote
+
+        await clear_dont_vote(
+            self._keys,
+            chat_id,
+            voter_id,
+        )
         log_game_event(
             "vote_cast",
             chat_id=chat_id,

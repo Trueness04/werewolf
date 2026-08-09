@@ -1,10 +1,10 @@
-"""Inline join keyboard with URL deeplink."""
+"""Inline join / next-game lobby keyboards."""
 
 from __future__ import annotations
 
-from telegram import InlineKeyboardButton
 from telegram import InlineKeyboardMarkup
 
+from app.keyboards.keyboard_maker import inline_button
 from app.managers.text_managers import TextManager
 
 
@@ -18,8 +18,28 @@ def build_join_keyboard(
     """Build joinToGame / JoinChallenge URL button."""
     key = "JoinChallenge" if challenge else "joinToGame"
     label = texts.get(key, lang)
-    button = InlineKeyboardButton(
-        text=label,
+    button = inline_button(
+        label,
+        style_key="join_lobby",
         url=join_url,
+    )
+    return InlineKeyboardMarkup([[button]])
+
+
+def build_cancel_next_keyboard(
+    texts: TextManager,
+    lang: str,
+    callback_data: str,
+) -> InlineKeyboardMarkup:
+    """Cancel queued next-game wait (danger)."""
+    label = texts.get(
+        "cancel_nextgame_btn",
+        lang,
+        bundle="lobby",
+    )
+    button = inline_button(
+        label,
+        style_key="cancel_nextgame",
+        callback_data=callback_data,
     )
     return InlineKeyboardMarkup([[button]])

@@ -122,6 +122,11 @@ class RedisKeySpace:
         template = str(self._raw["game_timer_end"])
         return template.format(chat_id=chat_id)
 
+    def next_game_list(self, chat_id: int) -> str:
+        """Set of users waiting for next lobby."""
+        template = str(self._raw["game_next_list"])
+        return template.format(chat_id=chat_id)
+
     def player_role(self, user_id: int) -> str:
         """Per-player role key."""
         template = str(self._raw["player_role"])
@@ -138,5 +143,8 @@ class RedisKeySpace:
         return template.format(chat_id=chat_id)
 
     def field(self, name: str) -> str:
-        """Return configured hash field name."""
-        return self._fields[name]
+        """Return configured hash field name.
+
+        Unknown names pass through (dodge_day:{uid}).
+        """
+        return self._fields.get(name, name)

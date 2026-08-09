@@ -11,10 +11,8 @@ from sqlalchemy import select
 from app.cache.redis_client import get_redis
 from app.cache.redis_keys import RedisKeySpace
 from app.config.paths import (
-    GAME_MODE_ROLES,
     ROLE_FILL,
     ROLE_WEIGHTS,
-    WOLF_COUNT_TABLE,
 )
 from app.config.settings import Settings, get_settings
 from app.database.models.player import PlayerRow
@@ -65,12 +63,43 @@ class RoleDistributionManager:
             mode=mode,
             count=len(players),
         )
-        pool = self._load_mode_roles(mode)
-        wolf_n = self._lookup_wolf_count(len(players))
+        if mode == "Foolish":
+            from app.managers.role_mode_specials import (
+                foolish_roles,
+            )
+
+            roles = foolish_roles(len(players))
+            self._rng.shuffle(roles)
+            await self._assign(chat_id, players, roles)
+            if self._night_starter is not None:
+                await self._night_starter(chat_id)
+            return
+        from app.managers.role_pool_filter import (
+            load_mode_pool,
+            lookup_wolf_count,
+        )
+
+        pool = load_mode_pool(mode, len(players))
+        wolf_n = lookup_wolf_count(len(players))
         selected = self._priority_select(
             pool,
             wolf_n,
             len(players),
+        )
+        from app.managers.role_pool_fillers import (
+            append_end_fillers,
+            inject_vampires,
+        )
+
+        selected = append_end_fillers(
+            selected,
+            len(players),
+            mode,
+        )
+        selected = inject_vampires(
+            selected,
+            len(players),
+            mode,
         )
         roles = self._slice_roles(selected, len(players))
         from app.managers.role_forced import (
@@ -86,26 +115,19 @@ class RoleDistributionManager:
         )
         self._rng.shuffle(roles)
         await self._assign(chat_id, players, roles)
+        if mode == "Romantic":
+            from app.managers.role_mode_specials import (
+                romantic_pairs,
+            )
+
+            await romantic_pairs(
+                chat_id,
+                players,
+                self._keys,
+            )
         if self._night_starter is None:
             return
         await self._night_starter(chat_id)
-
-    def _load_mode_roles(self, mode: str) -> list[str]:
-        """Return allowed role ids for mode."""
-        raw = load_json(GAME_MODE_ROLES)
-        if mode not in raw:
-            mode = "Normal"
-        return [str(item) for item in raw[mode]]
-
-    def _lookup_wolf_count(self, count: int) -> int:
-        """Lookup wolf count from table ranges."""
-        table = load_json(WOLF_COUNT_TABLE)
-        for row in table["ranges"]:
-            low = int(row["min_players"])
-            high = int(row["max_players"])
-            if low <= count <= high:
-                return int(row["wolf_count"])
-        return 2
 
     def _priority_select(
         self,
@@ -164,9 +186,7 @@ class RoleDistributionManager:
             if len(chosen) >= need:
                 break
             chosen.append(rid)
-        while len(chosen) < need:
-            chosen.append("role_villager")
-        return chosen[:need]
+        return chosen
 
     def _slice_roles(
         self,
@@ -271,6 +291,42 @@ class RoleDistributionManager:
             players,
             roles_map,
             self._keys,
+        )
+        role_vals = set(roles_map.values())
+        if "role_dynamite" in role_vals:
+            from random import SystemRandom
+
+            pool = [int(u) for u in roles_map]
+            SystemRandom().shuffle(pool)
+            parts = pool[: min(4, len(pool))]
+            await redis.hset(
+                self._keys.game_flags(chat_id),
+                mapping={
+                    self._keys.field(
+                        "bomber_parts"
+                    ): json.dumps(parts),
+                    self._keys.field(
+                        "dinamit_finds"
+                    ): "0",
+                    self._keys.field(
+                        "dinamit_in_game"
+                    ): (
+                        "1"
+                        if "role_dynamite" in role_vals
+                        else "0"
+                    ),
+                },
+            )
+        if "role_BlackKnight" in role_vals:
+            await redis.hset(
+                self._keys.game_flags(chat_id),
+                self._keys.field("black_knight_hits"),
+                "0",
+            )
+        await redis.hset(
+            self._keys.game_flags(chat_id),
+            self._keys.field("village_links_pending"),
+            "1",
         )
         log_game_event(
             "roles_assigned",

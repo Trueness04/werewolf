@@ -15,7 +15,6 @@ from app.config.paths import GAME_PHASES
 from app.config.settings import Settings, get_settings
 from app.database.models.game import GameRow
 from app.database.models.player import PlayerRow
-from app.database.models.user import UserRow
 from app.database.session import session_scope
 from app.managers.game_event import log_game_event
 from app.managers.json_loader import load_json
@@ -61,14 +60,12 @@ class LobbyManager:
             game_id = int(row.id)
         redis = await get_redis()
         key = self._keys.game_hash(chat_id)
-        await redis.delete(key)
-        await redis.delete(self._keys.ai_players(chat_id))
-        await redis.delete(self._keys.ai_personas(chat_id))
         await redis.delete(
-            self._keys.ai_chat_queue(chat_id)
-        )
-        await redis.delete(
-            self._keys.ai_chat_count(chat_id)
+            key,
+            self._keys.ai_players(chat_id),
+            self._keys.ai_personas(chat_id),
+            self._keys.ai_chat_queue(chat_id),
+            self._keys.ai_chat_count(chat_id),
         )
         timer = int(time()) + int(
             self._settings.join_duration_seconds
@@ -84,8 +81,15 @@ class LobbyManager:
             self._keys.field("new_user_join"): "[]",
             self._keys.field("edit_markup"): "[]",
             self._keys.field("delete_message"): "[]",
+            self._keys.field("day_count"): "1",
+            self._keys.field("night_count"): "0",
         }
         await redis.hset(key, mapping=mapping)
+        await redis.set(self._keys.day_count(chat_id), "1")
+        await redis.set(
+            self._keys.night_count(chat_id),
+            "0",
+        )
         active = self._keys.active_join_chats()
         await redis.sadd(active, str(chat_id))
         log_game_event(
@@ -187,6 +191,22 @@ class LobbyManager:
             game_id=game_id,
         )
 
+    async def unregister_player(
+        self,
+        chat_id: int,
+        user_id: int,
+    ) -> bool:
+        """Remove player from join lobby; False if absent."""
+        from app.managers.lobby_unregister import (
+            unregister_lobby_player,
+        )
+
+        return await unregister_lobby_player(
+            self._keys,
+            chat_id,
+            user_id,
+        )
+
     async def _append_json_list(
         self,
         chat_id: int,
@@ -227,16 +247,9 @@ class LobbyManager:
 
     async def get_user_coins(self, user_id: int) -> int:
         """Read user coin balance from PostgreSQL."""
-        async with session_scope() as session:
-            stmt = select(UserRow).where(
-                UserRow.user_id == user_id
-            )
-            row = (
-                await session.execute(stmt)
-            ).scalar_one_or_none()
-        if row is None:
-            return 0
-        return int(row.coins)
+        from app.managers.lobby_coins import get_user_coins
+
+        return await get_user_coins(user_id)
 
     async def deduct_coins(
         self,
@@ -244,17 +257,9 @@ class LobbyManager:
         amount: int,
     ) -> bool:
         """Deduct coins; False if insufficient."""
-        async with session_scope() as session:
-            stmt = select(UserRow).where(
-                UserRow.user_id == user_id
-            )
-            row = (
-                await session.execute(stmt)
-            ).scalar_one_or_none()
-            if row is None or row.coins < amount:
-                return False
-            row.coins = int(row.coins) - amount
-        return True
+        from app.managers.lobby_coins import deduct_coins
+
+        return await deduct_coins(user_id, amount)
 
     async def force_timer_end(self, chat_id: int) -> None:
         """Set timer to now-5 to end join soon."""

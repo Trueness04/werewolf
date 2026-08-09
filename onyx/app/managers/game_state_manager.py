@@ -85,8 +85,10 @@ class GameStateManager:
                     chat_id=chat_id,
                     status=active,
                     lang=lang,
+                    text_mode="general",
                     pin_player_message=False,
                     allow_extend=True,
+                    allow_flee=True,
                     vampire_role_on=True,
                     bloodthirsty_role_on=True,
                 )

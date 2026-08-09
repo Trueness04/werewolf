@@ -17,6 +17,7 @@
     "role_KhabGozar",
     "role_rishSefid",
     "role_Spy",
+    "role_feramason",
     "role_villager",
     "role_Khaen",
     "role_NefrinShode",
@@ -24,7 +25,15 @@
     "role_Fool",
     "role_Kadkhoda",
     "role_Shahzade",
-    "role_PesarGij"
+    "role_PesarGij",
+    "role_iceWolf",
+    "role_enchanter",
+    "role_Honey",
+    "role_Alpha",
+    "role_forestQueen",
+    "role_WolfJadogar",
+    "role_betaWolf",
+    "role_DarNeshan"
   ],
   "WereWolf": [
     "role_wolf",
@@ -44,6 +53,7 @@
     "role_KhabGozar",
     "role_rishSefid",
     "role_Spy",
+    "role_feramason",
     "role_villager",
     "role_Khaen",
     "role_NefrinShode",
@@ -51,7 +61,15 @@
     "role_Fool",
     "role_Kadkhoda",
     "role_Shahzade",
-    "role_PesarGij"
+    "role_PesarGij",
+    "role_iceWolf",
+    "role_enchanter",
+    "role_Honey",
+    "role_Alpha",
+    "role_forestQueen",
+    "role_WolfJadogar",
+    "role_betaWolf",
+    "role_DarNeshan"
   ],
   "Easy": [
     "role_wolf",
@@ -70,37 +88,13 @@
     "role_Qatel",
     "role_villager",
     "role_vampire",
+    "role_BeladMoon",
     "role_dynamite",
     "role_joker",
     "role_harley",
-    "role_firefighter"
-  ],
-  "Coin": [
-    "role_wolf",
-    "role_WhiteWolf",
-    "role_pishgo",
-    "role_Fereshte",
-    "role_Qatel",
-    "role_shekar",
-    "role_ferqe",
-    "role_Solh",
-    "role_kalantar",
-    "role_Vahshi",
-    "role_pishRezerv",
-    "role_tofangdar",
-    "role_Natasha",
-    "role_Ahangar",
-    "role_KhabGozar",
-    "role_rishSefid",
-    "role_Spy",
-    "role_villager",
-    "role_Khaen",
-    "role_NefrinShode",
-    "role_Mast",
-    "role_Fool",
-    "role_Kadkhoda",
-    "role_Shahzade",
-    "role_PesarGij"
+    "role_firefighter",
+    "role_WolfJadogar",
+    "role_betaWolf"
   ],
   "Romantic": [
     "role_wolf",
@@ -118,6 +112,7 @@
     "role_Fereshte",
     "role_villager",
     "role_vampire",
+    "role_BeladMoon",
     "role_kalantar"
   ],
   "Foolish": [
@@ -127,14 +122,6 @@
     "role_villager",
     "role_Fool",
     "role_PesarGij",
-    "role_kalantar"
-  ],
-  "Bomber": [
-    "role_wolf",
-    "role_pishgo",
-    "role_Fereshte",
-    "role_villager",
-    "role_dynamite",
     "role_kalantar"
   ],
   "Mafia": [

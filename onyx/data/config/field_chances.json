@@ -9,5 +9,19 @@
   "lilis_block_chance": 60,
   "cub_extend_seconds": 45,
   "royce_extend_seconds": 30,
-  "sheriff_shot_seconds": 45
+  "sheriff_shot_seconds": 45,
+  "darneshan_pick_seconds": 45,
+  "magento_convert": 50,
+  "vamp_not_kill": 50,
+  "vamp_vs_wolf": 50,
+  "blood_convert": 40,
+  "blood_convert_dead": 20,
+  "dodge_qatel_dead": 35,
+  "dodge_wolf_dead": 35,
+  "dodge_blood_dead": 50,
+  "princess_escape_chance": 40,
+  "cult_vs_blood_convert": 50,
+  "cult_vs_blood_kill": 50,
+  "dozd_moon_period": 14,
+  "dozd_on_alpha_convert": true
 }

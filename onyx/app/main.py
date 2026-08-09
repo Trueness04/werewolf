@@ -20,20 +20,66 @@ from app.handlers.day_action_handler import (
     day_callback,
     day_callback_pattern,
 )
+from app.handlers.dodge_handler import (
+    dodge_day_callback,
+    dodge_day_pattern,
+    dodge_vote_callback,
+    dodge_vote_pattern,
+)
 from app.handlers.extend import extend_join
+from app.handlers.flee import flee_join
 from app.handlers.force_start import force_start
 from app.handlers.join_game import (
     join_command,
     start_payload_join,
 )
 from app.handlers.kill_game import kill_game
+from app.handlers.mode_info import mode_info
+from app.handlers.next_game import (
+    cancel_next_callback,
+    cancel_next_pattern,
+    next_game_command,
+)
+from app.handlers.challenge import (
+    challenge_force,
+    start_challenge,
+)
+from app.handlers.economy import (
+    coin_pack_command,
+    mycoin_command,
+    sendcoin_command,
+    shop_command,
+)
+from app.handlers.meta_play import (
+    achievement_command,
+    myhero_command,
+    onlinegame_command,
+)
+from app.handlers.sudo_handler import sudo_command
+from app.handlers.config_handler import (
+    config_callback,
+    config_command,
+    config_pattern,
+)
+from app.handlers.magic_handler import (
+    magic_callback,
+    magic_callback_pattern,
+)
 from app.handlers.night_action_handler import (
     night_callback,
     night_callback_pattern,
 )
 from app.handlers.players_list import players_list
+from app.handlers.senior_handler import (
+    senior_callback,
+    senior_callback_pattern,
+)
 from app.handlers.start_game import start_game_entry
 from app.handlers.vote_action_handler import (
+    black_revenge_callback,
+    black_revenge_pattern,
+    darneshan_pick_callback,
+    darneshan_pick_pattern,
     sheriff_callback_pattern,
     sheriff_shot_callback,
     vote_callback,
@@ -73,6 +119,12 @@ def _register_handlers(app: Application) -> None:
     )
     app.add_handler(
         CommandHandler(
+            str(cmds["flee"]),
+            flee_join,
+        )
+    )
+    app.add_handler(
+        CommandHandler(
             str(cmds["force_start"]),
             force_start,
         )
@@ -96,9 +148,93 @@ def _register_handlers(app: Application) -> None:
         )
     )
     app.add_handler(
+        CommandHandler(
+            str(cmds["mode_info"]),
+            mode_info,
+        )
+    )
+    app.add_handler(
+        CommandHandler(
+            str(cmds["next_game"]),
+            next_game_command,
+        )
+    )
+    app.add_handler(
+        CommandHandler(
+            str(cmds["config"]),
+            config_command,
+        )
+    )
+    app.add_handler(
+        CommandHandler(
+            str(cmds["start_challenge"]),
+            start_challenge,
+        )
+    )
+    app.add_handler(
+        CommandHandler(
+            str(cmds["challenge_force"]),
+            challenge_force,
+        )
+    )
+    app.add_handler(
+        CommandHandler(
+            str(cmds["mycoin"]),
+            mycoin_command,
+        )
+    )
+    app.add_handler(
+        CommandHandler(
+            str(cmds["sendcoin"]),
+            sendcoin_command,
+        )
+    )
+    app.add_handler(
+        CommandHandler(
+            str(cmds["shop"]),
+            shop_command,
+        )
+    )
+    app.add_handler(
+        CommandHandler(
+            str(cmds["coin"]),
+            coin_pack_command,
+        )
+    )
+    app.add_handler(
+        CommandHandler(
+            str(cmds["sudo"]),
+            sudo_command,
+        )
+    )
+    app.add_handler(
+        CommandHandler(
+            str(cmds["myhero"]),
+            myhero_command,
+        )
+    )
+    app.add_handler(
+        CommandHandler(
+            str(cmds["achievement"]),
+            achievement_command,
+        )
+    )
+    app.add_handler(
+        CommandHandler(
+            str(cmds["onlinegame"]),
+            onlinegame_command,
+        )
+    )
+    app.add_handler(
         CallbackQueryHandler(
             night_callback,
             pattern=night_callback_pattern(),
+        )
+    )
+    app.add_handler(
+        CallbackQueryHandler(
+            magic_callback,
+            pattern=magic_callback_pattern(),
         )
     )
     app.add_handler(
@@ -117,6 +253,48 @@ def _register_handlers(app: Application) -> None:
         CallbackQueryHandler(
             sheriff_shot_callback,
             pattern=sheriff_callback_pattern(),
+        )
+    )
+    app.add_handler(
+        CallbackQueryHandler(
+            black_revenge_callback,
+            pattern=black_revenge_pattern(),
+        )
+    )
+    app.add_handler(
+        CallbackQueryHandler(
+            darneshan_pick_callback,
+            pattern=darneshan_pick_pattern(),
+        )
+    )
+    app.add_handler(
+        CallbackQueryHandler(
+            dodge_day_callback,
+            pattern=dodge_day_pattern(),
+        )
+    )
+    app.add_handler(
+        CallbackQueryHandler(
+            dodge_vote_callback,
+            pattern=dodge_vote_pattern(),
+        )
+    )
+    app.add_handler(
+        CallbackQueryHandler(
+            config_callback,
+            pattern=config_pattern(),
+        )
+    )
+    app.add_handler(
+        CallbackQueryHandler(
+            senior_callback,
+            pattern=senior_callback_pattern(),
+        )
+    )
+    app.add_handler(
+        CallbackQueryHandler(
+            cancel_next_callback,
+            pattern=cancel_next_pattern(),
         )
     )
     if get_settings().debug_mode:

@@ -93,7 +93,7 @@
         "name": "role_shekar_n",
         "description": "aboutCH",
         "team_info": null,
-        "night_prompt": "AskShekar"
+        "night_prompt": "howToHoHome"
       }
     },
     {
@@ -103,13 +103,61 @@
       "target_type": "single_target",
       "action_kind": "invite",
       "resolution_order_key": "cult_invite",
-      "unique": true,
+      "unique": false,
       "support_role": false,
       "message_keys": {
         "name": "role_ferqe_n",
         "description": "role_ferqe",
         "team_info": "role_ferqe_team",
-        "night_prompt": "AskFerqe"
+        "night_prompt": "AskConvert"
+      }
+    },
+    {
+      "role_id": "role_Royce",
+      "team": "cult",
+      "night1_active": true,
+      "target_type": "single_target",
+      "action_kind": "invite",
+      "resolution_order_key": "cult_invite",
+      "unique": true,
+      "support_role": false,
+      "message_keys": {
+        "name": "role_Royce_n",
+        "description": "role_Royce",
+        "team_info": "role_ferqe_team",
+        "night_prompt": "AskConvert"
+      }
+    },
+    {
+      "role_id": "role_Mummy",
+      "team": "cult",
+      "night1_active": true,
+      "target_type": "single_target",
+      "action_kind": "protect",
+      "resolution_order_key": "check_franc",
+      "unique": true,
+      "support_role": true,
+      "message_keys": {
+        "name": "role_Mummy_n",
+        "description": "role_Mummy",
+        "team_info": "role_ferqe_team",
+        "night_prompt": "AskMummy"
+      }
+    },
+    {
+      "role_id": "role_franc",
+      "team": "cult",
+      "night1_active": true,
+      "target_type": "single_target",
+      "action_kind": "protect_or_kill",
+      "resolution_order_key": "check_franc",
+      "unique": true,
+      "support_role": true,
+      "message_keys": {
+        "name": "role_franc_n",
+        "description": "role_franc",
+        "team_info": "role_ferqe_team",
+        "night_prompt": "AskFranc"
       }
     },
     {
@@ -409,52 +457,51 @@
     {
       "role_id": "role_vampire",
       "team": "solo",
-      "night1_active": false,
-      "target_type": "none",
-      "action_kind": "none",
-      "resolution_order_key": null,
+      "night1_active": true,
+      "target_type": "single_target",
+      "action_kind": "kill",
+      "resolution_order_key": "check_vampire",
       "unique": true,
       "support_role": false,
-      "mighty_stub": true,
+      "mighty_stub": false,
       "message_keys": {
         "name": "role_vampire_n",
         "description": "role_vampire",
-        "team_info": null,
-        "night_prompt": null
+        "team_info": "role_vampire_team",
+        "night_prompt": "AskVampire"
       }
     },
     {
       "role_id": "role_mighty_white_wolf",
       "team": "wolf",
-      "night1_active": false,
-      "target_type": "none",
-      "action_kind": "none",
-      "resolution_order_key": null,
+      "night1_active": true,
+      "target_type": "single_target",
+      "action_kind": "kill_non_wolf",
+      "resolution_order_key": "check_white_wolf",
       "unique": true,
       "support_role": false,
-      "mighty_stub": true,
       "message_keys": {
         "name": "role_mighty_white_wolf_n",
         "description": "role_mighty_white_wolf",
         "team_info": "role_wolf_team",
-        "night_prompt": null
+        "night_prompt": "AskKillWhiteWolf"
       }
     },
     {
       "role_id": "role_dynamite",
       "team": "solo",
-      "night1_active": false,
-      "target_type": "none",
-      "action_kind": "none",
-      "resolution_order_key": null,
+      "night1_active": true,
+      "target_type": "single_target",
+      "action_kind": "find",
+      "resolution_order_key": "check_dynamite",
       "unique": true,
       "support_role": false,
-      "mighty_stub": true,
+      "mighty_stub": false,
       "message_keys": {
         "name": "role_dynamite_n",
         "description": "role_dynamite",
         "team_info": null,
-        "night_prompt": null
+        "night_prompt": "AskDinamit"
       }
     },
     {
@@ -463,7 +510,7 @@
       "night1_active": true,
       "target_type": "single_target",
       "action_kind": "find_book",
-      "resolution_order_key": "joker_find",
+      "resolution_order_key": "check_joker",
       "unique": true,
       "support_role": false,
       "mighty_stub": false,
@@ -480,7 +527,7 @@
       "night1_active": true,
       "target_type": "single_target",
       "action_kind": "find_book",
-      "resolution_order_key": "joker_find",
+      "resolution_order_key": "check_harley",
       "unique": true,
       "support_role": false,
       "mighty_stub": false,
@@ -493,6 +540,263 @@
     },
     {
       "role_id": "role_firefighter",
+      "team": "solo",
+      "night1_active": true,
+      "target_type": "single_target",
+      "action_kind": "oil",
+      "resolution_order_key": "check_firefighter",
+      "unique": true,
+      "support_role": true,
+      "mighty_stub": false,
+      "message_keys": {
+        "name": "role_firefighter_n",
+        "description": "role_firefighter",
+        "team_info": null,
+        "night_prompt": "AskFirefighter"
+      }
+    },
+    {
+      "role_id": "role_IceQueen",
+      "team": "solo",
+      "night1_active": true,
+      "target_type": "single_target",
+      "action_kind": "freeze",
+      "resolution_order_key": "check_ice_queen",
+      "unique": true,
+      "support_role": true,
+      "message_keys": {
+        "name": "role_IceQueen_n",
+        "description": "role_IceQueen",
+        "team_info": null,
+        "night_prompt": "AskIceQueen"
+      }
+    },
+    {
+      "role_id": "role_Archer",
+      "team": "solo",
+      "night1_active": true,
+      "target_type": "single_target",
+      "action_kind": "shoot",
+      "resolution_order_key": "check_archer",
+      "unique": true,
+      "support_role": true,
+      "message_keys": {
+        "name": "role_Archer_n",
+        "description": "role_Archer",
+        "team_info": null,
+        "night_prompt": "AskArcher"
+      }
+    },
+    {
+      "role_id": "role_Hamzad",
+      "team": "villager",
+      "night1_active": true,
+      "target_type": "single_target",
+      "action_kind": "model",
+      "resolution_order_key": "natasha_visit",
+      "unique": true,
+      "support_role": true,
+      "message_keys": {
+        "name": "role_Hamzad_n",
+        "description": "role_Hamzad",
+        "team_info": null,
+        "night_prompt": "AskHamzad"
+      }
+    },
+    {
+      "role_id": "role_BlackKnight",
+      "team": "solo",
+      "night1_active": false,
+      "target_type": "single_target",
+      "action_kind": "day_kill",
+      "resolution_order_key": null,
+      "unique": true,
+      "support_role": false,
+      "message_keys": {
+        "name": "role_BlackKnight_n",
+        "description": "role_BlackKnight",
+        "team_info": null,
+        "night_prompt": null
+      }
+    },
+    {
+      "role_id": "role_Huntsman",
+      "team": "villager",
+      "night1_active": true,
+      "target_type": "single_target",
+      "action_kind": "trap",
+      "resolution_order_key": "check_huntsman",
+      "unique": true,
+      "support_role": true,
+      "message_keys": {
+        "name": "role_Huntsman_n",
+        "description": "role_Huntsman",
+        "team_info": null,
+        "night_prompt": "AskHuntsman"
+      }
+    },
+    {
+      "role_id": "role_Knight",
+      "team": "villager",
+      "night1_active": true,
+      "target_type": "single_target",
+      "action_kind": "kill",
+      "resolution_order_key": "check_knight",
+      "unique": true,
+      "support_role": true,
+      "message_keys": {
+        "name": "role_Knight_n",
+        "description": "role_Knight",
+        "team_info": null,
+        "night_prompt": "AskKnight"
+      }
+    },
+    {
+      "role_id": "role_Chemist",
+      "team": "villager",
+      "night1_active": true,
+      "target_type": "single_target",
+      "action_kind": "poison",
+      "resolution_order_key": "check_chemist",
+      "unique": true,
+      "support_role": true,
+      "message_keys": {
+        "name": "role_Chemist_n",
+        "description": "role_Chemist",
+        "team_info": null,
+        "night_prompt": "AskChemist"
+      }
+    },
+    {
+      "role_id": "role_Cow",
+      "team": "villager",
+      "night1_active": true,
+      "target_type": "single_target",
+      "action_kind": "gore",
+      "resolution_order_key": "check_cow",
+      "unique": true,
+      "support_role": true,
+      "message_keys": {
+        "name": "role_Cow_n",
+        "description": "role_Cow",
+        "team_info": null,
+        "night_prompt": "AskCow"
+      }
+    },
+    {
+      "role_id": "role_qhost",
+      "team": "villager",
+      "night1_active": true,
+      "target_type": "single_target",
+      "action_kind": "investigate",
+      "resolution_order_key": "check_ghost",
+      "unique": true,
+      "support_role": true,
+      "message_keys": {
+        "name": "role_qhost_n",
+        "description": "role_qhost",
+        "team_info": null,
+        "night_prompt": "AskGhost"
+      }
+    },
+    {
+      "role_id": "role_Mouse",
+      "team": "villager",
+      "night1_active": true,
+      "target_type": "single_target",
+      "action_kind": "detect",
+      "resolution_order_key": "check_mouse",
+      "unique": true,
+      "support_role": true,
+      "message_keys": {
+        "name": "role_Mouse_n",
+        "description": "role_Mouse",
+        "team_info": null,
+        "night_prompt": "AskMouse"
+      }
+    },
+    {
+      "role_id": "role_Augur",
+      "team": "villager",
+      "night1_active": true,
+      "target_type": "none",
+      "action_kind": "augur",
+      "resolution_order_key": "check_augur",
+      "unique": true,
+      "support_role": true,
+      "message_keys": {
+        "name": "role_Augur_n",
+        "description": "role_Augur",
+        "team_info": null,
+        "night_prompt": "AskAugur"
+      }
+    },
+    {
+      "role_id": "role_ngativ",
+      "team": "villager",
+      "night1_active": true,
+      "target_type": "single_target",
+      "action_kind": "investigate",
+      "resolution_order_key": "check_negative",
+      "unique": true,
+      "support_role": true,
+      "message_keys": {
+        "name": "role_ngativ_n",
+        "description": "role_ngativ",
+        "team_info": null,
+        "night_prompt": "Negativ_l"
+      }
+    },
+    {
+      "role_id": "role_karagah",
+      "team": "villager",
+      "night1_active": false,
+      "target_type": "single_target",
+      "action_kind": "day_snoop",
+      "resolution_order_key": null,
+      "unique": true,
+      "support_role": true,
+      "message_keys": {
+        "name": "role_karagah_n",
+        "description": "role_karagah",
+        "team_info": null,
+        "night_prompt": null
+      }
+    },
+    {
+      "role_id": "role_Princess",
+      "team": "villager",
+      "night1_active": false,
+      "target_type": "single_target",
+      "action_kind": "prison",
+      "resolution_order_key": null,
+      "unique": true,
+      "support_role": true,
+      "message_keys": {
+        "name": "role_Princess_n",
+        "description": "role_Princess",
+        "team_info": null,
+        "night_prompt": null
+      }
+    },
+    {
+      "role_id": "role_Phoenix",
+      "team": "villager",
+      "night1_active": true,
+      "target_type": "single_target",
+      "action_kind": "heal",
+      "resolution_order_key": "check_phoenix",
+      "unique": true,
+      "support_role": true,
+      "message_keys": {
+        "name": "role_Phoenix_n",
+        "description": "role_Phoenix",
+        "team_info": null,
+        "night_prompt": "AskPhoenix"
+      }
+    },
+    {
+      "role_id": "role_Gorgname",
       "team": "villager",
       "night1_active": false,
       "target_type": "none",
@@ -500,12 +804,509 @@
       "resolution_order_key": null,
       "unique": true,
       "support_role": true,
-      "mighty_stub": true,
       "message_keys": {
-        "name": "role_firefighter_n",
-        "description": "role_firefighter",
+        "name": "role_Gorgname_n",
+        "description": "role_Gorgname",
         "team_info": null,
         "night_prompt": null
+      }
+    },
+    {
+      "role_id": "role_Botanist",
+      "team": "villager",
+      "night1_active": false,
+      "target_type": "single_target",
+      "action_kind": "cure",
+      "resolution_order_key": null,
+      "unique": true,
+      "support_role": true,
+      "message_keys": {
+        "name": "role_Botanist_n",
+        "description": "role_Botanist",
+        "team_info": null,
+        "night_prompt": null
+      }
+    },
+    {
+      "role_id": "role_feramason",
+      "team": "villager",
+      "night1_active": false,
+      "target_type": "none",
+      "action_kind": "none",
+      "resolution_order_key": null,
+      "unique": false,
+      "support_role": true,
+      "message_keys": {
+        "name": "role_feramason_n",
+        "description": "role_feramason",
+        "team_info": "role_feramason_team",
+        "night_prompt": null
+      }
+    },
+    {
+      "role_id": "role_Nazer",
+      "team": "villager",
+      "night1_active": false,
+      "target_type": "none",
+      "action_kind": "none",
+      "resolution_order_key": null,
+      "unique": true,
+      "support_role": true,
+      "message_keys": {
+        "name": "role_Nazer_n",
+        "description": "role_Nazer",
+        "team_info": null,
+        "night_prompt": null
+      }
+    },
+    {
+      "role_id": "role_trouble",
+      "team": "villager",
+      "night1_active": false,
+      "target_type": "yes_no",
+      "action_kind": "second_vote",
+      "resolution_order_key": null,
+      "unique": true,
+      "support_role": true,
+      "message_keys": {
+        "name": "role_trouble_n",
+        "description": "role_trouble",
+        "team_info": null,
+        "night_prompt": null
+      }
+    },
+    {
+      "role_id": "role_Ruler",
+      "team": "villager",
+      "night1_active": false,
+      "target_type": "yes_no",
+      "action_kind": "rule",
+      "resolution_order_key": null,
+      "unique": true,
+      "support_role": true,
+      "message_keys": {
+        "name": "role_Ruler_n",
+        "description": "role_Ruler",
+        "team_info": null,
+        "night_prompt": null
+      }
+    },
+    {
+      "role_id": "role_elahe",
+      "team": "villager",
+      "night1_active": true,
+      "target_type": "single_target",
+      "action_kind": "cupid",
+      "resolution_order_key": "forest_queen_curse",
+      "unique": true,
+      "support_role": true,
+      "message_keys": {
+        "name": "role_elahe_n",
+        "description": "role_elahe",
+        "team_info": null,
+        "night_prompt": "AskCupid1"
+      }
+    },
+    {
+      "role_id": "role_Sweetheart",
+      "team": "villager",
+      "night1_active": false,
+      "target_type": "none",
+      "action_kind": "none",
+      "resolution_order_key": null,
+      "unique": true,
+      "support_role": true,
+      "message_keys": {
+        "name": "role_Sweetheart_n",
+        "description": "role_Sweetheart",
+        "team_info": null,
+        "night_prompt": null
+      }
+    },
+    {
+      "role_id": "role_Watermelon",
+      "team": "villager",
+      "night1_active": true,
+      "target_type": "single_target",
+      "action_kind": "mark",
+      "resolution_order_key": "check_watermelon",
+      "unique": true,
+      "support_role": true,
+      "message_keys": {
+        "name": "role_Watermelon_n",
+        "description": "role_Watermelon",
+        "team_info": null,
+        "night_prompt": "AskWatermelon"
+      }
+    },
+    {
+      "role_id": "role_clown",
+      "team": "villager",
+      "night1_active": false,
+      "target_type": "none",
+      "action_kind": "none",
+      "resolution_order_key": null,
+      "unique": true,
+      "support_role": true,
+      "message_keys": {
+        "name": "role_clown_n",
+        "description": "role_clown",
+        "team_info": null,
+        "night_prompt": null
+      }
+    },
+    {
+      "role_id": "role_babr",
+      "team": "villager",
+      "night1_active": true,
+      "target_type": "single_target",
+      "action_kind": "kill",
+      "resolution_order_key": "check_babr",
+      "unique": true,
+      "support_role": true,
+      "message_keys": {
+        "name": "role_babr_n",
+        "description": "role_babr",
+        "team_info": null,
+        "night_prompt": "AskBabr"
+      }
+    },
+    {
+      "role_id": "role_Khenyager",
+      "team": "villager",
+      "night1_active": true,
+      "target_type": "yes_no",
+      "action_kind": "reroute",
+      "resolution_order_key": "check_bard",
+      "unique": true,
+      "support_role": true,
+      "message_keys": {
+        "name": "role_Khenyager_n",
+        "description": "role_Khenyager",
+        "team_info": null,
+        "night_prompt": "AskKhenyager"
+      }
+    },
+    {
+      "role_id": "role_Lilis",
+      "team": "solo",
+      "night1_active": true,
+      "target_type": "single_target",
+      "action_kind": "kill",
+      "resolution_order_key": "check_lilis",
+      "unique": true,
+      "support_role": true,
+      "message_keys": {
+        "name": "role_Lilis_n",
+        "description": "role_Lilis",
+        "team_info": null,
+        "night_prompt": "AskLilis"
+      }
+    },
+    {
+      "role_id": "role_Magento",
+      "team": "solo",
+      "night1_active": true,
+      "target_type": "single_target",
+      "action_kind": "kill",
+      "resolution_order_key": "check_magento",
+      "unique": true,
+      "support_role": true,
+      "message_keys": {
+        "name": "role_Magento_n",
+        "description": "role_Magento",
+        "team_info": null,
+        "night_prompt": "AskMagento"
+      }
+    },
+    {
+      "role_id": "role_Bloodthirsty",
+      "team": "solo",
+      "night1_active": false,
+      "target_type": "none",
+      "action_kind": "none",
+      "resolution_order_key": null,
+      "unique": true,
+      "support_role": true,
+      "message_keys": {
+        "name": "role_Bloodthirsty_n",
+        "description": "role_Bloodthirsty",
+        "team_info": null,
+        "night_prompt": null
+      }
+    },
+    {
+      "role_id": "role_chiang",
+      "team": "solo",
+      "night1_active": true,
+      "target_type": "none",
+      "action_kind": "ping",
+      "resolution_order_key": "check_chiang",
+      "unique": true,
+      "support_role": true,
+      "message_keys": {
+        "name": "role_chiang_n",
+        "description": "role_chiang",
+        "team_info": null,
+        "night_prompt": null
+      }
+    },
+    {
+      "role_id": "role_Kent",
+      "team": "solo",
+      "night1_active": true,
+      "target_type": "single_target",
+      "action_kind": "spy",
+      "resolution_order_key": "check_kent",
+      "unique": true,
+      "support_role": true,
+      "message_keys": {
+        "name": "role_Kent_n",
+        "description": "role_Kent",
+        "team_info": null,
+        "night_prompt": "AskKent"
+      }
+    },
+    {
+      "role_id": "role_davina",
+      "team": "solo",
+      "night1_active": false,
+      "target_type": "yes_no",
+      "action_kind": "silence",
+      "resolution_order_key": null,
+      "unique": true,
+      "support_role": true,
+      "message_keys": {
+        "name": "role_davina_n",
+        "description": "role_davina",
+        "team_info": null,
+        "night_prompt": null
+      }
+    },
+    {
+      "role_id": "role_Hilda",
+      "team": "solo",
+      "night1_active": false,
+      "target_type": "none",
+      "action_kind": "none",
+      "resolution_order_key": null,
+      "unique": true,
+      "support_role": true,
+      "message_keys": {
+        "name": "role_Hilda_n",
+        "description": "role_Hilda",
+        "team_info": null,
+        "night_prompt": null
+      }
+    },
+    {
+      "role_id": "role_BrideTheDead",
+      "team": "solo",
+      "night1_active": true,
+      "target_type": "single_target",
+      "action_kind": "kill",
+      "resolution_order_key": "check_bride",
+      "unique": true,
+      "support_role": true,
+      "message_keys": {
+        "name": "role_BrideTheDead_n",
+        "description": "role_BrideTheDead",
+        "team_info": null,
+        "night_prompt": "AskBride"
+      }
+    },
+    {
+      "role_id": "role_dian",
+      "team": "solo",
+      "night1_active": false,
+      "target_type": "single_target",
+      "action_kind": "mark",
+      "resolution_order_key": null,
+      "unique": true,
+      "support_role": true,
+      "message_keys": {
+        "name": "role_dian_n",
+        "description": "role_dian",
+        "team_info": null,
+        "night_prompt": null
+      }
+    },
+    {
+      "role_id": "role_lucifer",
+      "team": "solo",
+      "night1_active": true,
+      "target_type": "single_target",
+      "action_kind": "deceive",
+      "resolution_order_key": "lucifer_team",
+      "unique": true,
+      "support_role": false,
+      "message_keys": {
+        "name": "role_lucifer_n",
+        "description": "role_lucifer",
+        "team_info": null,
+        "night_prompt": "AskLucifer"
+      }
+    },
+    {
+      "role_id": "role_iceWolf",
+      "team": "wolf",
+      "night1_active": true,
+      "target_type": "single_target",
+      "action_kind": "freeze",
+      "resolution_order_key": "check_ice_wolf",
+      "unique": true,
+      "support_role": false,
+      "message_keys": {
+        "name": "role_iceWolf_n",
+        "description": "role_iceWolf",
+        "team_info": "role_wolf_team",
+        "night_prompt": "AskIceWolf"
+      }
+    },
+    {
+      "role_id": "role_enchanter",
+      "team": "wolf",
+      "night1_active": true,
+      "target_type": "single_target",
+      "action_kind": "enchant",
+      "resolution_order_key": "check_enchanter",
+      "unique": true,
+      "support_role": false,
+      "message_keys": {
+        "name": "role_enchanter_n",
+        "description": "role_enchanter",
+        "team_info": "role_wolf_team",
+        "night_prompt": "AskEnchanter"
+      }
+    },
+    {
+      "role_id": "role_Honey",
+      "team": "wolf",
+      "night1_active": true,
+      "target_type": "single_target",
+      "action_kind": "honey",
+      "resolution_order_key": "check_honey",
+      "unique": true,
+      "support_role": false,
+      "message_keys": {
+        "name": "role_Honey_n",
+        "description": "role_Honey",
+        "team_info": "role_wolf_team",
+        "night_prompt": "AskHoney"
+      }
+    },
+    {
+      "role_id": "role_Alpha",
+      "team": "wolf",
+      "night1_active": true,
+      "target_type": "single_target",
+      "action_kind": "kill",
+      "resolution_order_key": "wolf_kill",
+      "unique": true,
+      "support_role": false,
+      "message_keys": {
+        "name": "role_Alpha_n",
+        "description": "role_Alpha",
+        "team_info": "role_wolf_team",
+        "night_prompt": "AskKillWolf"
+      }
+    },
+    {
+      "role_id": "role_forestQueen",
+      "team": "wolf",
+      "night1_active": true,
+      "target_type": "single_target",
+      "action_kind": "kill",
+      "resolution_order_key": "wolf_kill",
+      "unique": true,
+      "support_role": false,
+      "message_keys": {
+        "name": "role_forestQueen_n",
+        "description": "role_forestQueen",
+        "team_info": "role_wolf_team",
+        "night_prompt": "AskKillWolf"
+      }
+    },
+    {
+      "role_id": "role_WolfJadogar",
+      "team": "wolf",
+      "night1_active": true,
+      "target_type": "single_target",
+      "action_kind": "investigate",
+      "resolution_order_key": "check_sorcerer",
+      "unique": true,
+      "support_role": false,
+      "message_keys": {
+        "name": "role_WolfJadogar_n",
+        "description": "role_WolfJadogar",
+        "team_info": "role_wolf_team",
+        "night_prompt": "AskJadogar"
+      }
+    },
+    {
+      "role_id": "role_betaWolf",
+      "team": "wolf",
+      "night1_active": false,
+      "target_type": "none",
+      "action_kind": "none",
+      "resolution_order_key": "check_beta_wolf",
+      "unique": true,
+      "support_role": false,
+      "message_keys": {
+        "name": "role_betaWolf_n",
+        "description": "role_betaWolf",
+        "team_info": "role_wolf_team",
+        "night_prompt": null
+      }
+    },
+    {
+      "role_id": "role_dozd",
+      "team": "solo",
+      "night1_active": true,
+      "target_type": "single_target",
+      "action_kind": "mark_steal",
+      "resolution_order_key": "check_thief",
+      "unique": true,
+      "support_role": false,
+      "message_keys": {
+        "name": "role_dozd_n",
+        "description": "role_dozd",
+        "team_info": null,
+        "night_prompt": "AskDozd"
+      }
+    },
+    {
+      "role_id": "role_DarNeshan",
+      "team": "cult",
+      "night1_active": true,
+      "target_type": "single_target",
+      "action_kind": "mark",
+      "resolution_order_key": "check_dar_neshan",
+      "unique": true,
+      "support_role": false,
+      "message_keys": {
+        "name": "role_DarNeshan_n",
+        "description": "role_DarNeshan",
+        "team_info": "role_ferqe_team",
+        "night_prompt": "AskDarNeshanMark"
+      }
+    },
+    {
+      "role_id": "role_BeladMoon",
+      "team": "solo",
+      "night1_active": true,
+      "target_type": "single_target",
+      "action_kind": "kill",
+      "resolution_order_key": "check_vampire",
+      "unique": true,
+      "support_role": true,
+      "mighty_stub": false,
+      "message_keys": {
+        "name": "role_BeladMoon_n",
+        "description": "role_BeladMoon",
+        "team_info": "role_vampire_team",
+        "night_prompt": "AskVampire",
+        "day_prompt": "AskBeladMoon"
       }
     }
   ]

@@ -1,0 +1,39 @@
+---
+description: قوانین الزامی پروژه Onyx برای همه کارهای ایجنت
+alwaysApply: true
+---
+
+# Onyx — قوانین هسته
+
+منبع کامل: `data/AGENTS.md`.
+
+## ریشه (سخت)
+
+فقط این‌ها در ریشه مجازند:
+
+- `app/`
+- `data/`
+- `AI/`
+- `launcher.py`
+
+`docs` / `tests` / `archive` / `AGENTS.md` فقط زیر `data/`.
+
+## محصول
+
+- هسته: ورولف در بات تلگرام
+- شاپ/پرداخت → وب‌اپ؛ بات فقط کیف ساده
+- Bomber، مود coin، bet ممنوع
+- دزد = دزدی نقش
+- DB: PostgreSQL — نه Mongo
+
+## کد
+
+- Gatekeeper: ≤350 خط/فایل، ≤78 کاراکتر/خط
+- صفر هاردکد طولانی؛ JSON در `data/`
+- TextManager؛ `answer_safe`؛ راز فقط `.env`
+
+## گردش کار
+
+- فارسی، کوتاه
+- کامیت فقط با درخواست صریح
+- مرجع: `data/docs/`

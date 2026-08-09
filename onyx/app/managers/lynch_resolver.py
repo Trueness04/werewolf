@@ -5,18 +5,15 @@ from __future__ import annotations
 import json
 from typing import Any
 
-from sqlalchemy import select
-
 from app.cache.redis_client import get_redis
 from app.cache.redis_keys import RedisKeySpace
-from app.config.paths import GAME_PHASES, LYNCH_ORDER
+from app.config.paths import LYNCH_ORDER
 from app.config.settings import Settings, get_settings
-from app.database.models.game import GameRow
-from app.database.session import session_scope
 from app.managers.chat_bridge import ChatBridge
 from app.managers.end_game_manager import EndGameManager
 from app.managers.game_event import log_game_event
 from app.managers.json_loader import load_json
+from app.managers.lynch_advance import advance_to_night
 from app.managers.lynch_effects import LynchEffects
 from app.managers.text_managers import TextManager
 
@@ -55,7 +52,7 @@ class LynchResolver:
         )
 
     def set_night_starter(self, starter: Any) -> None:
-        """Inject night_manager start for next night."""
+        """Inject night start callable."""
         self._night_starter = starter
 
     async def resolve(
@@ -64,6 +61,8 @@ class LynchResolver:
         winner_id: int | None,
         peace: bool = False,
         had_votes: bool = True,
+        *,
+        defer_night: bool = False,
     ) -> None:
         """Post-process lynch then advance night."""
         lang = self._settings.default_lang
@@ -74,7 +73,19 @@ class LynchResolver:
             peace=peace,
         )
         if peace:
-            await self._to_night(chat_id)
+            from app.managers.darneshan_resolve import (
+                burn_mark_after_failed_lynch,
+            )
+
+            await burn_mark_after_failed_lynch(
+                self._bridge,
+                self._keys,
+                self._texts,
+                chat_id,
+                lang,
+            )
+            if not defer_night:
+                await self._to_night(chat_id)
             return
         if winner_id is None:
             key = "no_kill" if had_votes else "no_votes"
@@ -86,7 +97,19 @@ class LynchResolver:
                     bundle="vote",
                 ),
             )
-            await self._to_night(chat_id)
+            from app.managers.darneshan_resolve import (
+                burn_mark_after_failed_lynch,
+            )
+
+            await burn_mark_after_failed_lynch(
+                self._bridge,
+                self._keys,
+                self._texts,
+                chat_id,
+                lang,
+            )
+            if not defer_night:
+                await self._to_night(chat_id)
             return
         redis = await get_redis()
         roles = json.loads(
@@ -97,6 +120,7 @@ class LynchResolver:
         )
         role_id = str(roles.get(str(winner_id), ""))
         handled = False
+        died = False
         for step in self._order:
             if step == "prince" and role_id == (
                 "role_Shahzade"
@@ -112,13 +136,34 @@ class LynchResolver:
                 step == "black_knight"
                 and role_id == "role_BlackKnight"
             ):
-                handled = await self._fx.black_knight(
+                saved = await self._fx.black_knight(
                     chat_id,
                     winner_id,
                     lang,
                 )
-                if handled:
+                if saved:
+                    handled = True
                     break
+                await self._fx.normal_death(
+                    chat_id,
+                    winner_id,
+                    role_id,
+                    lang,
+                )
+                from app.managers.stop_black import (
+                    open_stop_black,
+                )
+
+                await open_stop_black(
+                    self._bridge,
+                    self._keys,
+                    self._texts,
+                    self._settings,
+                    chat_id,
+                    winner_id,
+                    lang,
+                )
+                return
             elif (
                 step == "hypocrite"
                 and role_id == "role_monafeq"
@@ -140,6 +185,14 @@ class LynchResolver:
                     lang,
                 )
                 if handled:
+                    # Death registered; pick after shot window
+                    await redis.hset(
+                        self._keys.game_flags(chat_id),
+                        self._keys.field(
+                            "darneshan_after_sheriff"
+                        ),
+                        str(winner_id),
+                    )
                     return
             elif step == "normal_death" and not handled:
                 await self._fx.normal_death(
@@ -149,19 +202,54 @@ class LynchResolver:
                     lang,
                 )
                 handled = True
-        await self._to_night(chat_id)
+                died = True
+        if handled and not died:
+            # prince / black-knight save — burn mark
+            from app.managers.darneshan_resolve import (
+                burn_mark_after_failed_lynch,
+            )
+
+            await burn_mark_after_failed_lynch(
+                self._bridge,
+                self._keys,
+                self._texts,
+                chat_id,
+                lang,
+            )
+        elif handled and died:
+            from app.managers.darneshan_resolve import (
+                maybe_open_darneshan_pick,
+            )
+
+            opened = await maybe_open_darneshan_pick(
+                self._bridge,
+                self._keys,
+                self._texts,
+                self._settings,
+                chat_id,
+                winner_id,
+                lang,
+            )
+            if opened:
+                return
+        if not defer_night:
+            await self._to_night(chat_id)
 
     async def continue_after_shot_timeout(
         self,
         chat_id: int,
     ) -> None:
-        """Sheriff skipped shot; advance to night."""
-        redis = await get_redis()
-        await redis.hdel(
-            self._keys.game_flags(chat_id),
-            self._keys.field("sheriff_shot_pending"),
+        """Sheriff skipped shot; advance by source."""
+        from app.managers.lynch_resume import (
+            resume_after_sheriff,
         )
-        await self._to_night(chat_id)
+
+        await resume_after_sheriff(
+            self._bridge,
+            self._keys,
+            chat_id,
+            self._to_night,
+        )
 
     async def open_sheriff_shot(
         self,
@@ -182,165 +270,67 @@ class LynchResolver:
         actor_id: int,
         target_id: int,
     ) -> None:
-        """Finish sheriff death-shot then go night."""
-        lang = self._settings.default_lang
-        redis = await get_redis()
-        await self._fx.mark_dead(chat_id, target_id)
-        players = json.loads(
-            await redis.get(
-                self._keys.game_players(chat_id)
-            )
-            or "[]"
+        """Finish sheriff death-shot then resume."""
+        from app.managers.sheriff_shot_apply import (
+            finish_sheriff_shot,
         )
-        names = {
-            int(item["user_id"]): str(item["fullname"])
-            for item in players
-        }
-        hunter = names.get(actor_id, str(actor_id))
-        target = names.get(target_id, str(target_id))
-        roles = json.loads(
-            await redis.get(
-                self._keys.game_roles(chat_id)
-            )
-            or "{}"
-        )
-        role_id = str(roles.get(str(target_id), ""))
-        role_name = role_id
-        if role_id:
-            from importlib import import_module
 
-            registry = import_module(
-                "app.class.roles.registry"
-            ).RoleRegistry()
-            mk = registry.definition(role_id)[
-                "message_keys"
-            ]["name"]
-            role_name = self._texts.get(
-                str(mk),
-                lang,
-                bundle="roles",
-            )
-        role_line = self._texts.get(
-            "user_role",
-            lang,
-            role_name,
-            bundle="vote",
-        )
-        await self._bridge.send_text(
+        await finish_sheriff_shot(
+            self._bridge,
+            self._keys,
+            self._texts,
+            self._settings.default_lang,
             chat_id,
-            self._texts.get(
-                "sheriff_shot_done",
-                lang,
-                hunter,
-                target,
-                role_line,
-                bundle="vote",
-            ),
+            actor_id,
+            target_id,
+            self._fx.mark_dead,
+            self._to_night,
         )
-        flags = self._keys.game_flags(chat_id)
-        await redis.hdel(
-            flags,
-            self._keys.field("sheriff_shot_pending"),
-        )
-        # Night HunterKill interrupt → resume day.
-        hunter = await redis.hget(
-            flags,
-            self._keys.field("hunter_kill"),
-        )
-        held = await redis.hget(
-            flags,
-            self._keys.field("check_night_done"),
-        )
-        if hunter or held:
-            await redis.hdel(
-                flags,
-                self._keys.field("hunter_kill"),
-                self._keys.field("check_night_done"),
-                self._keys.field("royce_selectd2"),
-            )
-            await redis.srem(
-                self._keys.active_night_chats(),
-                str(chat_id),
-            )
-            from app.managers.day_manager import (
-                DayManager,
-            )
 
-            await DayManager(self._bridge).start_day(
-                chat_id
-            )
-            return
-        await self._to_night(chat_id)
+    async def apply_black_revenge(
+        self,
+        chat_id: int,
+        actor_id: int,
+        target_id: int,
+    ) -> None:
+        """StopBlack revenge shot then night."""
+        from app.managers.stop_black import (
+            apply_stop_black_shot,
+        )
+
+        await apply_stop_black_shot(
+            self._bridge,
+            self._keys,
+            self._texts,
+            chat_id,
+            actor_id,
+            target_id,
+            self._settings.default_lang,
+            self._fx.mark_dead,
+            self._to_night,
+        )
+
+    async def continue_after_black_timeout(
+        self,
+        chat_id: int,
+    ) -> None:
+        """StopBlack skipped; go night."""
+        from app.managers.stop_black import (
+            continue_stop_black_timeout,
+        )
+
+        await continue_stop_black_timeout(
+            self._keys,
+            chat_id,
+            self._to_night,
+        )
 
     async def _to_night(self, chat_id: int) -> None:
         """Bump night_count and start next night."""
-        if await self._end.is_ended(chat_id):
-            return
-        redis = await get_redis()
-        await redis.srem(
-            self._keys.active_vote_chats(),
-            str(chat_id),
+        await advance_to_night(
+            self._bridge,
+            self._keys,
+            self._end,
+            chat_id,
+            self._night_starter,
         )
-        night_n = int(
-            await redis.get(
-                self._keys.night_count(chat_id)
-            )
-            or "0"
-        )
-        # Clear timed mast/silver-style blocks.
-        flags = self._keys.game_flags(chat_id)
-        await redis.hdel(
-            flags,
-            self._keys.field("mast_block"),
-            self._keys.field("silver_active"),
-        )
-        # Sprint 2: delayed gas before next night.
-        from app.managers.bittan_check import BittanCheck
-
-        await BittanCheck(self._bridge, self._keys).run(
-            chat_id
-        )
-        night_n += 1
-        await redis.set(
-            self._keys.night_count(chat_id),
-            str(night_n),
-        )
-        key = self._keys.game_hash(chat_id)
-        await redis.hset(
-            key,
-            self._keys.field("night_count"),
-            str(night_n),
-        )
-        game_id = int(
-            await redis.hget(
-                key,
-                self._keys.field("game_id"),
-            )
-            or "0"
-        )
-        async with session_scope() as session:
-            stmt = select(GameRow).where(
-                GameRow.id == game_id
-            )
-            row = (
-                await session.execute(stmt)
-            ).scalar_one_or_none()
-            if row is not None:
-                row.night_count = night_n
-        phases = load_json(GAME_PHASES)
-        night = str(phases["redis_phases"]["night"])
-        await redis.hset(
-            key,
-            self._keys.field("game_state"),
-            night,
-        )
-        await redis.delete(self._keys.vote_ballots(chat_id))
-        await redis.delete(self._keys.night_actions(chat_id))
-        await redis.delete(self._keys.night_sent(chat_id))
-        log_game_event(
-            "to_night",
-            chat_id=chat_id,
-            night_count=night_n,
-        )
-        if self._night_starter is not None:
-            await self._night_starter(chat_id)

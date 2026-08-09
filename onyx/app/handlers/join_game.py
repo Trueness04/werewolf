@@ -127,13 +127,21 @@ async def run_join_steps(
         return
     # 6 capacity
     count = await lobby.count_players(chat_id)
-    if count >= cfg.max_players:
+    group = await deps.state_mgr().ensure_group_active(
+        chat_id,
+    )
+    from app.managers.group_limits import max_players_of
+
+    cap = max_players_of(group, cfg) if group else (
+        cfg.max_players
+    )
+    if count >= cap:
         await context.bot.send_message(
             chat_id=user.id,
             text=tm.get(
                 "MaxPlayer",
                 lang,
-                cfg.max_players,
+                cap,
             ),
         )
         log_game_event(
@@ -177,37 +185,15 @@ async def run_join_steps(
         return
     mode = str(data.get(keys.field("game_mode"), ""))
     # 10 coin mode
-    if mode == "Coin":
-        coins = await lobby.get_user_coins(user.id)
-        cost = cfg.join_cost_coins
-        if coins < cost:
-            await context.bot.send_message(
-                chat_id=user.id,
-                text=tm.get("NotAnogthCoin", lang),
-            )
-            log_game_event(
-                "join_fail_coins",
-                chat_id=chat_id,
-                user_id=user.id,
-            )
-            return
-        ok = await lobby.deduct_coins(user.id, cost)
-        if not ok:
-            await context.bot.send_message(
-                chat_id=user.id,
-                text=tm.get("NotAnogthCoin", lang),
-            )
-            return
-        await context.bot.send_message(
-            chat_id=user.id,
-            text=tm.get("MinCoin", lang, cost),
-        )
     # 11 register
     await lobby.register_player(
         chat_id,
         user.id,
         fullname,
     )
+    from app.managers.lobby_extend import bump_if_late_join
+
+    await bump_if_late_join(lobby, chat_id, cfg)
     # 12 confirm PV
     try:
         title = await bridge.get_chat_title(chat_id)

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from importlib import import_module
 
 from telegram import Update
 from telegram.ext import ContextTypes
@@ -12,10 +13,10 @@ from app.cache.redis_keys import RedisKeySpace
 from app.config.paths import CALLBACK_TEMPLATES
 from app.handlers import deps
 from app.handlers.callback_ack import ack_selection
+from app.handlers.callback_safe import answer_safe
 from app.managers.game_event import log_game_event
 from app.managers.json_loader import load_json
 from app.managers.night_early import maybe_early_end_night
-from importlib import import_module
 
 _Registry = import_module(
     "app.class.roles.registry"
@@ -33,7 +34,7 @@ async def night_callback(
     user = update.effective_user
     if user is None:
         return
-    await query.answer()
+    await answer_safe(query)
     tpl = load_json(CALLBACK_TEMPLATES)
     prefix = str(tpl["prefix"])
     data = query.data
@@ -49,7 +50,26 @@ async def night_callback(
         return
     if actor != user.id:
         return
-    choice = parts[3]
+    await _night_apply(
+        update,
+        context,
+        chat_id,
+        actor,
+        parts[3],
+    )
+
+
+async def _night_apply(
+    update: Update,
+    context: ContextTypes.DEFAULT_TYPE,
+    chat_id: int,
+    actor: int,
+    choice: str,
+) -> None:
+    """Apply night pick from callback."""
+    query = update.callback_query
+    if query is None:
+        return
     lang = deps.lang_of(update)
     tm = deps.texts()
     keys = RedisKeySpace()
@@ -57,8 +77,7 @@ async def night_callback(
     role_id = await redis.get(keys.player_role(actor))
     if not role_id:
         return
-    registry = _Registry()
-    role = registry.create(str(role_id))
+    role = _Registry().create(str(role_id))
     if not role.night1_active:
         name = tm.get(
             str(role.message_keys["name"]),

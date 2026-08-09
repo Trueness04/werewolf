@@ -27,17 +27,24 @@
     "data/console",
     "data/env",
     "data/gatekeeper",
-    "data/config"
+    "data/config",
+    "data/docs",
+    "data/tests",
+    "data/archive",
+    "webapp",
+    "webapp/api",
+    "webapp/static"
   ],
   "allowed_top_level": [
     "app",
     "AI",
     "data",
-    "docs",
-    "launcher.py",
-    ".gitignore"
+    "webapp",
+    "launcher.py"
   ],
   "files": [
+    "webapp/main.py",
+    "webapp/__init__.py",
     "launcher.py",
     "app/main.py",
     "AI/__init__.py",
@@ -139,6 +146,8 @@
     "data/console/app.json",
     "data/config/url_templates.json",
     "data/config/game_modes.json",
+    "data/config/flavor_packs.json",
+    "data/config/flavor_overrides_fa.json",
     "data/config/commands.json",
     "data/config/warning_seconds.json",
     "data/config/game_phases.json",
@@ -159,6 +168,12 @@
     "data/config/callback_templates.json",
     "data/gatekeeper/structure.json",
     "data/gatekeeper/patterns.json",
-    "data/gatekeeper/limits.json"
+    "data/gatekeeper/limits.json",
+    "data/config/role_pool_thresholds.json",
+    "data/config/role_balance_buckets.json",
+    "data/config/role_pair_rules.json",
+    "data/config/field_chances.json",
+    "data/config/cult_rules.json",
+    "data/config/village_chances.json"
   ]
 }

@@ -23,7 +23,6 @@ from app.managers.json_loader import load_json
 from app.managers.logger_manager import get_logger
 from app.managers.night_context import build_night_context
 from app.managers.night_steps import NightSteps
-from app.managers.night_village import player
 from app.managers.text_managers import TextManager
 from importlib import import_module
 
@@ -76,12 +75,16 @@ class NightResolver:
             chat_id=chat_id,
         )
         ctx = await build_night_context(chat_id, self._keys)
+        from app.managers.bloodmoon import burn_if_blood_moon
+
         for step in self._order:
             log.debug(
                 "night_step chat={c} step={s}",
                 c=chat_id,
                 s=step,
             )
+            if burn_if_blood_moon(ctx, step):
+                continue
             handler = getattr(self._steps, step, None)
             if handler is None:
                 continue
@@ -171,6 +174,12 @@ class NightResolver:
             LynchResolver,
         )
 
+        redis = await get_redis()
+        await redis.hset(
+            self._keys.game_flags(chat_id),
+            self._keys.field("hunter_kill_source"),
+            "night",
+        )
         await LynchResolver(self._bridge).open_sheriff_shot(
             chat_id,
             int(target),
@@ -214,13 +223,18 @@ class NightResolver:
             return
         redis = await get_redis()
         flags = self._keys.game_flags(int(ctx["chat_id"]))
-        mapping = {
-            self._keys.field(str(k)): str(v)
-            for k, v in out.items()
-            if str(v) != ""
-        }
+        mapping = {}
+        to_del: list[str] = []
+        for k, v in out.items():
+            field = self._keys.field(str(k))
+            if str(v) == "":
+                to_del.append(field)
+            else:
+                mapping[field] = str(v)
         if mapping:
             await redis.hset(flags, mapping=mapping)
+        if to_del:
+            await redis.hdel(flags, *to_del)
 
     async def _apply_deaths(
         self,
@@ -271,6 +285,29 @@ class NightResolver:
                     self._keys.player_role(uid),
                     str(prow.get("role") or ""),
                 )
+                if dead and not was_dead:
+                    from app.managers.death_mute import (
+                        maybe_mute_on_death,
+                    )
+
+                    await maybe_mute_on_death(
+                        self._bridge,
+                        chat_id,
+                        uid,
+                    )
+                    from app.managers.role_links import (
+                        process_death_links,
+                    )
+
+                    await process_death_links(
+                        chat_id,
+                        uid,
+                        str(prow.get("role") or ""),
+                        bridge=self._bridge,
+                        texts=self._texts,
+                        keys=self._keys,
+                        lang=self._settings.default_lang,
+                    )
         await redis.set(
             self._keys.game_roles(chat_id),
             json.dumps(ctx["roles"]),
@@ -283,58 +320,17 @@ class NightResolver:
         ctx: dict[str, Any],
     ) -> None:
         """Send night result messages to group."""
-        for msg in ctx["messages"]:
-            text = self._texts.get(
-                str(msg),
-                lang,
-                bundle="results",
-            )
-            await self._bridge.send_text(chat_id, text)
-        if not ctx["deaths"]:
-            text = self._texts.get(
-                "NoAttakInDay",
-                lang,
-                bundle="results",
-            )
-            await self._bridge.send_text(chat_id, text)
-            return
-        for uid in ctx["deaths"]:
-            prow = player(ctx, int(uid))
-            from app.managers.player_format import (
-                mention_html,
-            )
+        from app.managers.night_announce import (
+            announce_night_results,
+        )
 
-            raw_name = str(prow["fullname"]) if prow else str(uid)
-            name = mention_html(int(uid), raw_name)
-            role_id = str(prow.get("role")) if prow else ""
-            role_name = ""
-            if role_id:
-                role_name = self._texts.get(
-                    str(
-                        self._registry.definition(role_id)[
-                            "message_keys"
-                        ]["name"]
-                    ),
-                    lang,
-                    bundle="roles",
-                )
-            text = self._texts.get(
-                "DefaultKilled",
-                lang,
-                name,
-                role_name,
-                bundle="results",
-            )
-            await self._bridge.send_text(chat_id, text)
-            await self._bridge.send_text(
-                int(uid),
-                self._texts.get(
-                    "you_died_night",
-                    lang,
-                    role_name or name,
-                    bundle="results",
-                ),
-            )
+        await announce_night_results(
+            chat_id,
+            lang,
+            ctx,
+            bridge=self._bridge,
+            texts=self._texts,
+        )
 
     async def _to_day(
         self,

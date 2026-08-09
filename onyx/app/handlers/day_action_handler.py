@@ -6,6 +6,9 @@ import json
 
 from telegram import Update
 from telegram.ext import ContextTypes
+from app.handlers.callback_safe import (
+    answer_safe,
+)
 
 from app.cache.redis_client import get_redis
 from app.cache.redis_keys import RedisKeySpace
@@ -28,7 +31,7 @@ async def day_callback(
     user = update.effective_user
     if user is None:
         return
-    await query.answer()
+    await answer_safe(query)
     tpl = load_json(CALLBACK_TEMPLATES)
     prefix = str(tpl["day_prefix"])
     data = query.data

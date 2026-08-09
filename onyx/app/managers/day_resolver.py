@@ -16,12 +16,14 @@ from app.managers.logger_manager import get_logger
 from app.managers.text_managers import TextManager
 from importlib import import_module
 
+from app.managers.day_steps import DaySteps
+
 _Registry = import_module(
     "app.class.roles.registry"
 ).RoleRegistry
 
 
-class DayResolver:
+class DayResolver(DaySteps):
     """Resolve deferred day actions in fixed order."""
 
     def __init__(
@@ -82,6 +84,36 @@ class DayResolver:
                 "day_sheriff_interrupt",
                 chat_id=chat_id,
             )
+            from time import time
+
+            from app.config.paths import ROOT
+            from app.managers.json_loader import load_json
+
+            secs = int(
+                load_json(
+                    ROOT
+                    / "data"
+                    / "config"
+                    / "field_chances.json"
+                )["sheriff_shot_seconds"]
+            )
+            await redis.set(
+                self._keys.timer_end(chat_id),
+                str(int(time()) + secs),
+            )
+            await redis.sadd(
+                self._keys.active_day_chats(),
+                str(chat_id),
+            )
+            await redis.hset(
+                self._keys.game_flags(chat_id),
+                mapping={
+                    self._keys.field(
+                        "hunter_kill_source"
+                    ): "day",
+                    self._keys.field("hunter_kill"): "1",
+                },
+            )
             pending = await redis.hget(
                 self._keys.game_flags(chat_id),
                 self._keys.field(
@@ -132,242 +164,3 @@ class DayResolver:
             "sheriff_interrupt": False,
         }
 
-    async def _step_gunner(
-        self,
-        ctx: dict[str, Any],
-        lang: str,
-    ) -> None:
-        """Apply gunner deferred shot if present."""
-        redis = await get_redis()
-        chat_id = int(ctx["chat_id"])
-        for uid_s, role_id in ctx["roles"].items():
-            if role_id != "role_tofangdar":
-                continue
-            raw = ctx["actions"].get(uid_s)
-            if not raw:
-                return
-            target = int(raw)
-            target_role = ctx["roles"].get(str(target))
-            flags = self._keys.game_flags(chat_id)
-            bullets = int(
-                await redis.hget(
-                    flags,
-                    self._keys.field("gunner_bullets"),
-                )
-                or "2"
-            )
-            if bullets <= 0:
-                return
-            await redis.hset(
-                flags,
-                self._keys.field("gunner_bullets"),
-                str(bullets - 1),
-            )
-            if target_role == "role_rishSefid":
-                ctx["roles"][uid_s] = "role_villager"
-                await redis.set(
-                    self._keys.game_roles(chat_id),
-                    json.dumps(ctx["roles"]),
-                )
-                await redis.set(
-                    self._keys.player_role(int(uid_s)),
-                    "role_villager",
-                )
-                return
-            if target_role == "role_kalantar":
-                ctx["sheriff_interrupt"] = True
-                await redis.hset(
-                    flags,
-                    self._keys.field(
-                        "sheriff_shot_pending"
-                    ),
-                    str(target),
-                )
-                return
-            await redis.set(
-                self._keys.player_state(target),
-                "dead",
-            )
-            log_game_event(
-                "gunner_kill",
-                chat_id=chat_id,
-                target=target,
-            )
-
-    async def _step_spy(
-        self,
-        ctx: dict[str, Any],
-        lang: str,
-    ) -> None:
-        """Private spy check for deferred target."""
-        danger_teams = {"wolf", "cult", "solo"}
-        for uid_s, role_id in ctx["roles"].items():
-            if role_id != "role_Spy":
-                continue
-            raw = ctx["actions"].get(uid_s)
-            if not raw:
-                return
-            target = str(raw)
-            t_role = ctx["roles"].get(target)
-            team = ""
-            if t_role:
-                team = str(
-                    self._registry.definition(t_role)[
-                        "team"
-                    ]
-                )
-            key = (
-                "spy_danger"
-                if team in danger_teams
-                else "spy_safe"
-            )
-            await self._bridge.send_text(
-                int(uid_s),
-                self._texts.get(
-                    key,
-                    lang,
-                    bundle="day",
-                ),
-            )
-
-    async def _step_black_knight(
-        self,
-        ctx: dict[str, Any],
-        lang: str,
-    ) -> None:
-        """Mighty stub placeholder."""
-        _ = (ctx, lang)
-
-    async def _step_dynamite(
-        self,
-        ctx: dict[str, Any],
-        lang: str,
-    ) -> None:
-        """Mighty stub placeholder."""
-        _ = (ctx, lang)
-
-    async def _step_detective(
-        self,
-        ctx: dict[str, Any],
-        lang: str,
-    ) -> None:
-        """Detective stub (day inquire later)."""
-        _ = (ctx, lang)
-
-    async def _step_princess(
-        self,
-        ctx: dict[str, Any],
-        lang: str,
-    ) -> None:
-        """Princess stub."""
-        _ = (ctx, lang)
-
-    async def _step_diane(
-        self,
-        ctx: dict[str, Any],
-        lang: str,
-    ) -> None:
-        """Diane +4 day mark → direct black win."""
-        _ = lang
-        redis = await get_redis()
-        chat_id = int(ctx["chat_id"])
-        flags = self._keys.game_flags(chat_id)
-        due = await redis.hget(
-            flags,
-            self._keys.field("diane_due_day"),
-        )
-        target = await redis.hget(
-            flags,
-            self._keys.field("diane_target"),
-        )
-        if not due or not target:
-            # Arm from day action if diane picked.
-            raw = ctx.get("actions", {}).get("diane")
-            if not raw:
-                for uid, val in (
-                    ctx.get("actions") or {}
-                ).items():
-                    role = (
-                        ctx.get("roles") or {}
-                    ).get(str(uid))
-                    if role == "role_dian":
-                        raw = val
-                        break
-            if raw:
-                day_n = int(
-                    await redis.get(
-                        self._keys.day_count(chat_id)
-                    )
-                    or "1"
-                )
-                await redis.hset(
-                    flags,
-                    mapping={
-                        self._keys.field(
-                            "diane_target"
-                        ): str(raw),
-                        self._keys.field(
-                            "diane_due_day"
-                        ): str(day_n + 4),
-                    },
-                )
-            return
-        day_n = int(
-            await redis.get(
-                self._keys.day_count(chat_id)
-            )
-            or "1"
-        )
-        if day_n < int(due):
-            return
-        state = await redis.get(
-            self._keys.player_state(int(target))
-        )
-        if state == "dead":
-            return
-        from app.managers.end_game_manager import (
-            EndGameManager,
-        )
-
-        await EndGameManager(self._bridge).end(
-            chat_id,
-            "black",
-        )
-
-    async def _step_botanist(
-        self,
-        ctx: dict[str, Any],
-        lang: str,
-    ) -> None:
-        """Botanist day cure clears gas flags."""
-        from app.managers.bittan_check import (
-            clear_gas_flag,
-        )
-
-        chat_id = int(ctx["chat_id"])
-        actions = ctx.get("actions") or {}
-        roles = ctx.get("roles") or {}
-        for uid, target in actions.items():
-            if roles.get(str(uid)) != "role_Botanist":
-                continue
-            try:
-                tid = int(target)
-            except (TypeError, ValueError):
-                continue
-            if await clear_gas_flag(chat_id, tid):
-                await self._bridge.send_text(
-                    tid,
-                    self._texts.get(
-                        "BotanistCured",
-                        lang,
-                        bundle="results",
-                    ),
-                )
-
-    async def _step_vampire_count(
-        self,
-        ctx: dict[str, Any],
-        lang: str,
-    ) -> None:
-        """Vampire count stub."""
-        _ = (ctx, lang)

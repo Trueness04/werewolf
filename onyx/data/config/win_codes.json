@@ -8,7 +8,6 @@
     "monafeq": "winner_monafeq",
     "nothing": "winner_nothing",
     "joker": "winner_joker",
-    "Bomber": "winner_Bomber",
     "Firefighter": "win_Firefighter",
     "vampire": "win_vampire",
     "black": "win_black",

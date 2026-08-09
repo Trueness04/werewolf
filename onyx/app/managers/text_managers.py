@@ -12,14 +12,20 @@ from app.config.paths import TEXT_DIR
 from app.config.settings import get_settings
 
 _Entry = str | list[str]
+# Sprint 6: phase bundle → optional mode catalog → general → main.
+_CATALOG_FALLBACK = ("general", "main")
 
 
 class TextManager:
     """Loads localized strings from data/text."""
 
-    def __init__(self) -> None:
+    def __init__(
+        self,
+        default_mode: str | None = None,
+    ) -> None:
         self._cache: dict[str, dict[str, _Entry]] = {}
         self._rng = SystemRandom()
+        self._default_mode = default_mode
 
     def _bundle_path(self, lang: str, name: str) -> Path:
         """Return path to a language JSON bundle."""
@@ -29,24 +35,34 @@ class TextManager:
         self,
         lang: str,
         name: str,
+        *,
+        required: bool = True,
     ) -> dict[str, _Entry]:
         """Load one language bundle into cache."""
         cache_key = f"{lang}:{name}"
         if cache_key in self._cache:
             return self._cache[cache_key]
         path = self._bundle_path(lang, name)
-        settings = get_settings()
         if not path.is_file():
+            if not required:
+                self._cache[cache_key] = {}
+                return {}
+            settings = get_settings()
             path = self._bundle_path(
                 settings.fallback_lang,
                 name,
             )
+            if not path.is_file():
+                self._cache[cache_key] = {}
+                return {}
         with path.open(encoding="utf-8-sig") as handle:
             raw: Any = json.load(handle)
         data: dict[str, _Entry] = {}
         for key, value in raw.items():
             if isinstance(value, list):
-                data[str(key)] = [str(item) for item in value]
+                data[str(key)] = [
+                    str(item) for item in value
+                ]
             else:
                 data[str(key)] = str(value)
         self._cache[cache_key] = data
@@ -62,22 +78,54 @@ class TextManager:
             return self._rng.choice(entry)
         return entry
 
+    def _resolve_entry(
+        self,
+        key: str,
+        lang: str,
+        bundle: str,
+        mode: str | None,
+    ) -> _Entry | None:
+        """Bundle → optional mode catalog → general → main."""
+        settings = get_settings()
+        catalogs: list[str] = []
+        active = mode if mode is not None else self._default_mode
+        if active and active != "general":
+            catalogs.append(active)
+        catalogs.extend(_CATALOG_FALLBACK)
+        seen: set[str] = set()
+        ordered: list[str] = []
+        for name in (bundle, *catalogs):
+            if name in seen:
+                continue
+            seen.add(name)
+            ordered.append(name)
+        for lng in (lang, settings.fallback_lang):
+            for name in ordered:
+                required = name == bundle and lng == lang
+                data = self._load_bundle(
+                    lng,
+                    name,
+                    required=required,
+                )
+                if key in data:
+                    return data[key]
+        return None
+
     def get(
         self,
         key: str,
         lang: str,
         *args: object,
         bundle: str = "lobby",
+        mode: str | None = None,
     ) -> str:
         """Return text for key; random if multi-value."""
-        data = self._load_bundle(lang, bundle)
-        if key not in data:
-            settings = get_settings()
-            data = self._load_bundle(
-                settings.fallback_lang,
-                bundle,
-            )
-        raw = data.get(key)
+        raw = self._resolve_entry(
+            key,
+            lang,
+            bundle,
+            mode,
+        )
         if isinstance(raw, list):
             text = self._pick(raw, key)
         elif isinstance(raw, str):

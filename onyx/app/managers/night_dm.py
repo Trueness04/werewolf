@@ -88,6 +88,11 @@ class NightDmSender:
             user_id=uid,
             role=role_id,
         )
+        await self._maybe_send_magic(
+            chat_id,
+            uid,
+            lang,
+        )
         if role.night1_active:
             if not await self._skip_action(
                 chat_id,
@@ -102,6 +107,38 @@ class NightDmSender:
                     all_players,
                 )
         await redis.sadd(sent_key, str(uid))
+
+    async def _maybe_send_magic(
+        self,
+        chat_id: int,
+        uid: int,
+        lang: str,
+    ) -> None:
+        """Send magic panel if inventory > 0 and allowed."""
+        from app.keyboards.inline.magic_keyboard import (
+            build_magic_keyboard,
+        )
+        from app.managers.magic_effects import magic_allowed
+        from app.managers.magic_inventory import (
+            inventory_counts,
+            total_magic,
+        )
+
+        if not await magic_allowed(chat_id, self._keys):
+            return
+        if await total_magic(uid) < 1:
+            return
+        counts = await inventory_counts(uid)
+        await self._bridge.send_text(
+            uid,
+            self._texts.get("MajikPanelMsg", lang),
+            reply_markup=build_magic_keyboard(
+                self._texts,
+                lang,
+                chat_id,
+                counts=counts,
+            ),
+        )
 
     async def _skip_action(
         self,
@@ -118,9 +155,31 @@ class NightDmSender:
         )
         if iced and str(iced) == str(uid):
             return True
+        if role.role_id == "role_Mummy":
+            die = await redis.hget(
+                flags,
+                self._keys.field("die_cult"),
+            )
+            if not die:
+                return True
+        blood = await redis.hget(
+            flags,
+            self._keys.field("blood_moon_active"),
+        )
+        if blood:
+            from app.managers.bloodmoon import (
+                BLOOD_MOON_ALLOWED_ROLES,
+            )
+
+            if role.role_id not in BLOOD_MOON_ALLOWED_ROLES:
+                if role.night1_active:
+                    return True
         if role.team != "wolf":
             return False
-        if role.role_id == "role_WhiteWolf":
+        if role.role_id in {
+            "role_WhiteWolf",
+            "role_mighty_white_wolf",
+        }:
             return False
         mast = await redis.hget(
             flags,
@@ -153,12 +212,64 @@ class NightDmSender:
         ttype = role.target_type
         markup = None
         if ttype == "single_target":
-            targets = [
-                (int(p["user_id"]), str(p["fullname"]))
-                for p in all_players
-                if int(p["user_id"]) != uid
-                and p.get("alive", True)
-            ]
+            from app.managers.special_teams import (
+                alive_targets_hide_bride,
+            )
+
+            targets = alive_targets_hide_bride(
+                all_players,
+                uid,
+            )
+            # Hide magic-ghost players from night lists
+            from app.managers.magic_targets import (
+                without_magic_ghosts,
+            )
+
+            targets = await without_magic_ghosts(
+                chat_id,
+                targets,
+                self._keys,
+            )
+            if role.role_id == "role_DarNeshan":
+                from app.managers.darneshan_resolve import (
+                    cult_mongo_roles,
+                )
+
+                cult = cult_mongo_roles()
+                targets = [
+                    t
+                    for t in targets
+                    if not any(
+                        int(p["user_id"]) == t[0]
+                        and (
+                            str(p.get("role") or "") in cult
+                            or str(p.get("role") or "")
+                            == "role_BrideTheDead"
+                        )
+                        for p in all_players
+                    )
+                ]
+            # SK cannot target Archer
+            if role.role_id == "role_Qatel":
+                targets = [
+                    t
+                    for t in targets
+                    if not any(
+                        int(p["user_id"]) == t[0]
+                        and p.get("role") == "role_Archer"
+                        for p in all_players
+                    )
+                ]
+            if role.role_id == "role_Archer":
+                targets = [
+                    t
+                    for t in targets
+                    if not any(
+                        int(p["user_id"]) == t[0]
+                        and p.get("role") == "role_Qatel"
+                        for p in all_players
+                    )
+                ]
             markup = build_target_keyboard(
                 chat_id,
                 uid,

@@ -29,7 +29,6 @@ _Registry = import_module(
     "app.class.roles.registry"
 ).RoleRegistry
 
-
 class NightManager:
     """Start first night and deliver role DMs."""
 
@@ -129,13 +128,34 @@ class NightManager:
             flags,
             self._keys.field("sleep_next_night"),
         )
-        if sleep:
+        blood_pending = await redis.hget(
+            flags,
+            self._keys.field("blood_moon_next_night"),
+        )
+        blood_sched = await redis.hget(
+            flags,
+            self._keys.field("blood_moon_night"),
+        )
+        night_n = int(
+            await redis.get(self._keys.night_count(chat_id))
+            or "0"
+        )
+        # G17: blood moon overrides sleep for vamp hunt
+        blood_tonight = bool(blood_pending) or (
+            blood_sched and str(blood_sched) == str(night_n)
+        )
+        if sleep and not blood_tonight:
             duration = 0
             await redis.hdel(
                 flags,
                 self._keys.field("sleep_next_night"),
             )
         else:
+            if sleep and blood_tonight:
+                await redis.hdel(
+                    flags,
+                    self._keys.field("sleep_next_night"),
+                )
             duration = int(
                 self._settings.night_duration_seconds
             )
@@ -198,8 +218,21 @@ class NightManager:
         await redis.delete(
             self._keys.night_actions(chat_id)
         )
-        if not sleep:
-            players = await self._load_players(chat_id)
+        players = await self._load_players(chat_id)
+        from app.managers.bloodmoon import (
+            activate_blood_moon_night,
+        )
+
+        await activate_blood_moon_night(
+            self._bridge,
+            self._keys,
+            self._texts,
+            chat_id,
+            lang,
+            night_n,
+            players,
+        )
+        if not sleep or blood_tonight:
             await asyncio.gather(
                 *[
                     self._dm.send_role_dm(
@@ -212,6 +245,42 @@ class NightManager:
                     if bool(p.get("alive", True))
                 ]
             )
+            pending = await redis.hget(
+                flags,
+                self._keys.field("village_links_pending"),
+            )
+            if pending:
+                roles = {
+                    str(p["user_id"]): str(p.get("role"))
+                    for p in players
+                }
+                from app.managers.village_links import (
+                    notify_mason_links,
+                    notify_nazer_seer,
+                )
+
+                await notify_mason_links(
+                    chat_id,
+                    players,
+                    roles,
+                    bridge=self._bridge,
+                    texts=self._texts,
+                    lang=lang,
+                )
+                await notify_nazer_seer(
+                    chat_id,
+                    players,
+                    roles,
+                    bridge=self._bridge,
+                    texts=self._texts,
+                    lang=lang,
+                )
+                await redis.hdel(
+                    flags,
+                    self._keys.field(
+                        "village_links_pending"
+                    ),
+                )
         end_at = int(time()) + max(duration, 0)
         await redis.set(
             self._keys.timer_end(chat_id),

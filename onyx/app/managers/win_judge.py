@@ -10,7 +10,6 @@ from app.cache.redis_keys import RedisKeySpace
 from app.config.paths import WIN_TEAM_MAP
 from app.managers.json_loader import load_json
 from app.managers.win_branches import (
-    bomber_winner,
     solo_winner,
     two_winner,
 )
@@ -46,6 +45,8 @@ class WinJudge:
             "sheriff_shot_pending",
             "hunter_kill",
             "check_night_done",
+            "stop_black",
+            "darneshan_pick_pending",
         ):
             if await redis.hget(
                 flags,
@@ -75,19 +76,6 @@ class WinJudge:
             self._keys.game_hash(chat_id),
             self._keys.field("game_mode"),
         )
-        if mode and str(mode).lower() == "bomber":
-            planted = bool(
-                await redis.hget(
-                    flags,
-                    self._keys.field("bomb_planted"),
-                )
-            )
-            bombed = bomber_winner(
-                alive,
-                planted=planted,
-            )
-            if bombed is not None:
-                return bombed
         if n == 1:
             return solo_winner(alive[0])
         if n == 2:
@@ -125,6 +113,8 @@ class WinJudge:
             return "vampire"
         if self._fire_overpower(counts):
             return "Firefighter"
+        if self._black_overpower(counts):
+            return "black"
         if self._village_clear(counts):
             return "rosta"
         return None
@@ -239,6 +229,27 @@ class WinJudge:
             + counts.get("monafeq", 0)
         )
         return fire > threat
+
+    def _black_overpower(
+        self,
+        counts: Counter[str],
+    ) -> bool:
+        """Black > rosta+fire+monafeq (remediation fix)."""
+        black = counts.get("black", 0)
+        if black <= 0:
+            return False
+        if (
+            counts.get("wolf", 0)
+            or counts.get("vampire", 0)
+            or counts.get("ferqeTeem", 0)
+        ):
+            return False
+        threat = (
+            counts.get("rosta", 0)
+            + counts.get("Firefighter", 0)
+            + counts.get("monafeq", 0)
+        )
+        return black > threat
 
     def _village_clear(
         self,

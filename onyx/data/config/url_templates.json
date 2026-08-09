@@ -3,6 +3,7 @@
   "redis": "redis://{host}:{port}/0",
   "join_deeplink": "https://t.me/{bot}?start={prefix}{chat_id}",
   "user_mention_html": "<a href=\"tg://user?id={user_id}\">{name}</a>",
-  "default_start_gif": "https://media.giphy.com/media/3o7aCTPPm4OHfRLSH6/giphy.gif"
+  "default_start_gif": "https://media.giphy.com/media/3o7aCTPPm4OHfRLSH6/giphy.gif",
+  "webapp": "{webapp_url}"
 }
 

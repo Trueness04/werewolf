@@ -1,4 +1,4 @@
-"""Mighty stub role: FirefighterRole."""
+"""Firefighter / Magento role shell."""
 
 from __future__ import annotations
 
@@ -6,8 +6,9 @@ from ..base_role import BaseRole
 
 
 class FirefighterRole(BaseRole):
-    """Mighty role stub; filled later."""
+    """Fire team; night resolve is pipeline-driven."""
 
     async def resolve(self, ctx: dict) -> None:
-        """Not implemented for Mighty yet."""
-        raise NotImplementedError(self.role_id)
+        """No-op; fire_resolve handles the slot."""
+        _ = ctx
+        return None

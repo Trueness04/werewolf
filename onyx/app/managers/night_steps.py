@@ -12,13 +12,23 @@ from app.managers.night_attack import (
     resolve_wolf_team,
 )
 from app.managers.night_stubs import NightStubs
-from app.managers.night_village import NightVillage, player
+from app.managers.night_village import NightVillage
+from app.managers.night_village_checks import (
+    NightVillageChecks,
+)
+from app.managers.night_special_checks import (
+    NightSpecialChecks,
+)
 from app.managers.text_managers import TextManager
 
 _CHANCES = ROOT / "data" / "config" / "field_chances.json"
 
 
-class NightSteps(NightStubs):
+class NightSteps(
+    NightSpecialChecks,
+    NightVillageChecks,
+    NightStubs,
+):
     """Stateful helpers used by NightResolver."""
 
     def __init__(
@@ -47,6 +57,10 @@ class NightSteps(NightStubs):
 
     async def wolf_team(self, ctx: dict[str, Any]) -> None:
         """Full WolfTeam vote + defense + bite/eat."""
+        from app.managers.bloodmoon import burn_if_blood_moon
+
+        if burn_if_blood_moon(ctx, "wolf_team"):
+            return
         await resolve_wolf_team(ctx)
 
     async def interrupt_cub(
@@ -66,6 +80,10 @@ class NightSteps(NightStubs):
 
     async def get_killer(self, ctx: dict[str, Any]) -> None:
         """Full GetKiller defense + kill branch."""
+        from app.managers.bloodmoon import burn_if_blood_moon
+
+        if burn_if_blood_moon(ctx, "get_killer"):
+            return
         await resolve_killer(ctx)
 
     async def interrupt_sheriff(
@@ -87,20 +105,58 @@ class NightSteps(NightStubs):
         self,
         ctx: dict[str, Any],
     ) -> None:
-        """Cult hunter night kill."""
-        await self._v.cult_hunter(ctx)
+        """GetCultHunter before CheckCult."""
+        from app.managers.bloodmoon import burn_if_blood_moon
+        from app.managers.cult_hunter_resolve import (
+            resolve_cult_hunter,
+        )
+
+        if burn_if_blood_moon(ctx, "cult_hunter"):
+            return
+        await resolve_cult_hunter(ctx)
 
     async def cult_invite(self, ctx: dict[str, Any]) -> None:
-        """Record cult invite target."""
-        for item in ctx["players"]:
-            if item.get("role") != "role_ferqe":
-                continue
-            raw = ctx["actions"].get(str(item["user_id"]))
-            if raw:
-                ctx["cult_target"] = int(raw)
+        """CheckCult invite / convert resolve."""
+        from app.managers.bloodmoon import burn_if_blood_moon
+        from app.managers.cult_resolve import (
+            resolve_cult,
+        )
+
+        if burn_if_blood_moon(ctx, "cult_invite"):
+            return
+        await resolve_cult(ctx)
+
+    async def check_dar_neshan(
+        self,
+        ctx: dict[str, Any],
+    ) -> None:
+        """DarNeshan gallows mark after CheckCult."""
+        from app.managers.bloodmoon import burn_if_blood_moon
+        from app.managers.darneshan_resolve import (
+            resolve_dar_neshan_mark,
+        )
+
+        if burn_if_blood_moon(ctx, "check_dar_neshan"):
+            return
+        await resolve_dar_neshan_mark(ctx)
+
+    async def check_franc(
+        self,
+        ctx: dict[str, Any],
+    ) -> None:
+        """GetFranc guard or kill mode."""
+        from app.managers.cult_side_effects import (
+            resolve_franc,
+        )
+
+        await resolve_franc(ctx)
 
     async def get_angel(self, ctx: dict[str, Any]) -> None:
         """Report angel protection for cleanup."""
+        from app.managers.bloodmoon import burn_if_blood_moon
+
+        if burn_if_blood_moon(ctx, "get_angel"):
+            return
         for item in ctx["players"]:
             if item.get("role") != "role_Fereshte":
                 continue
@@ -118,9 +174,18 @@ class NightSteps(NightStubs):
         """Natasha night visit + wild child model."""
         await self._v.natasha_visit(ctx)
         self._v.wild_child_pick(ctx)
+        from app.managers.special_resolve import (
+            hamzad_pick,
+        )
+
+        hamzad_pick(ctx)
 
     async def seer_result(self, ctx: dict[str, Any]) -> None:
         """DM seer investigation result."""
+        from app.managers.bloodmoon import burn_if_blood_moon
+
+        if burn_if_blood_moon(ctx, "seer_result"):
+            return
         for item in ctx["players"]:
             if item.get("role") != "role_pishgo":
                 continue
@@ -131,16 +196,35 @@ class NightSteps(NightStubs):
                 continue
             target = int(raw)
             role_id = str(ctx["roles"].get(str(target), ""))
-            label = self._v.seer_label(role_id)
+            label = self._v.seer_label(
+                role_id,
+                target_id=target,
+                ctx=ctx,
+            )
             await self._v.dm_role_result(
                 int(item["user_id"]),
                 label,
             )
+        from app.managers.village_night import (
+            deliver_seer_notes,
+        )
+
+        await deliver_seer_notes(
+            ctx,
+            self._bridge,
+            self._texts,
+            self._lang,
+            self._v.seer_label,
+        )
 
     async def check_fool(self, ctx: dict[str, Any]) -> None:
         """Fool night investigate (random role)."""
         from random import SystemRandom
 
+        from app.managers.bloodmoon import burn_if_blood_moon
+
+        if burn_if_blood_moon(ctx, "check_fool"):
+            return
         for item in ctx["players"]:
             if item.get("role") != "role_Fool":
                 continue
@@ -208,7 +292,7 @@ class NightSteps(NightStubs):
             )
 
     async def final_deaths(self, ctx: dict[str, Any]) -> None:
-        """Collect leftover kills + converts."""
+        """Collect leftover kills + cult death effects."""
         for key in ("wolf_target", "sk_target"):
             target = ctx.get(key)
             if target is not None:
@@ -216,33 +300,59 @@ class NightSteps(NightStubs):
         self._v.follow_natasha_death(ctx)
         self._v.convert_wild_child(ctx)
         self._v.promote_apprentice(ctx)
-        cult = ctx.get("cult_target")
-        if cult is None:
-            return
-        tid = int(cult)
-        if tid in ctx["deaths"]:
-            return
-        victim = player(ctx, tid)
-        if victim is None or not victim.get("alive", True):
-            return
-        if victim.get("team") in {"wolf", "cult"}:
-            return
-        if victim.get("role") == "role_shekar":
-            for p in ctx["players"]:
-                if p.get("role") == "role_ferqe" and p.get(
-                    "alive", True
-                ):
-                    ctx["deaths"].add(int(p["user_id"]))
-                    return
-        victim["role"] = "role_ferqe"
-        victim["team"] = "cult"
-        ctx["roles"][str(tid)] = "role_ferqe"
+        from app.managers.cult_side_effects import (
+            apply_cult_deaths,
+        )
+
+        apply_cult_deaths(ctx)
+        from app.managers.special_resolve import (
+            convert_hamzad,
+        )
+        from app.managers.village_links import (
+            follow_lover_deaths,
+        )
+
+        convert_hamzad(ctx)
+        follow_lover_deaths(ctx)
+        from app.managers.fire_extra import (
+            refresh_die_fire_and_ice,
+        )
+        from app.managers.vampire_resolve import (
+            notify_hilda_sk_dead,
+        )
+
+        refresh_die_fire_and_ice(ctx)
+        notify_hilda_sk_dead(ctx)
+        from app.managers.special_teams import (
+            follow_black_knight_death,
+        )
+
+        follow_black_knight_death(ctx)
+        # Blood death unlocks convert + chiang
+        for p in ctx["players"]:
+            if p.get("role") != "role_Bloodthirsty":
+                continue
+            uid = int(p["user_id"])
+            if uid not in ctx["deaths"]:
+                continue
+            ctx["flags_out"]["dead_bloodthirsty"] = "1"
+            ctx["flags_out"]["vampire_convert"] = "20"
+            ctx["messages"].append("DeadBloodthirsty")
 
     async def night_cleanup(
         self,
         ctx: dict[str, Any],
     ) -> None:
         """Clear ephemeral home/angel defense keys."""
+        from app.managers.darneshan_resolve import (
+            burn_mark_if_target_dead,
+        )
+
+        burn_mark_if_target_dead(ctx)
+        if ctx.get("blood_moon_active"):
+            ctx["flags_out"]["blood_moon_active"] = ""
+            ctx["flags_out"]["blood_moon_night"] = ""
+            ctx["flags_out"]["blood_moon_next_night"] = ""
         ctx["protected"] = None
         ctx["franc_guard"] = set()
         ctx["phoenix_heals"] = set()

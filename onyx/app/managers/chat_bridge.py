@@ -105,3 +105,23 @@ class ChatBridge:
         """Return chat title for PV confirmations."""
         chat = await self._bot.get_chat(chat_id)
         return str(chat.title or chat_id)
+
+    async def mute_member(
+        self,
+        chat_id: int,
+        user_id: int,
+    ) -> None:
+        """Mute member (can_send_messages=False)."""
+        from telegram import ChatPermissions
+
+        try:
+            await self._bot.restrict_chat_member(
+                chat_id=chat_id,
+                user_id=user_id,
+                permissions=ChatPermissions(
+                    can_send_messages=False,
+                ),
+            )
+        except Exception:
+            return
+

@@ -44,18 +44,31 @@ def sync_role_toggles(
         set_("bloodthirsty", False)
         set_("role_vampire", False)
         set_("role_Bloodthirsty", False)
-    # ferqe ↔ shekar ↔ Royce
+    # ferqe ↔ shekar ↔ Royce ↔ DarNeshan
     if get("Royce") or get("role_Royce"):
         set_("ferqe", True)
         set_("shekar", True)
         set_("role_ferqe", True)
         set_("role_shekar", True)
+    if get("DarNeshan") or get("role_DarNeshan"):
+        set_("ferqe", True)
+        set_("shekar", True)
+        set_("role_ferqe", True)
+        set_("role_shekar", True)
+        set_("role_DarNeshan", True)
     if get("ferqe") or get("role_ferqe"):
         set_("shekar", True)
         set_("role_shekar", True)
     if get("shekar") or get("role_shekar"):
         set_("ferqe", True)
         set_("role_ferqe", True)
+    # BeladMoon requires vampire path
+    if get("BeladMoon") or get("role_BeladMoon"):
+        set_("vampire", True)
+        set_("bloodthirsty", True)
+        set_("role_vampire", True)
+        set_("role_Bloodthirsty", True)
+        set_("role_BeladMoon", True)
     # IceQueen ↔ Firefighter
     ice = get("IceQueen") or get("role_IceQueen")
     fire = get("firefighter") or get(

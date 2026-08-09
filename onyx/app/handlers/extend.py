@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-from time import time
-
 from telegram import Update
 from telegram.ext import ContextTypes
 
@@ -14,6 +12,7 @@ from app.managers.game_state_manager import (
     GameState,
     GroupInactive,
 )
+from app.managers.lobby_extend import apply_extend
 
 
 async def extend_join(
@@ -70,13 +69,14 @@ async def extend_join(
             text=tm.get("NotAllowUserminusExtend", lang),
         )
         return
-    lobby = deps.lobby_mgr()
-    timer = await lobby.get_timer(chat.id)
-    new_timer = timer + delta
-    left = new_timer - int(time())
+    left = await apply_extend(
+        deps.lobby_mgr(),
+        chat.id,
+        cfg,
+        delta,
+    )
     if left <= 0:
         return
-    await lobby.set_timer(chat.id, new_timer)
     await context.bot.send_message(
         chat_id=chat.id,
         text=str(left),

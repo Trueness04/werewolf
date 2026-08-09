@@ -9,13 +9,9 @@ from importlib import import_module
 
 from app.cache.redis_client import get_redis
 from app.cache.redis_keys import RedisKeySpace
-from app.config.paths import WARNING_SECONDS
 
 _get_mode = import_module("app.class.game_mode").get_mode
 from app.config.settings import Settings, get_settings
-from app.keyboards.inline.lobby_keyboard import (
-    build_join_keyboard,
-)
 from app.managers.chat_bridge import ChatBridge
 from app.managers.game_event import (
     log_debug_tick,
@@ -129,6 +125,18 @@ class TimerManager:
                 names,
                 self._track_delete,
             )
+            from app.managers.session_senior import (
+                maybe_refresh_session_senior,
+            )
+
+            await maybe_refresh_session_senior(
+                chat_id,
+                bridge=self._bridge,
+                texts=self._texts,
+                keys=self._keys,
+                lobby=self._lobby,
+                lang=lang,
+            )
         count = await self._lobby.count_players(chat_id)
         if self._settings.enable_bot_to_bot and count > 0:
             from AI.lobby_fill import ensure_ai_from_redis
@@ -143,8 +151,25 @@ class TimerManager:
             count = await self._lobby.count_players(
                 chat_id,
             )
-        if count >= self._settings.max_players:
+        if await self._at_capacity(chat_id, count):
             await self._lobby.force_timer_end(chat_id)
+
+    async def _at_capacity(
+        self,
+        chat_id: int,
+        count: int,
+    ) -> bool:
+        """True when lobby reached group max players."""
+        group = await self._state.ensure_group_active(
+            chat_id,
+        )
+        from app.managers.group_limits import max_players_of
+
+        cap = max_players_of(
+            group,
+            self._settings,
+        ) if group else self._settings.max_players
+        return count >= cap
 
     async def update_player_list(
         self,
@@ -176,39 +201,19 @@ class TimerManager:
         lang: str,
     ) -> None:
         """Emit join time warnings in config windows."""
-        raw = load_json(WARNING_SECONDS)
-        join_url = await self._join_url(chat_id)
-        keyboard = build_join_keyboard(
-            self._texts,
-            lang,
-            join_url,
+        from app.managers.timer_warnings import (
+            emit_join_warnings,
         )
-        for item in raw["warnings"]:
-            low = int(item["min_left"])
-            high = int(item["max_left"])
-            if left < low or left > high:
-                continue
-            unit_key = str(item["unit_key"])
-            seconds = int(item["seconds"])
-            if bool(item["include_number"]):
-                unit = self._texts.get(
-                    unit_key,
-                    lang,
-                    seconds,
-                )
-            else:
-                unit = self._texts.get(unit_key, lang)
-            text = self._texts.get(
-                "OnlyJoinTheGameTime",
-                lang,
-                unit,
-            )
-            mid = await self._bridge.send_text(
-                chat_id,
-                text,
-                reply_markup=keyboard,
-            )
-            await self._track_delete(chat_id, mid)
+
+        await emit_join_warnings(
+            self._bridge,
+            self._texts,
+            chat_id,
+            left,
+            lang,
+            self._join_url,
+            self._track_delete,
+        )
 
     async def finish_join(
         self,
@@ -224,6 +229,14 @@ class TimerManager:
         lang: str,
     ) -> None:
         """Close lobby or start initial flow."""
+        await self._finish_body(chat_id, lang)
+
+    async def _finish_body(
+        self,
+        chat_id: int,
+        lang: str,
+    ) -> None:
+        """Close lobby or start initial flow body."""
         redis = await get_redis()
         key = self._keys.game_hash(chat_id)
         await redis.hset(

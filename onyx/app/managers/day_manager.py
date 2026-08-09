@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import json
 from time import time
 from typing import Any
 
@@ -14,11 +13,8 @@ from app.config.paths import DAY_ROLES, GAME_PHASES
 from app.config.settings import Settings, get_settings
 from app.database.models.game import GameRow
 from app.database.session import session_scope
-from app.keyboards.inline.day_keyboard import (
-    build_day_target_keyboard,
-    build_day_yes_no,
-)
 from app.managers.chat_bridge import ChatBridge
+from app.managers.day_role_ui import send_day_role_ui
 from app.managers.game_event import log_game_event
 from app.managers.game_state_manager import (
     GameStateManager,
@@ -106,6 +102,34 @@ class DayManager:
             flags,
             self._keys.field("no_night_kill"),
         )
+        davina_next = await redis.hget(
+            flags,
+            self._keys.field("davina_next"),
+        )
+        if davina_next and int(davina_next) == day_n:
+            await redis.hset(
+                flags,
+                self._keys.field("not_send_day"),
+                "1",
+            )
+            await redis.hdel(
+                flags,
+                self._keys.field("davina_next"),
+            )
+            await self._bridge.send_text(
+                chat_id,
+                self._texts.get(
+                    "DavinaDayMute",
+                    lang,
+                    bundle="day",
+                ),
+            )
+        # Clear previous peace/ruler at night→day
+        await redis.hdel(
+            flags,
+            self._keys.field("peace_flag"),
+            self._keys.field("ruler_ok"),
+        )
         if no_kill:
             await self._bridge.send_text(
                 chat_id,
@@ -115,8 +139,16 @@ class DayManager:
                     bundle="day",
                 ),
             )
-        duration = int(
-            self._settings.day_duration_seconds
+        davina_mute = bool(
+            await redis.hget(
+                flags,
+                self._keys.field("not_send_day"),
+            )
+        )
+        duration = (
+            30
+            if davina_mute
+            else int(self._settings.day_duration_seconds)
         )
         await self._bridge.send_text(
             chat_id,
@@ -161,6 +193,15 @@ class DayManager:
             str(chat_id),
         )
         await self.broadcast_day_roles(chat_id)
+        # Clear one-day silence after applying
+        if await redis.hget(
+            flags,
+            self._keys.field("not_send_day"),
+        ):
+            await redis.hdel(
+                flags,
+                self._keys.field("not_send_day"),
+            )
         log_game_event(
             "day_started",
             chat_id=chat_id,
@@ -186,23 +227,78 @@ class DayManager:
         """Send day UI once per eligible living player."""
         lang = self._settings.default_lang
         redis = await get_redis()
+        if await redis.hget(
+            self._keys.game_flags(chat_id),
+            self._keys.field("not_send_day"),
+        ):
+            return
         players = await self._load_players(chat_id)
         sent_key = self._keys.day_sent(chat_id)
         immediate = set(self._day_roles["immediate"])
         deferred = set(self._day_roles["deferred"])
         types = self._day_roles["target_type"]
+        flags = self._keys.game_flags(chat_id)
+        iced = await redis.hget(
+            flags,
+            self._keys.field("player_iced"),
+        )
+        prison = await redis.hget(
+            flags,
+            self._keys.field("princess_prison"),
+        )
+        night_n = int(
+            await redis.get(
+                self._keys.night_count(chat_id)
+            )
+            or "0"
+        )
         for player in players:
             if not player.get("alive", True):
                 continue
             uid = int(player["user_id"])
-            if await redis.sismember(sent_key, str(uid)):
+            if iced and str(uid) == str(iced):
+                continue
+            if prison and str(uid) == str(prison):
                 continue
             role_id = str(player.get("role") or "")
+            if (
+                role_id == "role_Princess"
+                and night_n <= 2
+            ):
+                continue
+            if await redis.sismember(sent_key, str(uid)):
+                continue
             if role_id not in immediate | deferred:
                 continue
             if await self._already_used(chat_id, role_id):
                 continue
-            await self._send_role_ui(
+            from app.managers.lucifer_dodge import (
+                dodge_day_owner,
+                send_day_dodge,
+            )
+
+            luci = await dodge_day_owner(
+                self._keys,
+                chat_id,
+                uid,
+            )
+            if luci is not None:
+                await send_day_dodge(
+                    self._bridge,
+                    self._texts,
+                    chat_id,
+                    luci,
+                    uid,
+                    role_id,
+                    lang,
+                    players,
+                )
+                await redis.sadd(sent_key, str(uid))
+                continue
+            await send_day_role_ui(
+                self._bridge,
+                self._texts,
+                self._keys,
                 chat_id,
                 uid,
                 role_id,
@@ -223,6 +319,10 @@ class DayManager:
             "role_Ahangar": "silver_used",
             "role_KhabGozar": "sleep_used",
             "role_Kadkhoda": "mayor_revealed",
+            "role_trouble": "trouble_used",
+            "role_Ruler": "ruler_used",
+            "role_davina": "davina_used",
+            "role_BeladMoon": "belad_moon_used",
         }
         field = used.get(role_id)
         if not field:
@@ -234,101 +334,6 @@ class DayManager:
                 self._keys.field(field),
             )
         )
-
-    async def _send_role_ui(
-        self,
-        chat_id: int,
-        uid: int,
-        role_id: str,
-        ttype: str,
-        lang: str,
-        players: list[dict[str, Any]],
-    ) -> None:
-        """DM day prompt + keyboard for one role."""
-        prompt_map = {
-            "role_Solh": ("solh_L", "solh_btnY", "solh_btnN"),
-            "role_Kadkhoda": (
-                "Kadkhoda_l",
-                "Kadkhoda_btn",
-                "Kadkhoda_cancel",
-            ),
-            "role_Ahangar": (
-                "ahangar_L",
-                "ahangar_btnY",
-                "ahangar_btn",
-            ),
-            "role_KhabGozar": (
-                "KHABGOZAR_l",
-                "KHABGOZAR_BTN",
-                "KHABGOZAR_BTN_N",
-            ),
-        }
-        if ttype == "yes_no" and role_id in prompt_map:
-            pkey, ykey, nkey = prompt_map[role_id]
-            prompt = self._texts.get(
-                pkey,
-                lang,
-                bundle="day",
-            )
-            markup = build_day_yes_no(
-                self._texts,
-                lang,
-                chat_id,
-                uid,
-                ykey,
-                nkey,
-            )
-            await self._bridge.send_text(
-                uid,
-                prompt,
-                reply_markup=markup,
-            )
-            return
-        if ttype == "single_target":
-            if role_id == "role_tofangdar":
-                bullets = await self._gunner_bullets(
-                    chat_id
-                )
-                prompt = self._texts.get(
-                    "gunner_prompt",
-                    lang,
-                    bullets,
-                    bundle="day",
-                )
-            else:
-                prompt = self._texts.get(
-                    "spy_prompt",
-                    lang,
-                    bundle="day",
-                )
-            targets = [
-                (int(p["user_id"]), str(p["fullname"]))
-                for p in players
-                if int(p["user_id"]) != uid
-                and p.get("alive", True)
-            ]
-            markup = build_day_target_keyboard(
-                chat_id,
-                uid,
-                targets,
-            )
-            await self._bridge.send_text(
-                uid,
-                prompt,
-                reply_markup=markup,
-            )
-
-    async def _gunner_bullets(self, chat_id: int) -> int:
-        """Read remaining gunner bullets from flags."""
-        redis = await get_redis()
-        raw = await redis.hget(
-            self._keys.game_flags(chat_id),
-            self._keys.field("gunner_bullets"),
-        )
-        try:
-            return int(raw or "2")
-        except ValueError:
-            return 2
 
     async def _load_players(
         self,

@@ -63,6 +63,7 @@ class EndGameManager:
         )
         lang = self._settings.default_lang
         await self._announce(chat_id, winner, lang)
+        await self._record_player_rewards(chat_id, winner)
         await self._mark_db(chat_id, winner)
         await self._cleanup(chat_id)
         log_game_event(
@@ -74,36 +75,12 @@ class EndGameManager:
     async def kill(
         self,
         chat_id: int,
-    ) -> None:
-        """Admin cancel: wipe session without win."""
-        redis = await get_redis()
-        lang = self._settings.default_lang
-        await redis.hset(
-            self._keys.game_flags(chat_id),
-            self._keys.field("game_is_end"),
-            "killed",
-        )
-        await self._bridge.send_text(
-            chat_id,
-            self._texts.get("game_killed", lang),
-        )
-        await self._mark_db(chat_id, "killed")
-        await self._cleanup(chat_id)
-        log_game_event(
-            "game_killed",
-            chat_id=chat_id,
-        )
-
-    async def kill(
-        self,
-        chat_id: int,
         by_user_id: int | None = None,
     ) -> bool:
         """Admin force-stop; wipe session without win."""
         redis = await get_redis()
         key = self._keys.game_hash(chat_id)
         if not await redis.exists(key):
-            # Still clear stray active-set membership.
             await self._cleanup(chat_id)
             return False
         lang = self._settings.default_lang
@@ -129,6 +106,24 @@ class EndGameManager:
         )
         return True
 
+    async def _record_player_rewards(
+        self,
+        chat_id: int,
+        winner: str,
+    ) -> None:
+        """Stats + achievements before Redis wipe."""
+        from app.managers.achievement_rewards import (
+            apply_end_stats,
+        )
+
+        await apply_end_stats(
+            chat_id,
+            winner,
+            keys=self._keys,
+            bridge=self._bridge,
+            texts=self._texts,
+            lang=self._settings.default_lang,
+        )
     async def _announce(
         self,
         chat_id: int,

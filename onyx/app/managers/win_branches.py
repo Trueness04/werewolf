@@ -1,4 +1,4 @@
-"""Two-player and Bomber win branches (sprint 4)."""
+"""Two-player win branches (sprint 4)."""
 
 from __future__ import annotations
 
@@ -85,33 +85,3 @@ async def two_winner(
         return next(iter(teams))
     return None
 
-
-def bomber_winner(
-    alive: list[dict[str, Any]],
-    *,
-    planted: bool,
-) -> str | None:
-    """Bomber mode branch."""
-    bombers = [
-        p
-        for p in alive
-        if str(p.get("role") or "")
-        in {"role_dynamite", "role_Bomber", "role_dinamit"}
-    ]
-    village = [
-        p
-        for p in alive
-        if str(p.get("win_team")) == "rosta"
-        and p not in bombers
-    ]
-    b_n = len(bombers)
-    v_n = len(village)
-    if planted:
-        return "Bomber"
-    if b_n >= v_n and b_n > 0:
-        return "Bomber"
-    if v_n > 0 and b_n == 0:
-        return "rosta"
-    if b_n == 0 and v_n == 0:
-        return "nothing"
-    return None

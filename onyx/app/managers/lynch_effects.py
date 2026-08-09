@@ -167,10 +167,20 @@ class LynchEffects:
             self._keys.timer_end(chat_id),
             str(int(time()) + extend),
         )
-        await redis.sadd(
-            self._keys.active_vote_chats(),
-            str(chat_id),
+        source = await redis.hget(
+            self._keys.game_flags(chat_id),
+            self._keys.field("hunter_kill_source"),
         )
+        if source == "day":
+            await redis.sadd(
+                self._keys.active_day_chats(),
+                str(chat_id),
+            )
+        else:
+            await redis.sadd(
+                self._keys.active_vote_chats(),
+                str(chat_id),
+            )
         return True
 
     async def normal_death(
@@ -258,6 +268,9 @@ class LynchEffects:
     ) -> None:
         """Persist death in Redis + PostgreSQL."""
         redis = await get_redis()
+        role_id = await redis.get(
+            self._keys.player_role(user_id)
+        )
         await redis.set(
             self._keys.player_state(user_id),
             "dead",
@@ -281,3 +294,37 @@ class LynchEffects:
             if row is not None:
                 row.alive = False
                 row.state = "dead"
+        from app.managers.death_mute import (
+            maybe_mute_on_death,
+        )
+
+        await maybe_mute_on_death(
+            self._bridge,
+            chat_id,
+            user_id,
+        )
+        from app.managers.magic_effects import (
+            refund_unused_on_death,
+        )
+
+        await refund_unused_on_death(
+            chat_id,
+            user_id,
+            self._bridge,
+            self._texts,
+            self._settings.default_lang,
+            self._keys,
+        )
+        from app.managers.role_links import (
+            process_death_links,
+        )
+
+        await process_death_links(
+            chat_id,
+            user_id,
+            str(role_id) if role_id else None,
+            bridge=self._bridge,
+            texts=self._texts,
+            keys=self._keys,
+            lang=self._settings.default_lang,
+        )

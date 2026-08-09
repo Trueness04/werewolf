@@ -84,5 +84,11 @@
   "role_harley": "You are Harley Quinn 👩‍🎤, the Joker's partner. Search for books at night. Your team wins with 3 books or when ≤3 players remain.",
   "AskHarly": "Who do you search for a book tonight?",
   "role_firefighter_n": "Firefighter",
-  "role_firefighter": "Description of firefighter"
+  "role_firefighter": "Description of firefighter",
+  "AskDarNeshanMark": "Who do you mark for the gallows tonight?",
+  "role_DarNeshan": "You are DarNeshan🕯️, a cultist. While others beg at night, you recruit from the gallows. Each night mark one player. If they are lynched tomorrow, you immediately pick another living player who joins the cult for certain. The lynched one dies; the convert lives. A wrong mark gains nothing. {0}",
+  "role_DarNeshan_n": "DarNeshan🕯️",
+  "AskBeladMoon": "Call the blood moon for tomorrow night? (once)",
+  "role_BeladMoon": "You are BeladMoon🌕. Your kin have fangs; you own the sky. Once per game, by day, you call the blood moon. Next night turns crimson: wolves miss, cult invites fail, the killer's blade locks, fire won't catch. Only your hunt remains. One perfect night — then the moon returns and your hand never reaches the sky again. {0}",
+  "role_BeladMoon_n": "BeladMoon🌕"
 }

@@ -17,6 +17,27 @@ from app.database.models.ban import BanRow  # noqa: F401
 from app.database.models.game import GameRow  # noqa: F401
 from app.database.models.group import GroupRow  # noqa: F401
 from app.database.models.player import PlayerRow  # noqa: F401
+from app.database.models.social import (  # noqa: F401
+    AchievementUnlockRow,
+    ChallengeMemberRow,
+    ChallengeRow,
+    CoinLedgerRow,
+    CommentRow,
+    FeedEventRow,
+    FollowRow,
+    HeroRow,
+    LikeRow,
+    PostRow,
+    ReportRow,
+    ShopOwnedRow,
+    TournamentMemberRow,
+    TournamentRow,
+)
+from app.database.models.admin import (  # noqa: F401
+    AdminAuditRow,
+    ChargeOrderRow,
+    SponsorRow,
+)
 from app.database.models.user import UserRow
 from app.database.session import session_scope
 
@@ -96,14 +117,66 @@ async def _seed_user(user_id: int) -> None:
             print("user_updated", user_id)
 
 
-async def main(user_id: int) -> None:
-    """Bootstrap local DB for Telegram tests."""
+
+async def _ensure_group_columns() -> None:
+    """Add new group columns on existing DBs."""
+    settings = get_settings()
+    cfg = _cfg()
+    engine = create_async_engine(settings.database_url)
+    stmts = (
+        str(cfg["sql_add_secret_vote"]),
+        str(cfg["sql_add_mute_die"]),
+        str(cfg["sql_add_text_mode"]),
+        "ALTER TABLE groups ADD COLUMN IF NOT EXISTS "
+        "sponsor_lock BOOLEAN DEFAULT FALSE",
+    )
+    async with engine.begin() as conn:
+        for stmt in stmts:
+            await conn.execute(text(stmt))
+    await engine.dispose()
+    print("group_columns_ok")
+
+
+async def _ensure_user_columns() -> None:
+    """Add rank/xp/stats columns on existing users table."""
+    settings = get_settings()
+    engine = create_async_engine(settings.database_url)
+    stmts = (
+        "ALTER TABLE users ADD COLUMN IF NOT EXISTS xp INTEGER DEFAULT 0",
+        "ALTER TABLE users ADD COLUMN IF NOT EXISTS rank INTEGER DEFAULT 1",
+        "ALTER TABLE users ADD COLUMN IF NOT EXISTS games_played INTEGER DEFAULT 0",
+        "ALTER TABLE users ADD COLUMN IF NOT EXISTS wins INTEGER DEFAULT 0",
+        "ALTER TABLE users ADD COLUMN IF NOT EXISTS bio TEXT",
+        "ALTER TABLE users ADD COLUMN IF NOT EXISTS username VARCHAR(128)",
+        "ALTER TABLE web_reports ADD COLUMN IF NOT EXISTS "
+        "status VARCHAR(16) DEFAULT 'open'",
+    )
+    async with engine.begin() as conn:
+        for stmt in stmts:
+            await conn.execute(text(stmt))
+    await engine.dispose()
+    print("user_columns_ok")
+
+
+async def ensure_schema(*, seed_user_id: int | None = None) -> None:
+    """Create DB/tables/columns; optional seed user for tests."""
     get_settings.cache_clear()
     await _ensure_database()
     await _create_tables()
-    await _seed_user(user_id)
+    await _ensure_group_columns()
+    await _ensure_user_columns()
+    if seed_user_id is not None:
+        await _seed_user(seed_user_id)
+
+
+async def main(user_id: int) -> None:
+    """Bootstrap local DB for Telegram tests."""
+    await ensure_schema(seed_user_id=user_id)
 
 
 if __name__ == "__main__":
     uid = _parse_user_id(sys.argv)
     asyncio.run(main(uid))
+
+
+

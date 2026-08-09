@@ -1,4 +1,4 @@
-"""Mighty stub role: DynamiteRole."""
+"""Dynamite role shell."""
 
 from __future__ import annotations
 
@@ -6,8 +6,9 @@ from ..base_role import BaseRole
 
 
 class DynamiteRole(BaseRole):
-    """Mighty role stub; filled later."""
+    """Dynamite; resolve is pipeline-driven."""
 
     async def resolve(self, ctx: dict) -> None:
-        """Not implemented for Mighty yet."""
-        raise NotImplementedError(self.role_id)
+        """No-op; special_teams handles the slot."""
+        _ = ctx
+        return None

@@ -31,7 +31,7 @@ async def convert_player(
     registry = _Registry()
     try:
         info = registry.definition(new_role)
-    except Exception:
+    except KeyError:
         return False
     team = str(info.get("team") or "villager")
     roles_raw = await redis.get(keys.game_roles(chat_id))

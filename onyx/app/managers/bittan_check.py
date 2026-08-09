@@ -77,6 +77,13 @@ class BittanCheck:
                 flags,
                 self._keys.field(field),
             )
+            if field == "convert_enchanter":
+                await _prune_enchanter(
+                    redis,
+                    flags,
+                    self._keys,
+                    uid,
+                )
             if not ok:
                 continue
             text = self._texts.get(
@@ -114,3 +121,30 @@ async def clear_gas_flag(
             await redis.hdel(flags, keys.field(name))
             cleared = True
     return cleared
+
+
+async def _prune_enchanter(
+    redis,
+    flags: str,
+    keys: RedisKeySpace,
+    uid: int,
+) -> None:
+    """Rewrite enchanter_list without converted uid."""
+    from app.managers.enchanter_list import (
+        dumps,
+        parse_list,
+        remove_uid,
+    )
+
+    field = keys.field("enchanter_list")
+    raw = await redis.hget(flags, field)
+    cur = remove_uid(parse_list(raw), uid)
+    if not cur:
+        await redis.hdel(flags, field)
+    else:
+        await redis.hset(flags, field, dumps(cur))
+    mark_f = keys.field("enchanter_mark")
+    mark = await redis.hget(flags, mark_f)
+    if mark and str(mark) == str(uid):
+        await redis.hdel(flags, mark_f)
+

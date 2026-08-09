@@ -1,13 +1,11 @@
-"""Mighty stub role: MightyWhiteWolfRole."""
+"""Mighty white wolf — pipeline-driven like WhiteWolf."""
 
 from __future__ import annotations
 
-from ..base_role import BaseRole
+from app.class.roles.white_wolf import WhiteWolfRole
 
 
-class MightyWhiteWolfRole(BaseRole):
-    """Mighty role stub; filled later."""
+class MightyWhiteWolfRole(WhiteWolfRole):
+    """Alias class; night resolve is pipeline-driven."""
 
-    async def resolve(self, ctx: dict) -> None:
-        """Not implemented for Mighty yet."""
-        raise NotImplementedError(self.role_id)
+    pass

@@ -49,6 +49,10 @@ class Settings(BaseSettings):
     extend_default_seconds: int = Field(
         alias="EXTEND_DEFAULT_SECONDS",
     )
+    max_extend_seconds: int = Field(
+        default=300,
+        alias="MAX_EXTEND_SECONDS",
+    )
     join_cost_coins: int = Field(alias="JOIN_COST_COINS")
     debug_mode: bool = Field(alias="DEBUG_MODE")
     enable_bot_to_bot: bool = Field(
@@ -99,6 +103,40 @@ class Settings(BaseSettings):
         default="",
         alias="NVIDIA_MODEL",
     )
+    webapp_url: str = Field(
+        default="",
+        alias="WEBAPP_URL",
+    )
+    webapp_host: str = Field(
+        default="0.0.0.0",
+        alias="WEBAPP_HOST",
+    )
+    webapp_port: int = Field(
+        default=8080,
+        alias="WEBAPP_PORT",
+    )
+    sudo_ids: str = Field(
+        default="",
+        alias="SUDO_IDS",
+    )
+
+    charge_verify_secret: str = Field(
+        default="",
+        alias="CHARGE_VERIFY_SECRET",
+    )
+
+    def sudo_id_set(self) -> set[int]:
+        """Parse comma-separated Telegram sudo user ids."""
+        out: set[int] = set()
+        for part in self.sudo_ids.split(","):
+            part = part.strip()
+            if not part:
+                continue
+            try:
+                out.add(int(part))
+            except ValueError:
+                continue
+        return out
 
     def _templates(self) -> dict[str, str]:
         """Load URL templates from data/config."""

@@ -22,6 +22,10 @@ def force_role_pairs(
     deps = [str(x) for x in rules["wolf_dependents"]]
     out = list(roles)
     villager = str(rules["villager_inject"])
+    non_vg = {
+        str(x)
+        for x in rules.get("non_vg", rules["no_inject"])
+    }
 
     def count(rid: str) -> int:
         return sum(1 for r in out if r == rid)
@@ -32,16 +36,17 @@ def force_role_pairs(
                 out[i] = new
                 return
 
-    def inject(rid: str) -> None:
-        for i, r in enumerate(out):
-            if r == villager:
-                out[i] = rid
-                return
-        # no villager slot: replace a non-critical
-        for i, r in enumerate(out):
-            if r not in bases and r != rid:
-                out[i] = rid
-                return
+    def inject(rid: str) -> bool:
+        """Replace a random non-Vg slot (GetRandomvg fix)."""
+        idxs = [
+            i
+            for i, r in enumerate(out)
+            if r not in non_vg
+        ]
+        if not idxs:
+            return False
+        out[rng.choice(idxs)] = rid
+        return True
 
     # A: wolf dependents without base wolf → base wolf
     if not has_base_wolf(out, bases):
@@ -74,13 +79,18 @@ def force_role_pairs(
     if count("role_vampire") and not count(
         "role_Bloodthirsty"
     ):
-        # optional blood inject when vamp present
-        pass
-    # G–H: ferqe or Royce without shekar
+        inject("role_Bloodthirsty")
+    # G–H: ferqe / Royce / DarNeshan without shekar
     if (
-        count("role_ferqe") or count("role_Royce")
+        count("role_ferqe")
+        or count("role_Royce")
+        or count("role_DarNeshan")
     ) and not count("role_shekar"):
         inject("role_shekar")
+    if count("role_BeladMoon") and not count(
+        "role_vampire"
+    ):
+        inject("role_vampire")
     # I: PishRezerv without pishgo → pishgo
     if count("role_pishRezerv") and not count(
         "role_pishgo"
@@ -100,11 +110,30 @@ def force_role_pairs(
                 "role_firefighter",
                 villager,
             )
-    if count("role_joker") xor count("role_harley"):
+    if bool(count("role_joker")) ^ bool(
+        count("role_harley")
+    ):
         if count("role_joker") and not count(
             "role_harley"
         ):
-            pass  # harley optional stub
+            inject("role_harley")
+        if count("role_harley") and not count(
+            "role_joker"
+        ):
+            inject("role_joker")
+    # Black knight ↔ bride required
+    if bool(count("role_BlackKnight")) ^ bool(
+        count("role_BrideTheDead")
+    ):
+        if count("role_BlackKnight"):
+            inject("role_BrideTheDead")
+        if count("role_BrideTheDead"):
+            inject("role_BlackKnight")
+    if count("role_dian") and (
+        not count("role_BlackKnight")
+        or not count("role_BrideTheDead")
+    ):
+        replace_first("role_dian", villager)
     if count("role_shekar") and not count("role_pishgo"):
         # keep shekar; seer not mandatory with hunter
         pass

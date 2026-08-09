@@ -3,5 +3,8 @@
   "min_specials": 2,
   "min_villagers": 1,
   "small_game_max_players": 8,
-  "small_game_tolerance": 12
+  "small_game_tolerance": 12,
+  "sg_small": 5,
+  "sg_large": 6,
+  "sg_threshold": 20
 }

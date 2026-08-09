@@ -96,16 +96,31 @@ def _team_weights(
     defs: dict[str, Any],
     weights: dict[str, int],
 ) -> tuple[int, int]:
-    """Return (wolf_weight, village_weight)."""
-    wolf_w = 0
-    village_w = 0
+    """Return (enemy_weight, village_weight)."""
+    from app.config.paths import ROLE_BALANCE_BUCKETS
+    from collections import defaultdict
+
+    cfg = load_json(ROLE_BALANCE_BUCKETS)
+    map_b = cfg.get("buckets") or {}
+    enemy_keys = set(cfg.get("enemy") or [])
+    village_keys = set(cfg.get("village") or [])
+    tallies: dict[str, int] = defaultdict(int)
     for rid in roles:
-        weight = weights.get(rid, 0)
-        if defs[rid]["team"] == "wolf":
-            wolf_w += weight
-        else:
-            village_w += weight
-    return wolf_w, village_w
+        weight = int(weights.get(rid, 0))
+        bucket = str(map_b.get(rid) or "")
+        if not bucket:
+            if defs.get(rid, {}).get("team") == "wolf":
+                bucket = "wolf"
+            else:
+                bucket = "rosta"
+        if bucket == "skip":
+            continue
+        tallies[bucket] += weight
+    # MF-10: blod accumulates independent of vampire
+    enemy = sum(tallies[k] for k in enemy_keys)
+    village = sum(tallies[k] for k in village_keys)
+    _ = defs
+    return enemy, village
 
 
 def downgrade_heaviest(

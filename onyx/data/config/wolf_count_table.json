@@ -3,6 +3,6 @@
     {"min_players": 2, "max_players": 7, "wolf_count": 1},
     {"min_players": 8, "max_players": 12, "wolf_count": 2},
     {"min_players": 13, "max_players": 16, "wolf_count": 3},
-    {"min_players": 17, "max_players": 45, "wolf_count": 4}
+    {"min_players": 17, "max_players": 60, "wolf_count": 4}
   ]
 }

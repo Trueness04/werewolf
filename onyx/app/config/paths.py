@@ -16,6 +16,9 @@ CONFIG_DATA: Path = DATA_DIR / "config"
 ERRORS_JSON: Path = TEXT_DIR / "errors.json"
 URL_TEMPLATES: Path = CONFIG_DATA / "url_templates.json"
 GAME_MODES: Path = CONFIG_DATA / "game_modes.json"
+FLAVOR_PACKS: Path = (
+    CONFIG_DATA / "flavor_packs.json"
+)
 COMMANDS_JSON: Path = CONFIG_DATA / "commands.json"
 WARNING_SECONDS: Path = (
     CONFIG_DATA / "warning_seconds.json"
@@ -32,6 +35,12 @@ WOLF_COUNT_TABLE: Path = (
     CONFIG_DATA / "wolf_count_table.json"
 )
 ROLE_FILL: Path = CONFIG_DATA / "role_fill.json"
+ROLE_BALANCE_BUCKETS: Path = (
+    CONFIG_DATA / "role_balance_buckets.json"
+)
+ROLE_POOL_THRESHOLDS: Path = (
+    CONFIG_DATA / "role_pool_thresholds.json"
+)
 NIGHT_ORDER: Path = (
     CONFIG_DATA / "night_resolution_order.json"
 )

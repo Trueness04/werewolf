@@ -41,8 +41,51 @@ def build_sheriff_shot_keyboard(
     targets: list[tuple[int, str]],
 ) -> InlineKeyboardMarkup:
     """Build sheriff death-shot target buttons."""
+    return _shot_keyboard(
+        "sheriff_shot",
+        chat_id,
+        actor_id,
+        targets,
+    )
+
+
+def build_black_revenge_keyboard(
+    chat_id: int,
+    actor_id: int,
+    targets: list[tuple[int, str]],
+) -> InlineKeyboardMarkup:
+    """Build StopBlack revenge target buttons."""
+    return _shot_keyboard(
+        "black_revenge",
+        chat_id,
+        actor_id,
+        targets,
+    )
+
+
+def build_darneshan_pick_keyboard(
+    chat_id: int,
+    actor_id: int,
+    targets: list[tuple[int, str]],
+) -> InlineKeyboardMarkup:
+    """Build DarNeshan post-lynch convert keyboard."""
+    return _shot_keyboard(
+        "darneshan_pick",
+        chat_id,
+        actor_id,
+        targets,
+    )
+
+
+def _shot_keyboard(
+    tpl_key: str,
+    chat_id: int,
+    actor_id: int,
+    targets: list[tuple[int, str]],
+) -> InlineKeyboardMarkup:
+    """Shared actor→target shot keyboard builder."""
     tpl = load_json(CALLBACK_TEMPLATES)
-    pattern = str(tpl["sheriff_shot"])
+    pattern = str(tpl[tpl_key])
     rows: list[list[InlineKeyboardButton]] = []
     for uid, name in targets:
         data = pattern.format(

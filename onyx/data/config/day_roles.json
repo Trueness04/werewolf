@@ -3,18 +3,38 @@
     "role_Solh",
     "role_Kadkhoda",
     "role_Ahangar",
-    "role_KhabGozar"
+    "role_KhabGozar",
+    "role_trouble",
+    "role_Ruler",
+    "role_davina",
+    "role_BeladMoon"
   ],
   "deferred": [
     "role_tofangdar",
-    "role_Spy"
+    "role_Spy",
+    "role_karagah",
+    "role_Princess",
+    "role_Botanist",
+    "role_BlackKnight",
+    "role_dian",
+    "role_dynamite"
   ],
   "target_type": {
     "role_Solh": "yes_no",
     "role_Kadkhoda": "yes_no",
     "role_Ahangar": "yes_no",
     "role_KhabGozar": "yes_no",
+    "role_trouble": "yes_no",
+    "role_Ruler": "yes_no",
+    "role_davina": "yes_no",
+    "role_BeladMoon": "yes_no",
     "role_tofangdar": "single_target",
-    "role_Spy": "single_target"
+    "role_Spy": "single_target",
+    "role_karagah": "single_target",
+    "role_Princess": "single_target",
+    "role_Botanist": "single_target",
+    "role_BlackKnight": "single_target",
+    "role_dian": "single_target",
+    "role_dynamite": "single_target"
   }
 }
