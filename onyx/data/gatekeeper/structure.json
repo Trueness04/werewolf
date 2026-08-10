@@ -33,7 +33,9 @@
     "data/archive",
     "webapp",
     "webapp/api",
-    "webapp/static"
+    "webapp/ui",
+    "webapp/ui/src",
+    "webapp/dist"
   ],
   "allowed_top_level": [
     "app",

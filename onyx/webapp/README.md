@@ -1,44 +1,44 @@
-# وب‌اپ اونیکس (Telegram Mini App)
+# وب‌اپ اونیکس (Telegram Mini App · React)
 
-پیاده‌سازی `change-spec-webapp-social-economy-fa.md` §۷.۰.
+پیاده‌سازی `change-spec-webapp-social-economy-fa.md` §۵ / §۷.۰.
+
+UI: React + Vite در `webapp/ui` → بیلد به `webapp/dist`.
+
+## بیلد فرانت
+
+```bash
+cd webapp/ui
+npm install
+npm run build
+```
+
+حالت توسعه (پروکسی API به پورت ۸۰۸۰):
+
+```bash
+cd webapp/ui
+npm run dev
+```
 
 ## اجرا — همه از لانچر
 
-از ریشهٔ پروژه (`e:\Project\onyx`):
+از ریشهٔ پروژه:
 
 ```bash
 pip install -r data/env/requirements.txt
 python launcher.py
 ```
 
-لانچر به‌ترتیب: Gatekeeper → اسکیمای DB → وب‌اپ (uvicorn) → بات تلگرام را بالا می‌آورد.
-
-تنظیمات `.env`:
+لانچر: Gatekeeper → اسکیمای DB → وب‌اپ (uvicorn) → بات.
 
 | کلید | معنی |
 |------|------|
 | `WEBAPP_HOST` | پیش‌فرض `0.0.0.0` |
 | `WEBAPP_PORT` | پیش‌فرض `8080` |
-| `WEBAPP_URL` | آدرس عمومی مینی‌اپ برای تلگرام |
+| `WEBAPP_URL` | آدرس عمومی مینی‌اپ |
 | `SUDO_IDS` | آیدی‌های سودو |
 
-BotFather → Menu Button / Web App را به `WEBAPP_URL` وصل کنید. `DEBUG_MODE=false` تا initData اجباری شود.
+## UX (قفل سند)
 
-Seed تستی اختیاری:
-
-```bash
-python -m app.database.bootstrap <TELEGRAM_USER_ID>
-```
-
-## قابلیت‌ها
-
-- فید، پروفایل، شاپ، شارژ، هیرو، دستاورد، تورنمنت، آنلاین، چالش
-- پنل مدیریت سودو (`/sudo`)
-- لیست رنک + خاندان سلطنتی
-
-## بات
-
-- `/mycoin` `/sendcoin` می‌مانند
-- `/myhero` `/achievement` `/onlinegame` `/shop` `/coin` / چالش → وب‌اپ
-- مجیک: خرید وب → پنل بعد از نقش
-- `/sudo` + ارشد رنک «پنل کنترل بازی»
+- خانه = فید
+- شاپ / رنک / پروفایل مسیر جدا
+- بقیه از «بیشتر»
