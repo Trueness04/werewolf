@@ -1,0 +1,60 @@
+{
+  "base_wolves": [
+    "role_wolf",
+    "role_WhiteWolf",
+    "role_Alpha",
+    "role_Tolle",
+    "role_Wolfx",
+    "role_WolfGorgine",
+    "role_iceWolf"
+  ],
+  "wolf_dependents": [
+    "role_WolfJadogar",
+    "role_Honey",
+    "role_enchanter",
+    "role_WhiteWolf",
+    "role_forestQueen",
+    "role_Khaen",
+    "role_NefrinShode",
+    "role_betaWolf"
+  ],
+  "villager_inject": "role_villager",
+  "no_inject": [
+    "role_NefrinShode",
+    "role_Khaen",
+    "role_Mast"
+  ],
+  "non_vg": [
+    "role_wolf",
+    "role_WhiteWolf",
+    "role_Alpha",
+    "role_Tolle",
+    "role_Wolfx",
+    "role_WolfGorgine",
+    "role_WolfJadogar",
+    "role_Honey",
+    "role_enchanter",
+    "role_forestQueen",
+    "role_Khaen",
+    "role_NefrinShode",
+    "role_Qatel",
+    "role_vampire",
+    "role_Bloodthirsty",
+    "role_BlackKnight",
+    "role_BrideTheDead",
+    "role_joker",
+    "role_harley",
+    "role_lucifer",
+    "role_Mast",
+    "role_iceWolf",
+    "role_ferqe",
+    "role_Royce",
+    "role_shekar",
+    "role_franc",
+    "role_Mummy",
+    "role_DarNeshan",
+    "role_kalantar",
+    "role_betaWolf",
+    "role_BeladMoon"
+  ]
+}

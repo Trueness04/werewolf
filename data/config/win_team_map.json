@@ -1,0 +1,58 @@
+{
+  "default_by_team": {
+    "villager": "rosta",
+    "wolf": "wolf",
+    "cult": "ferqeTeem",
+    "solo": "rosta"
+  },
+  "by_role": {
+    "role_wolf": "wolf",
+    "role_WhiteWolf": "wolf",
+    "role_mighty_white_wolf": "wolf",
+    "role_Qatel": "qatel",
+    "role_ferqe": "ferqeTeem",
+    "role_vampire": "vampire",
+    "role_dynamite": "dinamit",
+    "role_joker": "joker",
+    "role_harley": "joker",
+    "role_firefighter": "Firefighter",
+    "role_IceQueen": "Firefighter",
+    "role_Archer": "qatel",
+    "role_BlackKnight": "black",
+    "role_BrideTheDead": "black",
+    "role_dian": "black",
+    "role_Royce": "ferqeTeem",
+    "role_Mummy": "ferqeTeem",
+    "role_franc": "ferqeTeem",
+    "role_monafeq": "monafeq",
+    "role_Bloodthirsty": "vampire",
+    "role_chiang": "vampire",
+    "role_Kent": "vampire",
+    "role_Lilis": "Firefighter",
+    "role_Magento": "Firefighter",
+    "role_davina": "qatel",
+    "role_Hilda": "qatel",
+    "role_lucifer": "rosta",
+    "role_iceWolf": "wolf",
+    "role_Honey": "wolf",
+    "role_Alpha": "wolf",
+    "role_forestQueen": "wolf",
+    "role_WolfJadogar": "wolf",
+    "role_betaWolf": "wolf",
+    "role_dozd": "rosta",
+    "role_DarNeshan": "ferqeTeem",
+    "role_BeladMoon": "vampire"
+  },
+  "count_as_rosta": [
+    "role_WolfJadogar",
+    "role_Honey",
+    "role_enchanter"
+  ],
+  "hostile_buckets": [
+    "wolf",
+    "Firefighter",
+    "black",
+    "ferqeTeem",
+    "vampire"
+  ]
+}

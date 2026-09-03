@@ -1,0 +1,22 @@
+{
+  "MassgeFortypeSummery_vote": "Dusk draws near, and the villagers gather to decide who they are lynching this evening...\nEveryone now has {0} seconds to vote!",
+  "MassgeFortypeSummery_Secretvote": "Dusk draws near, and the villagers gather to decide who they are lynching this evening... Everyone now has {0} seconds to vote! This vote is secret.",
+  "vote_prompt": "Who do you want to lynch?",
+  "vote_public": "{0} has voted to lynch {1}.",
+  "vote_secret_count": "{0} players have voted, {1} total.",
+  "killed_user": "The villagers have cast their votes, amid doubts and suspicions. {0} is dead. {1}",
+  "user_role": "Their role was <b>{0}</b>",
+  "no_kill": "Unable to come up with a proper decision on who to lynch, the mob returns to their homes for the night, frustrated...",
+  "no_votes": "Something is fishy, for no one voted! No lynch mob tonight...",
+  "peace_no_lynch": "Because of the Pacifist's ☮️ heartfelt speech, the lynch phase will be skipped today!",
+  "solh_speech": "The Pacifist ☮️, {0}, is making a heartfelt speech of friendship and trust in front of the village. Moved by their speech, there will be no lynching today!",
+  "prince_saved": "As the village begins to lynch {0}, they say “Wait! I am the Prince. This royal ring, with the seal of the king proves it. Every night I am surrounded by servants. So I cannot be evil.” Feeling foolish, the villagers sheepishly retire for the night.",
+  "BlackKnightKillVote": "The Black Knight survives the lynch and walks free.",
+  "sheriff_lynch": "The villagers have cast their votes, amid doubts and suspicions. {0} is dead. {1}",
+  "sheriff_shot_prompt": "The village has chosen to hang you! This is your last chance, choose to shoot someone as you go down!",
+  "sheriff_shot_done": "As the noose tightens, {0} whips out a pistol, takes aim, and shoots {1} as the floor drops out! {1} falls over, dead. {2}",
+  "sheriff_shot_skip": "{0} whips out their pistol and looks at the crowd... and cannot make a decision on who to shoot. They fall to their death, accepting their fate...",
+  "you_died_lynch": "You were lynched. Your role: {0}",
+  "SelectOk": "Choice accepted.",
+  "ErrorSelect": "Error: that action does not match your role ({0})"
+}

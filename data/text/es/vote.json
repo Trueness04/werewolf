@@ -1,0 +1,22 @@
+{
+  "MassgeFortypeSummery_vote": "El ocaso se acerca y los aldeanos tratan de decidir a quién lincharán esta tarde... ¡Todo el mundo tiene {0} segundos para votar a partir de ahora!",
+  "MassgeFortypeSummery_Secretvote": "El ocaso se acerca y los aldeanos tratan de decidir a quién lincharán... ¡Todo el mundo tiene {0} segundos para votar! La votación es secreta.",
+  "vote_prompt": "¿A quién quieres linchar?",
+  "vote_public": "{0} ha votado linchar a {1}.",
+  "vote_secret_count": "{0} jugadores han votado, {1} en total.",
+  "killed_user": "Los aldeanos tienen su veredicto, entre tantas dudas y sospechas, {0} ha muerto linchado por el pueblo. {1}.",
+  "user_role": "Su rol era <b>{0}</b>",
+  "no_kill": "Incapaces de tomar una decisión sobre el linchamiento, la multitud vuelve frustrada a pasar la noche en sus casas... [Empate en las votaciones].",
+  "no_votes": "¡Qué extraño, nadie ha votado! No hay linchamiento esta noche...",
+  "peace_no_lynch": "A causa del enternecedor discurso del pacifista ☮️, no habrá linchamientos por hoy.",
+  "solh_speech": "El pacifista ☮️, {0}, está dando un emotivo discurso de paz, amor y amistad en la plaza del pueblo. Conmovido por su retórica, el pueblo decide no linchar a nadie esta noche.",
+  "prince_saved": "Mientras el pueblo empieza a linchar a {0}, de repente dice: «¡Esperad, soy la princesa! Este anillo real, junto con el sello del rey lo demuestran. ¡Mis sirvientes me acompañan día y noche, por lo que no puedo ser malo!». Avergonzados, los aldeanos se marchan a sus casas.",
+  "BlackKnightKillVote": "El Caballero Negro sobrevive al linchamiento.",
+  "sheriff_lynch": "Los aldeanos tienen su veredicto, entre tantas dudas y sospechas, {0} ha muerto linchado por el pueblo. {1}.",
+  "sheriff_shot_prompt": "¡Los aldeanos han decidido colgarte! Esta es tu última oportunidad, ¡escoge a quién disparar mientras caes!",
+  "sheriff_shot_done": "Mientras el nudo se aprieta alrededor del cuello de {0}, saca la pistola, la carga, apunta, aprieta el gatillo ¡y dispara a {1} mientras el suelo se acerca! {1} cae y muere. {2}",
+  "sheriff_shot_skip": "{0} alcanza su pistola, mira a la multitud... y no puede escoger a quien disparar. Muere aceptando su destino.",
+  "you_died_lynch": "Te han linchado. Tu rol: {0}",
+  "SelectOk": "Ya has elegido. No hay vuelta atrás.",
+  "ErrorSelect": "Error: esa acción no coincide con tu rol ({0})"
+}

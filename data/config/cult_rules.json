@@ -1,0 +1,71 @@
+{
+  "vote_bucket": ["role_ferqe", "role_Royce", "role_Mummy"],
+  "mongo_team": [
+    "role_ferqe",
+    "role_Royce",
+    "role_Mummy",
+    "role_franc",
+    "role_DarNeshan"
+  ],
+  "base_wolves": [
+    "role_wolf",
+    "role_Alpha",
+    "role_Tolle",
+    "role_Wolfx",
+    "role_WolfGorgine"
+  ],
+  "certain": [
+    "role_villager",
+    "role_PesarGij",
+    "role_Nazer",
+    "role_feramason",
+    "role_Fool",
+    "role_Mast",
+    "role_Khaen",
+    "role_monafeq",
+    "role_Kadkhoda",
+    "role_Ruler",
+    "role_Shahzade",
+    "role_tofangdar",
+    "role_pishRezerv",
+    "role_Solh",
+    "role_Vahshi",
+    "role_Gorgname",
+    "role_clown"
+  ],
+  "resistant": [
+    "role_IceQueen",
+    "role_firefighter",
+    "role_Archer",
+    "role_forestQueen",
+    "role_WhiteWolf",
+    "role_lucifer",
+    "role_Huntsman",
+    "role_Hamzad"
+  ],
+  "chance": {
+    "role_Honey": 60,
+    "role_pishgo": 40,
+    "role_ngativ": 40,
+    "role_Augur": 40,
+    "role_WolfJadogar": 40,
+    "role_trouble": 40,
+    "role_Chemist": 50,
+    "role_enchanter": 60,
+    "role_NefrinShode": 60,
+    "role_KhabGozar": 60,
+    "role_Knight": 30,
+    "role_Spy": 30,
+    "role_rishSefid": 30,
+    "role_Botanist": 70,
+    "role_Lucifer": 70,
+    "role_Natasha": 70,
+    "role_Ahangar": 75,
+    "role_karagah": 80
+  },
+  "hunter_vs_franc_pct": 10,
+  "cult_vs_killer_base": 50,
+  "cult_vs_vamp_base": 50,
+  "cult_vs_sheriff_convert": 50,
+  "cult_vs_sheriff_shot": 50
+}

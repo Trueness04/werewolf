@@ -1,0 +1,11 @@
+{
+  "charge_live": false,
+  "manual_grants_enabled": true,
+  "sponsor_lock_default": false,
+  "charge_verify_secret": "",
+  "notes": {
+    "role": "Sudo repairs broken transactions; gateway auto-fulfills when charge_live=true",
+    "manual": "Until bank gateway is live, sudo grants coins/magic via admin panel",
+    "verify": "POST /api/shop/charge/verify with order_id+gateway_ref+secret"
+  }
+}

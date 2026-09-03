@@ -1,0 +1,13 @@
+data/env/.env
+data/env/.venv/
+webapp/ui/node_modules/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+data/logs/*
+!data/logs/.gitkeep

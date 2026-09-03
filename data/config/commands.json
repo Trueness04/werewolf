@@ -1,0 +1,32 @@
+{
+  "start_commands": {
+    "startgame": "Normal",
+    "startmighty": "Mighty",
+    "startwerewolf": "WereWolf",
+    "startmafia": "Mafia",
+    "starteasy": "Easy",
+    "startromantic": "Romantic",
+    "startvampire": "Vampire",
+    "startfoolish": "Foolish"
+  },
+  "join": "join",
+  "flee": "flee",
+  "next_game": "nextgame",
+  "config": "config",
+  "force_start": "forcestart",
+  "extend": "extend",
+  "players": "players",
+  "kill_game": "killgame",
+  "mode_info": "modeinfo",
+  "start_payload_prefix": "joinToGAME_",
+  "start_challenge": "startchallenge",
+  "challenge_force": "challengeforce",
+  "mycoin": "mycoin",
+  "sendcoin": "sendcoin",
+  "shop": "shop",
+  "coin": "coin",
+  "sudo": "sudo",
+  "myhero": "myhero",
+  "achievement": "achievement",
+  "onlinegame": "onlinegame"
+}

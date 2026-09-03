@@ -1,0 +1,22 @@
+{
+  "MassgeFortypeSummery_vote": "🌥 Senja telah tiba. Seluruh warga berkumpul di balai desa untuk memilih siapa yang akan dieksekusi. Sebagian warga terlihat sibuk menyiapkan alat penyiksaan untuk siang ini. Kalian mempunyai waktu selama {0} detik untuk memilih! Hati-hati, jangan sampai disetir orang yang salah!",
+  "MassgeFortypeSummery_Secretvote": "Senja telah tiba. Warga berkumpul untuk memilih siapa yang dieksekusi. Kalian punya {0} detik untuk memilih! Voting ini rahasia.",
+  "vote_prompt": "Siapa yang akan dieksekusi? 🔥",
+  "vote_public": "{0} memilih {1} untuk dieksekusi.",
+  "vote_secret_count": "{0} pemain telah memilih dari total {1} pemain.",
+  "killed_user": "🔥 Warga desa mengambil keputusan bulat. {0} tewas dibakar masa. {1}",
+  "user_role": "Perannya adalah <b>{0}</b>",
+  "no_kill": "┐(ˇ.ˇ\")┌ Terlalu banyak konsumsi micin, warga kesulitan mengambil keputusan bulat. Mereka pun pulang ke rumah masing-masing dengan tangan hampa.",
+  "no_votes": "(¬_¬\") Mencurigakan sekali, tidak ada yang memilih untuk digantung malam ini.",
+  "peace_no_lynch": "Karena warga desa terharu dengan pidato Pacifist ☮️ yang sepenuh hati, fase lynch akan dilewati hari ini!",
+  "solh_speech": "Pacifist ☮️, {0}, sedang berpidato tentang persahabatan dan kepercayaan di depan desa. Karena warga desa terharu dengan pidatonya, tidak akan ada hukuman mati hari ini!",
+  "prince_saved": "Karena warga desa sudah memulai untuk mengeksekusi {0}, dia akhirnya menunjukkan cincin kristal kerajaannya kepada warga! \"Lihatlah! Aku ini seorang pangeran!\" Merasa dibodohi, akhirnya warga tertunduk malu dan menunduk kepada pangeran.",
+  "BlackKnightKillVote": "Black Knight selamat dari eksekusi dan pergi bebas.",
+  "sheriff_lynch": "🔥 Warga desa mengambil keputusan bulat. {0} tewas dibakar masa. {1}",
+  "sheriff_shot_prompt": "Warga desa memilih untuk mengeksekusimu! Inilah kesempatan terakhir untuk memilih siapa yang kamu bawa menemanimu ke akhirat!",
+  "sheriff_shot_done": "Seluruh warga desa mengejar {0} dan menemukannya terperangkap di salah satu rumah! Dengan sigap ia menatap satu per satu warga dan menembak {1} untuk membela diri! {1} terjatuh bersimbah darah, lalu mati. {2}",
+  "sheriff_shot_skip": "{0} terperangkap! Ia menatap seluruh warga desa yang marah satu persatu. Tapi ia memilih menyerah, menerima nasibnya mati di tangan warga desa.",
+  "you_died_lynch": "Kamu dieksekusi. Peranmu: {0}",
+  "SelectOk": "👍 Mantap! Pilihanmu sudah diterima, semoga kamu tidak memilih orang yang salah!",
+  "ErrorSelect": "Error: aksi tidak cocok dengan peranmu ({0})"
+}

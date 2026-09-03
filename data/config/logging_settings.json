@@ -1,0 +1,11 @@
+{
+  "app_subdir": "app",
+  "debug_subdir": "debug",
+  "games_subdir": "games",
+  "rotation": "10 MB",
+  "retention": "14 days",
+  "app_level": "INFO",
+  "debug_level": "DEBUG",
+  "games_level": "INFO",
+  "enqueue": true
+}

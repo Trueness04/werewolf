@@ -1,0 +1,39 @@
+{
+  "max_literal_length": 40,
+  "skip_docstrings": true,
+  "skip_files": [
+    "app/config/paths.py"
+  ],
+  "rules": [
+    {
+      "id": "raw_sql",
+      "flags": "i",
+      "pattern": "\\b(SELECT\\s+.+\\s+FROM|INSERT\\s+INTO|UPDATE\\s+\\w+\\s+SET|DELETE\\s+FROM|DROP\\s+TABLE)\\b"
+    },
+    {
+      "id": "inline_url",
+      "flags": "i",
+      "pattern": "https?://[^\\s\"']+"
+    },
+    {
+      "id": "secret_like",
+      "flags": "i",
+      "pattern": "(api[_-]?key|bot[_-]?token|password)\\s*=\\s*['\"][^'\"]+['\"]"
+    },
+    {
+      "id": "abs_windows_path",
+      "flags": "i",
+      "pattern": "[A-Za-z]:\\\\[^\\s\"']+"
+    },
+    {
+      "id": "inline_regex",
+      "flags": "",
+      "pattern": "re\\.(compile|match|search|findall)\\(\\s*r?['\"]"
+    },
+    {
+      "id": "hardcoded_numeric_id",
+      "flags": "",
+      "pattern": "(?<![\\w.])\\d{8,}(?![\\w.])"
+    }
+  ]
+}

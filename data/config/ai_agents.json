@@ -1,0 +1,37 @@
+{
+  "id_base": -900000,
+  "name_prefix": "AI",
+  "fill_to": 6,
+  "default_agent": "AI.heuristic_agent.HeuristicAgent",
+  "join_when_enabled": true,
+  "act_delay_seconds": 1,
+  "immediate_yes_chance": 0.4,
+  "gunner_shoot_chance": 0.25,
+  "spy_act_chance": 0.7,
+  "night_yes_chance": 0.8,
+  "chat_enabled": true,
+  "chat_max_tokens": 100,
+  "chat_temperature": 0.55,
+  "chat_top_p": 0.8,
+  "chat_retries": 2,
+  "messages_per_day_each": 2,
+  "chat_line_template": "<b>{name}</b>: {text}",
+  "chat_system_extra": "فقط فارسی روان بنویس. هیچ کلمه انگلیسی، چینی، کد، یا نام فنی ننویس. حداکثر دو جمله کوتاه محاوره‌ای.",
+  "chat_user_template": "اسم مستعار تو: {my_name}\nبازیکنان زنده: {alive}\nتیم محرمانه تو: {team}\nحداقل «{target}» را خطاب کن.\n{rules}",
+  "chat_user_rules": "فقط یک پیام کوتاه فارسی برای گروه. بدون اسم خودت در اول پیام. بدون انگلیسی، بدون چینی، بدون کد.",
+  "team_labels": {
+    "wolf": "گرگ",
+    "villager": "روستا",
+    "solo": "مستقل"
+  },
+  "chat_fallback_lines": [
+    "{target} امروز خیلی ساکتی، یه چیزی بگو ببینیم کجایی.",
+    "به نظرم رفتار {target} مشکوکه، رأی بیاریم روش حرف بزنه.",
+    "{target} جان دیشب کجا بودی؟ یه توضیح بده.",
+    "من به {target} گیر دادم؛ کسی مخالفِ؟",
+    "بچه‌ها روی {target} تمرکز کنیم، حرفاش نمی‌خونه."
+  ],
+  "nvidia_base_url": "https://integrate.api.nvidia.com/v1",
+  "nvidia_model": "z-ai/glm-5.2",
+  "service_tick_seconds": 3
+}

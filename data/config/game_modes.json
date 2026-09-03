@@ -1,0 +1,60 @@
+{
+  "modes": {
+    "Normal": {
+      "min_players": 6,
+      "command": "startgame",
+      "start_text_key": "startAtGame_Normal",
+      "needs_vampire_roles": false,
+      "skip_role_assign": false
+    },
+    "Mighty": {
+      "min_players": 6,
+      "command": "startmighty",
+      "start_text_key": "startAtGame_Mighty",
+      "needs_vampire_roles": false,
+      "skip_role_assign": false
+    },
+    "WereWolf": {
+      "min_players": 6,
+      "command": "startwerewolf",
+      "start_text_key": "startAtGame_WereWolf",
+      "needs_vampire_roles": false,
+      "skip_role_assign": false
+    },
+    "Mafia": {
+      "min_players": 6,
+      "command": "startmafia",
+      "start_text_key": "startAtGame_Normal",
+      "needs_vampire_roles": false,
+      "skip_role_assign": false
+    },
+    "Easy": {
+      "min_players": 6,
+      "command": "starteasy",
+      "start_text_key": "startAtGame_Easy",
+      "needs_vampire_roles": false,
+      "skip_role_assign": false
+    },
+    "Romantic": {
+      "min_players": 6,
+      "command": "startromantic",
+      "start_text_key": "startAtGame_Romantic",
+      "needs_vampire_roles": false,
+      "skip_role_assign": false
+    },
+    "Vampire": {
+      "min_players": 7,
+      "command": "startvampire",
+      "start_text_key": "startAtGame_Vampire",
+      "needs_vampire_roles": true,
+      "skip_role_assign": false
+    },
+    "Foolish": {
+      "min_players": 6,
+      "command": "startfoolish",
+      "start_text_key": "startAtGame_Foolish",
+      "needs_vampire_roles": false,
+      "skip_role_assign": false
+    }
+  }
+}

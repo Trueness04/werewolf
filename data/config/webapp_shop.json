@@ -1,0 +1,81 @@
+{
+  "items": [
+    {
+      "id": "MajikReveal",
+      "title_fa": "جادوی افشا",
+      "price": 25,
+      "kind": "magic"
+    },
+    {
+      "id": "MajikProtect",
+      "title_fa": "جادوی محافظت",
+      "price": 30,
+      "kind": "magic"
+    },
+    {
+      "id": "MajikSilence",
+      "title_fa": "جادوی سکوت",
+      "price": 20,
+      "kind": "magic"
+    },
+    {
+      "id": "MajikSear",
+      "title_fa": "جادوی اعلام نقش",
+      "price": 2,
+      "kind": "magic"
+    },
+    {
+      "id": "sponser100",
+      "title_fa": "بسته اسپانسر ۱۰۰ سکه",
+      "price": 0,
+      "kind": "sponsor",
+      "coins_grant": 100
+    },
+    {
+      "id": "emoji_pack_basic",
+      "title_fa": "بسته اموجی پایه",
+      "price": 15,
+      "kind": "cosmetic"
+    },
+    {
+      "id": "laqab",
+      "title_fa": "لقب سفارشی",
+      "price": 40,
+      "kind": "cosmetic"
+    },
+    {
+      "id": "Xp500",
+      "title_fa": "۵۰۰ اکس‌پی",
+      "price": 50,
+      "kind": "xp",
+      "xp_grant": 500
+    }
+  ],
+  "charge_packages": [
+    {
+      "id": "coin_100",
+      "title_fa": "۱۰۰ سکه",
+      "coins": 100,
+      "price_toman": 10000
+    },
+    {
+      "id": "coin_500",
+      "title_fa": "۵۰۰ سکه",
+      "coins": 500,
+      "price_toman": 45000
+    },
+    {
+      "id": "coin_1000",
+      "title_fa": "۱۰۰۰ سکه",
+      "coins": 1000,
+      "price_toman": 80000
+    }
+  ],
+  "notes": {
+    "sear": "MF-41 fix: buy in webapp, use in in-game magic panel",
+    "charge_rial": "UI+packages built for bank gateway review; live key after approval (MF-37…39)",
+    "dozd": "removed PN-12",
+    "laqab_price": "unified 40 (shop truth; SetLaqab 30 obsolete)",
+    "policy_2026_08_05": "complete promised meta features; do not remove"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "seed_fullname": "Tester",
+  "seed_coins": 99999,
+  "sql_db_exists": "SELECT 1 FROM pg_database WHERE datname = :name",
+  "sql_create_db": "CREATE DATABASE \"{name}\"",
+  "sql_add_secret_vote": "ALTER TABLE groups ADD COLUMN IF NOT EXISTS secret_vote BOOLEAN DEFAULT FALSE",
+  "sql_add_mute_die": "ALTER TABLE groups ADD COLUMN IF NOT EXISTS mute_die BOOLEAN DEFAULT FALSE",
+  "sql_add_text_mode": "ALTER TABLE groups ADD COLUMN IF NOT EXISTS text_mode VARCHAR(32) DEFAULT 'general'",
+  "sql_add_user_xp": "ALTER TABLE users ADD COLUMN IF NOT EXISTS xp INTEGER DEFAULT 0",
+  "sql_add_user_rank": "ALTER TABLE users ADD COLUMN IF NOT EXISTS rank INTEGER DEFAULT 1",
+  "sql_add_user_games": "ALTER TABLE users ADD COLUMN IF NOT EXISTS games_played INTEGER DEFAULT 0",
+  "sql_add_user_wins": "ALTER TABLE users ADD COLUMN IF NOT EXISTS wins INTEGER DEFAULT 0",
+  "sql_add_user_bio": "ALTER TABLE users ADD COLUMN IF NOT EXISTS bio TEXT",
+  "sql_add_user_username": "ALTER TABLE users ADD COLUMN IF NOT EXISTS username VARCHAR(128)",
+  "sql_add_web_status": "ALTER TABLE web_reports ADD COLUMN IF NOT EXISTS status VARCHAR(16) DEFAULT 'open'",
+  "sql_add_sponsor_lock": "ALTER TABLE groups ADD COLUMN IF NOT EXISTS sponsor_lock BOOLEAN DEFAULT FALSE"
+}
