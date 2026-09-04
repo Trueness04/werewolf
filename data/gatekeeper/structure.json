@@ -42,7 +42,10 @@
     "AI",
     "data",
     "webapp",
-    "launcher.py"
+    "launcher.py",
+    "requirements.txt",
+    "nixpacks.toml",
+    "railway.json"
   ],
   "files": [
     "webapp/main.py",
