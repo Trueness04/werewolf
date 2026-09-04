@@ -1,4 +1,5 @@
 {
+  "enabled": true,
   "id_base": -900000,
   "name_prefix": "AI",
   "fill_to": 6,
@@ -32,6 +33,6 @@
     "بچه‌ها روی {target} تمرکز کنیم، حرفاش نمی‌خونه."
   ],
   "nvidia_base_url": "https://integrate.api.nvidia.com/v1",
-  "nvidia_model": "z-ai/glm-5.2",
+  "nvidia_model": "nvidia/llama-3.3-nemotron-super-49b-v1.5",
   "service_tick_seconds": 3
 }

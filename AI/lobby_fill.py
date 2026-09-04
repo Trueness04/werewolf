@@ -5,6 +5,7 @@ from __future__ import annotations
 from importlib import import_module
 
 from AI.join_ai import fill_ai_players
+from AI.registry import ai_enabled
 from AI.talker import fill_target
 from app.cache.redis_client import get_redis
 from app.cache.redis_keys import RedisKeySpace
@@ -27,6 +28,8 @@ async def ensure_ai_lobby_fill(
     """Add AI until fill_to / min_players is met."""
     settings = get_settings()
     if not settings.enable_bot_to_bot:
+        return 0
+    if not ai_enabled():
         return 0
     lobby = lobby or LobbyManager()
     info = _get_mode(mode_name or "Normal")

@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from AI.personas import PersonaBook
-from AI.registry import AgentRegistry
+from AI.registry import AgentRegistry, ai_enabled
 from AI.talker import fill_target
 from app.cache.redis_client import get_redis
 from app.cache.redis_keys import RedisKeySpace
@@ -27,6 +27,8 @@ async def fill_ai_players(
         return 0
     settings = get_settings()
     if not settings.enable_bot_to_bot:
+        return 0
+    if not ai_enabled():
         return 0
     registry = AgentRegistry()
     if not bool(registry.config.get("join_when_enabled")):

@@ -10,6 +10,11 @@ from app.config.paths import AI_AGENTS
 from app.managers.json_loader import load_json
 
 
+def ai_enabled() -> bool:
+    """Master AI players switch (ai_agents.json 'enabled')."""
+    return bool(load_json(AI_AGENTS).get("enabled", True))
+
+
 class AgentRegistry:
     """Create agents from config class path."""
 
