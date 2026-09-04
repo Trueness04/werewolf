@@ -28,6 +28,8 @@
   "player_state": "player:{user_id}:state",
   "player_role": "player:{user_id}:role",
   "night_sent": "game:{chat_id}:night_sent",
+  "role_intro_sent": "game:{chat_id}:role_intro_sent",
+  "player_last_role": "player:{user_id}:last_role",
   "fields": {
     "timer": "timer",
     "game_state": "game_state",
