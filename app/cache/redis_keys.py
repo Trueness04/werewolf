@@ -152,6 +152,10 @@ class RedisKeySpace:
         template = str(self._raw["player_last_role"])
         return template.format(user_id=user_id)
 
+    def ai_runtime_enabled(self) -> str:
+        """Global runtime AI on/off switch key."""
+        return str(self._raw["ai_runtime_enabled"])
+
     def field(self, name: str) -> str:
         """Return configured hash field name.
 

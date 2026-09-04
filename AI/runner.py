@@ -7,7 +7,7 @@ from typing import Any
 
 from AI.actions import AiActions
 from AI.context import GameContext
-from AI.registry import AgentRegistry, ai_enabled
+from AI.registry import AgentRegistry, ai_runtime_enabled
 from app.cache.redis_client import get_redis
 from app.cache.redis_keys import RedisKeySpace
 from app.config.settings import get_settings
@@ -20,7 +20,7 @@ async def tick_ai_agents(bridge: ChatBridge) -> None:
     settings = get_settings()
     if not settings.enable_bot_to_bot:
         return
-    if not ai_enabled():
+    if not await ai_runtime_enabled():
         return
     keys = RedisKeySpace()
     redis = await get_redis()

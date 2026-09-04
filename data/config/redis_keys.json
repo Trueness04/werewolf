@@ -30,6 +30,7 @@
   "night_sent": "game:{chat_id}:night_sent",
   "role_intro_sent": "game:{chat_id}:role_intro_sent",
   "player_last_role": "player:{user_id}:last_role",
+  "ai_runtime_enabled": "ai:runtime_enabled",
   "fields": {
     "timer": "timer",
     "game_state": "game_state",

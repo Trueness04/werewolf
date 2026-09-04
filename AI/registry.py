@@ -6,6 +6,8 @@ from importlib import import_module
 from typing import Any
 
 from AI.base_agent import BaseAgent
+from app.cache.redis_client import get_redis
+from app.cache.redis_keys import RedisKeySpace
 from app.config.paths import AI_AGENTS
 from app.managers.json_loader import load_json
 
@@ -13,6 +15,36 @@ from app.managers.json_loader import load_json
 def ai_enabled() -> bool:
     """Master AI players switch (ai_agents.json 'enabled')."""
     return bool(load_json(AI_AGENTS).get("enabled", True))
+
+
+async def ai_runtime_enabled() -> bool:
+    """Runtime AI switch: Redis key first, json fallback.
+
+    The Redis value ("1"/"0") is the live source of truth
+    set by the sudo /ai command; when the key is missing
+    (or Redis is unreachable) fall back to ai_agents.json
+    'enabled'.
+    """
+    try:
+        keys = RedisKeySpace()
+        redis = await get_redis()
+        raw = await redis.get(keys.ai_runtime_enabled())
+    except Exception:
+        # Redis unavailable: json config stays authoritative.
+        return ai_enabled()
+    if raw is None:
+        return ai_enabled()
+    return str(raw).strip().lower() in {"1", "true", "on"}
+
+
+async def set_ai_runtime_enabled(enabled: bool) -> None:
+    """Persist runtime AI switch in Redis (no TTL)."""
+    keys = RedisKeySpace()
+    redis = await get_redis()
+    await redis.set(
+        keys.ai_runtime_enabled(),
+        "1" if enabled else "0",
+    )
 
 
 class AgentRegistry:

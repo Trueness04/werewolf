@@ -10,7 +10,7 @@ _ROOT = Path(__file__).resolve().parents[1]
 if str(_ROOT) not in sys.path:
     sys.path.insert(0, str(_ROOT))
 
-from AI.registry import ai_enabled
+from AI.registry import ai_runtime_enabled
 from AI.sender import build_ai_bridge
 from AI.talker import AiTalker, flush_ai_chat
 from app.cache.redis_client import get_redis
@@ -26,7 +26,7 @@ from app.managers.logger_manager import (
 
 async def _tick() -> None:
     """Produce talk and send via @AI bot."""
-    if not ai_enabled():
+    if not await ai_runtime_enabled():
         return
     keys = RedisKeySpace()
     redis = await get_redis()
