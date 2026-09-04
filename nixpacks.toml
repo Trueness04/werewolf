@@ -5,4 +5,4 @@ nixPkgs = ["python313"]
 cmds = ["python -m pip install --upgrade pip", "pip install -r requirements.txt"]
 
 [start]
-cmd = "python launcher.py"
+cmd = "python envboot.py && python launcher.py"

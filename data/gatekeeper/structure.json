@@ -48,7 +48,8 @@
     "railway.json",
     "skills-lock.json",
     "_textwork",
-    ".agents"
+    ".agents",
+    "envboot.py"
   ],
   "files": [
     "webapp/main.py",
