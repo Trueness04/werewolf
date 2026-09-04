@@ -1,4 +1,4 @@
 {
-  "database": "postgresql://{user}:{password}@{host}:{port}/{name}",
+  "database": "postgresql+asyncpg://{user}:{password}@{host}:{port}/{name}",
   "redis": "redis://default:{password}@{host}:{port}/0"
 }
