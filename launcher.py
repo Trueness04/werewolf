@@ -38,7 +38,9 @@ def _ensure_venv():
 
 
 def _kill_old_bot(token: str):
-    """Kill processes running launcher.py."""
+    """Kill processes running launcher.py (Windows-only)."""
+    if os.name != "nt":
+        return
     own_pid = os.getpid()
     out = subprocess.check_output(
         ["tasklist", "/FI", "IMAGENAME eq python.exe",
