@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "skills": {
+    "railway-deployment": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "skillPath": "cli-tool/components/skills/railway/deployment/SKILL.md",
+      "computedHash": "e30caa1a0235dd93a40e1cac3312e9e291dc337a6352a23ed06bedf809b4736d"
+    }
+  }
+}
