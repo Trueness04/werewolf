@@ -36,6 +36,7 @@ class Settings(BaseSettings):
     db_password: str = Field(alias="DB_PASSWORD")
     redis_host: str = Field(alias="REDIS_HOST")
     redis_port: int = Field(alias="REDIS_PORT")
+    redis_password: str = Field(default="", alias="REDIS_PASSWORD")
     default_lang: str = Field(alias="DEFAULT_LANG")
     fallback_lang: str = Field(alias="FALLBACK_LANG")
     bot_username: str = Field(alias="BOT_USERNAME")
@@ -164,6 +165,7 @@ class Settings(BaseSettings):
         """Build Redis URL from host and port."""
         template = self._templates()["redis"]
         return template.format(
+            password=self.redis_password,
             host=self.redis_host,
             port=self.redis_port,
         )
