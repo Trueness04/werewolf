@@ -1,4 +1,4 @@
-{
+﻿{
   "DisabledVampireMode": "حالت ومپایر در این گروه غیرفعال است.",
   "NotBotEnableGifOnGroup": "ربات اجازه ارسال گیف در گروه را ندارد.",
   "StartBot": "ابتدا ربات را استارت کنید.",
@@ -92,6 +92,9 @@
   "players_header_zero": "بازیکنان: 0",
   "ai_players_joined": "{0} بازیکن هوش مصنوعی وارد بازی شدند.",
   "game_killed": "بازی توسط ادمین لغو شد.",
+  "player_col": "بازیکن",
+  "col_role": "نقش",
+  "roster_title": "بازیکنان ({0}):",
   "phase_player_list": "بازیکنان زنده ({0}):\n{1}",
   "phase_dead_list": "بازیکنان مرده ({0}):\n{1}",
   "NextGameList": "صف بازی بعد: {0}",

@@ -158,6 +158,52 @@ class ChatBridge:
                 return 0
         return 0
 
+    async def send_rich(
+        self,
+        chat_id: int,
+        markdown: str,
+    ) -> bool:
+        """Send Rich Message (Bot API sendRichMessage).
+
+        Returns False when unsupported or failed; caller falls back.
+        """
+        if self._is_ai_target(chat_id):
+            self._log.warning(
+                "skip_ai_rich chat={}", chat_id,
+            )
+            return False
+        for attempt in range(2):
+            try:
+                await self._bot._post(
+                    "sendRichMessage",
+                    data={
+                        "chat_id": chat_id,
+                        "rich_message": {
+                            "markdown": markdown,
+                        },
+                    },
+                )
+                return True
+            except telegram.error.RetryAfter as exc:
+                if attempt == 0:
+                    await asyncio.sleep(exc.retry_after)
+                    continue
+                self._log.warning(
+                    "rich_rate_limited_giveup chat={}",
+                    chat_id,
+                )
+                return False
+            except Exception as exc:
+                head = markdown.splitlines()[0][:80] if markdown else ""
+                self._log.warning(
+                    "rich_failed chat={} err={} head={!r}",
+                    chat_id,
+                    exc,
+                    head,
+                )
+                return False
+        return False
+
     async def edit_text(
         self,
         chat_id: int,

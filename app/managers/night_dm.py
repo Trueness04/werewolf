@@ -42,7 +42,7 @@ class NightDmSender:
         lang: str,
         all_players: list[dict[str, Any]],
     ) -> None:
-        """Send role intro + optional night keyboard."""
+        """Send role intro once + per-night action prompt."""
         log = get_logger()
         uid = int(player["user_id"])
         redis = await get_redis()
@@ -58,6 +58,49 @@ class NightDmSender:
         if not role_id:
             return
         role = self._registry.create(role_id)
+        intro_key = self._keys.role_intro_sent(chat_id)
+        already_intro = await redis.sismember(
+            intro_key,
+            str(uid),
+        )
+        if not already_intro:
+            await self._send_intro(
+                chat_id,
+                uid,
+                role,
+                lang,
+                all_players,
+            )
+            await redis.sadd(intro_key, str(uid))
+        await self._maybe_send_magic(
+            chat_id,
+            uid,
+            lang,
+        )
+        if role.night1_active:
+            if not await self._skip_action(
+                chat_id,
+                uid,
+                role,
+            ):
+                await self._send_action(
+                    chat_id,
+                    uid,
+                    role,
+                    lang,
+                    all_players,
+                )
+        await redis.sadd(sent_key, str(uid))
+
+    async def _send_intro(
+        self,
+        chat_id: int,
+        uid: int,
+        role: Any,
+        lang: str,
+        all_players: list[dict[str, Any]],
+    ) -> None:
+        """Build and send one-time role intro body."""
         mk = role.message_keys
         name = self._texts.get(
             str(mk["name"]),
@@ -93,27 +136,8 @@ class NightDmSender:
             "role_dm_sent",
             chat_id=chat_id,
             user_id=uid,
-            role=role_id,
+            role=role.role_id,
         )
-        await self._maybe_send_magic(
-            chat_id,
-            uid,
-            lang,
-        )
-        if role.night1_active:
-            if not await self._skip_action(
-                chat_id,
-                uid,
-                role,
-            ):
-                await self._send_action(
-                    chat_id,
-                    uid,
-                    role,
-                    lang,
-                    all_players,
-                )
-        await redis.sadd(sent_key, str(uid))
 
     async def _maybe_send_magic(
         self,

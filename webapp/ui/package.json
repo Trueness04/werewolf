@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "iconsax-reactjs": "^0.0.8",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "react-router-dom": "^7.18.2"
@@ -21,7 +22,11 @@
     "@types/telegram-web-app": "^9.6.0",
     "@vitejs/plugin-react": "^6.0.4",
     "oxlint": "^1.75.0",
+    "puppeteer": "^25.9.0",
     "typescript": "~6.0.2",
     "vite": "^8.2.0"
+  },
+  "allowScripts": {
+    "puppeteer@25.9.0": true
   }
 }

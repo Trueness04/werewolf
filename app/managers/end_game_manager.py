@@ -224,6 +224,7 @@ class EndGameManager:
             self._keys.vote_ballots,
             self._keys.vote_sent,
             self._keys.night_sent,
+            self._keys.role_intro_sent,
             self._keys.game_flags,
             self._keys.ai_players,
             self._keys.ai_personas,

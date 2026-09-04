@@ -1,4 +1,4 @@
-{
+﻿{
   "DisabledVampireMode": "Mode vampir dinonaktifkan di grup ini.",
   "NotBotEnableGifOnGroup": "Bot tidak bisa mengirim GIF di grup ini.",
   "StartBot": "Silakan start bot terlebih dahulu.",
@@ -47,6 +47,9 @@
   "players_header_zero": "Pemain: 0",
   "ai_players_joined": "{0} AI players joined the game.",
   "game_killed": "Game cancelled by admin.",
+  "player_col": "Pemain",
+  "col_role": "Peran",
+  "roster_title": "Pemain ({0}):",
   "phase_player_list": "Living players ({0}):\n{1}",
   "phase_dead_list": "Dead players ({0}):\n{1}"
 }

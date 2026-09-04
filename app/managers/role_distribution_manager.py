@@ -113,6 +113,10 @@ class RoleDistributionManager:
             weights=self._weights,
             settings=self._settings,
         )
+        roles = await self._avoid_repeats(
+            players,
+            roles,
+        )
         self._rng.shuffle(roles)
         await self._assign(chat_id, players, roles)
         if mode == "Romantic":
@@ -187,6 +191,50 @@ class RoleDistributionManager:
                 break
             chosen.append(rid)
         return chosen
+
+    async def _avoid_repeats(
+        self,
+        players: list[dict[str, Any]],
+        roles: list[str],
+    ) -> list[str]:
+        """Swap roles so fewer players repeat last role.
+
+        Greedy: for each player whose assigned role equals
+        their previous game role, find a swap partner whose
+        role differs from both players' last roles.
+        Wolves stay wolves (swap within same team).
+        """
+        redis = await get_redis()
+        defs = self._registry.all_definitions()
+        last: dict[int, str] = {}
+        for player in players:
+            uid = int(player["user_id"])
+            raw = await redis.get(
+                self._keys.player_last_role(uid)
+            )
+            if raw:
+                last[uid] = str(raw)
+        if not last:
+            return roles
+        for i, player in enumerate(players):
+            uid = int(player["user_id"])
+            if uid not in last or roles[i] != last[uid]:
+                continue
+            for j in range(i + 1, len(players)):
+                other = int(players[j]["user_id"])
+                ri, rj = roles[i], roles[j]
+                if rj == last.get(other, rj):
+                    continue
+                if rj == last[uid]:
+                    continue
+                same_team = (
+                    defs[ri]["team"] == defs[rj]["team"]
+                )
+                if not same_team:
+                    continue
+                roles[i], roles[j] = rj, ri
+                break
+        return roles
 
     def _slice_roles(
         self,
@@ -268,6 +316,10 @@ class RoleDistributionManager:
                 roles_map[str(uid)] = role_id
                 await redis.set(
                     self._keys.player_role(uid),
+                    role_id,
+                )
+                await redis.set(
+                    self._keys.player_last_role(uid),
                     role_id,
                 )
                 await redis.set(

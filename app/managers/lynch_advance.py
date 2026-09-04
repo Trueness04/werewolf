@@ -87,7 +87,6 @@ async def advance_to_night(
     )
     await redis.delete(keys.vote_ballots(chat_id))
     await redis.delete(keys.night_actions(chat_id))
-    await redis.delete(keys.night_sent(chat_id))
     log_game_event(
         "to_night",
         chat_id=chat_id,

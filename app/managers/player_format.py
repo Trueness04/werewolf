@@ -14,7 +14,15 @@ from app.database.models.player import PlayerRow
 from app.database.session import session_scope
 from app.managers.chat_bridge import ChatBridge
 from app.managers.json_loader import load_json
+from importlib import import_module
+
 from app.managers.text_managers import TextManager
+
+# ponytail: "app.class" contains the `class` keyword — normal import
+# syntax is illegal; project-wide convention is string import_module.
+RoleRegistry = import_module(
+    "app.class.roles.registry"
+).RoleRegistry
 
 
 def player_name(item: dict[str, Any]) -> str:
@@ -123,6 +131,64 @@ async def load_game_players(
     return out
 
 
+def _cell(name: str) -> str:
+    """One-line markdown table cell; pipes neutralized."""
+    return (
+        str(name)
+        .replace("\n", " ")
+        .replace("|", "/")
+    )
+
+
+# ponytail: custom-emoji slot — fill role_id -> icon_custom_emoji_id
+# once IDs are obtained (needs premium); rich-markdown tables cannot
+# embed custom-emoji IDs, so this stays a wiring hook for now.
+ROLE_CUSTOM_EMOJI: dict[str, str] = {}
+
+
+def _role_label(
+    texts: TextManager,
+    lang: str,
+    role_id: str,
+    registry: RoleRegistry,
+) -> str:
+    """Localized role display name (emoji built in) for roster."""
+    _ = ROLE_CUSTOM_EMOJI.get(role_id, "")
+    try:
+        key = str(
+            registry.definition(role_id)
+            .get("message_keys", {})
+            .get("name", "")
+        )
+    except KeyError:
+        return role_id
+    label = texts.get(key, lang, bundle="roles") if key else ""
+    if not label or label == key:
+        return role_id
+    return label
+
+
+def _roster_markdown(
+    head: str,
+    rows: list[tuple[str, str, str]],
+    player_col: str,
+    role_col: str,
+) -> str:
+    """One Rich-Markdown table: all seats, role shown when dead."""
+    if not rows:
+        return f"**{head}**\n\n-"
+    body = "\n".join(
+        f"| {num} | {_cell(name)} | {_cell(role)} |"
+        for num, name, role in rows
+    )
+    table = (
+        f"| # | {player_col} | {role_col} |\n"
+        f"|:-:|------|------|\n"
+        f"{body}"
+    )
+    return f"**{head}**\n\n{table}"
+
+
 async def announce_roster(
     bridge: ChatBridge,
     texts: TextManager,
@@ -140,16 +206,51 @@ async def announce_roster(
     live_body = "\n".join(
         f"{i}. {n}" for i, n in enumerate(living, 1)
     ) or "-"
-    tpl = texts.get(
+    live_tpl = texts.get(
         "phase_player_list",
         lang,
         len(living),
         "\0",
         bundle=bundle,
     )
+    # Rich path: one markdown table, all seats, role revealed when dead.
+    redis = await get_redis()
+    roles_map = json.loads(
+        await redis.get(
+            RedisKeySpace().game_roles(chat_id)
+        )
+        or "{}"
+    )
+    registry = RoleRegistry()
+    rows: list[tuple[str, str, str]] = []
+    for i, item in enumerate(players, 1):
+        role_cell = ""
+        if not bool(item.get("alive", True)):
+            rid = str(
+                roles_map.get(str(item["user_id"]), "")
+            )
+            if rid:
+                role_cell = _role_label(
+                    texts, lang, rid, registry,
+                )
+        rows.append((str(i), player_name(item), role_cell))
+    rich_md = _roster_markdown(
+        head=texts.get(
+            "roster_title",
+            lang,
+            len(players),
+            bundle=bundle,
+        ),
+        rows=rows,
+        player_col=texts.get("player_col", lang, bundle=bundle),
+        role_col=texts.get("col_role", lang, bundle=bundle),
+    )
+    if await bridge.send_rich(chat_id, rich_md):
+        return
+    # Fallback: legacy two plain messages.
     await bridge.send_text(
         chat_id,
-        tpl.replace("\0", live_body, 1),
+        live_tpl.replace("\0", live_body, 1),
     )
     if dead:
         dead_body = "\n".join(

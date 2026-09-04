@@ -142,6 +142,16 @@ class RedisKeySpace:
         template = str(self._raw["night_sent"])
         return template.format(chat_id=chat_id)
 
+    def role_intro_sent(self, chat_id: int) -> str:
+        """Set of users who got role intro this game."""
+        template = str(self._raw["role_intro_sent"])
+        return template.format(chat_id=chat_id)
+
+    def player_last_role(self, user_id: int) -> str:
+        """Last game's role per user (anti-repeat)."""
+        template = str(self._raw["player_last_role"])
+        return template.format(user_id=user_id)
+
     def field(self, name: str) -> str:
         """Return configured hash field name.
 

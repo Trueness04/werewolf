@@ -239,7 +239,6 @@ class NightManager:
             chat_id,
             lang,
         )
-        await redis.delete(self._keys.night_sent(chat_id))
         await redis.delete(
             self._keys.night_actions(chat_id)
         )

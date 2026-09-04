@@ -1,17 +1,32 @@
+/* Onyx — Minimalism 3.0 × Neumorphism (dark/warm)
+   Palette locked from music-player reference: dark #0d0d0d, card #1a1a2e,
+   amber accent #f5a623 / #ff8c00. Iconsax icons. WCAG AA on dark. */
+
 :root {
-  --bg: #d9dee6;
-  --ink: #0b0d10;
-  --muted: #5c6572;
-  --line: #aeb7c4;
-  --surface: #f1f4f7;
-  --accent: #0f5f52;
-  --accent-ink: #e8f5f1;
-  --royal: #8a6f1e;
-  --danger: #9b2c2c;
+  --bg: #0d0d0d;
+  --bg-raise: #16161c;
+  --surface: #1a1a2e;
+  --surface-2: #212138;
+  --line: rgba(255, 255, 255, 0.08);
+  --ink: #f2f3f5;
+  --muted: #9a9aa7;
+  --accent: #f5a623;
+  --accent-glow: #ff8c00;
+  --accent-ink: #1a1200;
+  --royal: #c9a5ff;
+  --danger: #ff6363;
+  --ok: #4ade80;
   --font-display: "Lalezar", "Vazirmatn", sans-serif;
   --font-body: "Vazirmatn", sans-serif;
   --rail: 4.5rem;
   --max: 40rem;
+
+  /* neumorphic shadow pair on raised surfaces */
+  --neu: 8px 8px 16px rgba(0, 0, 0, 0.5), -6px -6px 14px rgba(255, 255, 255, 0.045);
+  --neu-in: inset 4px 4px 8px rgba(0, 0, 0, 0.5), inset -4px -4px 8px rgba(255, 255, 255, 0.04);
+  --neu-accent: 6px 6px 14px rgba(0, 0, 0, 0.55), -4px -4px 10px rgba(255, 255, 255, 0.05),
+    0 0 18px rgba(255, 140, 0, 0.28);
+  --radius: 1rem;
 }
 
 * {
@@ -29,9 +44,9 @@ body {
   font-family: var(--font-body);
   color: var(--ink);
   background:
-    radial-gradient(900px 420px at 0% -10%, #c5cdd8 0%, transparent 55%),
-    radial-gradient(700px 380px at 100% 0%, #b9c8c2 0%, transparent 50%),
-    linear-gradient(180deg, #e4e8ee 0%, var(--bg) 40%, #cfd6e0 100%);
+    radial-gradient(820px 420px at 85% -12%, rgba(255, 140, 0, 0.07) 0%, transparent 55%),
+    radial-gradient(700px 380px at 0% 0%, rgba(45, 27, 105, 0.35) 0%, transparent 55%),
+    var(--bg);
   background-attachment: fixed;
 }
 
@@ -45,6 +60,15 @@ select {
 a {
   color: inherit;
   text-decoration: none;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+::selection {
+  background: rgba(245, 166, 35, 0.35);
 }
 
 .shell {
@@ -61,9 +85,9 @@ a {
   justify-content: space-between;
   gap: 1rem;
   padding: 0.85rem 1.1rem 0.65rem;
-  backdrop-filter: blur(10px);
-  background: color-mix(in srgb, var(--bg) 78%, white);
-  border-bottom: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
+  backdrop-filter: blur(12px);
+  background: rgba(13, 13, 13, 0.82);
+  border-bottom: 1px solid var(--line);
 }
 
 .brand {
@@ -71,6 +95,10 @@ a {
   font-size: 1.85rem;
   line-height: 1;
   letter-spacing: -0.02em;
+  background: linear-gradient(120deg, var(--accent) 20%, var(--accent-glow) 80%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 .top-meta {
@@ -97,9 +125,11 @@ a {
 }
 
 .compose {
-  border-bottom: 1px solid var(--line);
-  padding-bottom: 0.9rem;
-  margin-bottom: 0.5rem;
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--neu);
+  padding: 0.9rem;
+  margin-bottom: 1.1rem;
 }
 
 .compose textarea {
@@ -113,8 +143,11 @@ a {
 }
 
 .feed-item {
-  padding: 0.95rem 0;
-  border-bottom: 1px solid color-mix(in srgb, var(--line) 75%, transparent);
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--neu);
+  padding: 0.9rem 0.95rem;
+  margin-bottom: 0.85rem;
 }
 
 .feed-item p {
@@ -137,11 +170,24 @@ a {
 
 .btn {
   border: 0;
-  background: var(--accent);
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-glow) 100%);
   color: var(--accent-ink);
-  padding: 0.5rem 0.95rem;
-  border-radius: 0.55rem;
+  font-weight: 600;
+  padding: 0.55rem 1.05rem;
+  border-radius: 0.75rem;
   cursor: pointer;
+  box-shadow: var(--neu-accent);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+}
+
+.btn:hover:not(:disabled) {
+  filter: brightness(1.06);
+  transform: translateY(-1px);
+}
+
+.btn:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: var(--neu-in);
 }
 
 .btn:disabled {
@@ -150,20 +196,31 @@ a {
 }
 
 .btn.ghost {
-  background: transparent;
+  background: var(--surface-2);
+  color: var(--ink);
+  box-shadow: var(--neu);
+}
+
+.btn.ghost:hover:not(:disabled) {
+  filter: none;
   color: var(--accent);
-  border: 1px solid var(--line);
 }
 
 .btn.danger {
-  background: var(--danger);
+  background: linear-gradient(135deg, #e05252 0%, var(--danger) 100%);
   color: #fff;
 }
 
 .btn.link {
   background: transparent;
   color: var(--muted);
+  box-shadow: none;
   padding: 0.25rem 0.4rem;
+}
+
+.btn.link:hover:not(:disabled) {
+  color: var(--accent);
+  transform: none;
 }
 
 .badge {
@@ -175,11 +232,16 @@ a {
 
 .field {
   width: 100%;
-  border: 1px solid var(--line);
-  background: var(--surface);
-  border-radius: 0.55rem;
-  padding: 0.65rem 0.75rem;
+  border: 0;
+  background: var(--surface-2);
+  box-shadow: var(--neu-in);
+  border-radius: 0.75rem;
+  padding: 0.65rem 0.8rem;
   color: var(--ink);
+}
+
+.field::placeholder {
+  color: var(--muted);
 }
 
 .list-row {
@@ -187,8 +249,8 @@ a {
   justify-content: space-between;
   gap: 0.75rem;
   align-items: center;
-  padding: 0.85rem 0;
-  border-bottom: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
+  padding: 0.85rem 0.2rem;
+  border-bottom: 1px solid var(--line);
 }
 
 .profile-head {
@@ -216,21 +278,25 @@ a {
   padding: 0 0.35rem;
   display: grid;
   place-items: center;
-  background: color-mix(in srgb, var(--ink) 8%, transparent);
-  border: 1px solid var(--line);
+  background: var(--surface-2);
+  box-shadow: var(--neu-in);
+  border-radius: 0.6rem;
   font-size: 0.72rem;
+  color: var(--muted);
 }
 
 .more-grid {
   display: grid;
-  gap: 0.15rem;
+  gap: 0.55rem;
 }
 
 .more-link {
   display: block;
-  padding: 0.95rem 0.15rem;
-  border-bottom: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
-  font-size: 1.05rem;
+  background: var(--surface);
+  box-shadow: var(--neu);
+  border-radius: var(--radius);
+  padding: 0.85rem 0.95rem;
+  font-size: 1.02rem;
 }
 
 .more-link span {
@@ -247,23 +313,32 @@ a {
   z-index: 20;
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  gap: 0.1rem;
-  padding: 0.35rem 0.4rem calc(0.35rem + env(safe-area-inset-bottom, 0px));
-  background: color-mix(in srgb, var(--surface) 92%, white);
+  gap: 0.25rem;
+  padding: 0.45rem 0.5rem calc(0.45rem + env(safe-area-inset-bottom, 0px));
+  background: rgba(13, 13, 13, 0.88);
+  backdrop-filter: blur(12px);
   border-top: 1px solid var(--line);
 }
 
 .rail a {
+  display: grid;
+  place-items: center;
+  gap: 0.15rem;
   text-align: center;
-  padding: 0.45rem 0.2rem;
+  padding: 0.4rem 0.2rem;
   color: var(--muted);
-  font-size: 0.78rem;
-  border-radius: 0.45rem;
+  font-size: 0.72rem;
+  border-radius: 0.7rem;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+
+.rail a:hover {
+  color: var(--ink);
 }
 
 .rail a.active {
-  color: var(--ink);
-  background: color-mix(in srgb, var(--ink) 7%, transparent);
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
   font-weight: 600;
 }
 
@@ -273,41 +348,46 @@ a {
 }
 
 .ok {
-  color: var(--accent);
+  color: var(--ok);
   margin: 0.5rem 0;
 }
 
 .admin-nav {
   display: flex;
-  gap: 0.35rem;
+  gap: 0.45rem;
   flex-wrap: wrap;
   margin-bottom: 0.9rem;
 }
 
 .admin-nav button {
-  border: 1px solid var(--line);
-  background: var(--surface);
-  padding: 0.35rem 0.65rem;
-  border-radius: 0.45rem;
+  border: 0;
+  background: var(--surface-2);
+  box-shadow: var(--neu);
+  padding: 0.4rem 0.75rem;
+  border-radius: 0.65rem;
   color: var(--muted);
   cursor: pointer;
+  transition: color 0.15s ease;
 }
 
 .admin-nav button.active {
-  background: var(--ink);
-  color: var(--surface);
-  border-color: var(--ink);
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-glow) 100%);
+  color: var(--accent-ink);
+  box-shadow: var(--neu-accent);
+  font-weight: 600;
 }
 
 .stat-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 0.55rem;
+  gap: 0.65rem;
 }
 
 .stat {
-  padding: 0.7rem 0;
-  border-bottom: 1px solid var(--line);
+  background: var(--surface);
+  box-shadow: var(--neu);
+  border-radius: var(--radius);
+  padding: 0.75rem 0.85rem;
 }
 
 .stat b {
@@ -322,4 +402,10 @@ a {
   letter-spacing: 0.04em;
   color: var(--muted);
   text-transform: uppercase;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+  }
 }
