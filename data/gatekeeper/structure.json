@@ -45,7 +45,10 @@
     "launcher.py",
     "requirements.txt",
     "nixpacks.toml",
-    "railway.json"
+    "railway.json",
+    "skills-lock.json",
+    "_textwork",
+    ".agents"
   ],
   "files": [
     "webapp/main.py",
