@@ -360,7 +360,7 @@ def _wait_polling_free(settings: Settings, attempts: int = 12) -> None:
             return
         except Conflict:
             log.warning(
-                "polling_busy attempt={} — waiting for old instance",
+                "polling_busy attempt={} — wait",
                 i,
             )
             _t.sleep(5)
