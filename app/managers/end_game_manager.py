@@ -72,6 +72,47 @@ class EndGameManager:
             winner=winner,
         )
 
+    async def _announce(
+        self,
+        chat_id: int,
+        winner: str,
+        lang: str,
+    ) -> None:
+        """Send win-list FIRST, then victory GIF+caption (Amin 0905)."""
+        bundle = str(self._codes["bundle"])
+        captions = self._codes["caption_keys"]
+        key = str(captions.get(winner, "winner_nothing"))
+        # Win-list BEFORE redis wipe: all seats, roles
+        # revealed, win/lose per player (Amin 0904).
+        from app.managers.player_format import (
+            load_game_players,
+            send_win_list,
+        )
+
+        players = await load_game_players(chat_id)
+        await send_win_list(
+            self._bridge,
+            self._texts,
+            chat_id,
+            lang,
+            players,
+            winner,
+        )
+        # Victory animation + caption — after the list.
+        gifs = self._codes.get("win_gifs", {})
+        gif = str(gifs.get(winner, "") or "")
+        if gif:
+            await self._bridge.send_animation(
+                chat_id,
+                gif,
+                self._texts.get(key, lang, bundle=bundle),
+            )
+        else:
+            await self._bridge.send_text(
+                chat_id,
+                self._texts.get(key, lang, bundle=bundle),
+            )
+
     async def kill(
         self,
         chat_id: int,
@@ -124,53 +165,6 @@ class EndGameManager:
             texts=self._texts,
             lang=self._settings.default_lang,
         )
-    async def _announce(
-        self,
-        chat_id: int,
-        winner: str,
-        lang: str,
-    ) -> None:
-        """Send winner caption + endGame list."""
-        bundle = str(self._codes["bundle"])
-        captions = self._codes["caption_keys"]
-        key = str(captions.get(winner, "winner_nothing"))
-        await self._bridge.send_text(
-            chat_id,
-            self._texts.get(key, lang, bundle=bundle),
-        )
-        alive = await self._census.alive_players(chat_id)
-        names = ", ".join(
-            str(p.get("fullname", p["user_id"]))
-            for p in alive
-        )
-        started = await self._started_at(chat_id)
-        duration = max(int(time()) - started, 0)
-        await self._bridge.send_text(
-            chat_id,
-            self._texts.get(
-                "endGame",
-                lang,
-                names or "-",
-                winner,
-                duration,
-                bundle=bundle,
-            ),
-        )
-
-    async def _started_at(self, chat_id: int) -> int:
-        """Unix start from Redis or now."""
-        redis = await get_redis()
-        raw = await redis.hget(
-            self._keys.game_hash(chat_id),
-            self._keys.field("start_game_at"),
-        )
-        if not raw:
-            return int(time())
-        try:
-            return int(raw)
-        except ValueError:
-            return int(time())
-
     async def _mark_db(
         self,
         chat_id: int,

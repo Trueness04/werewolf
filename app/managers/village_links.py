@@ -115,7 +115,7 @@ def parse_lover_pair(raw: str | None) -> tuple[int, int] | None:
 
 
 def follow_lover_deaths(ctx: dict[str, Any]) -> None:
-    """If one lover dies, other dies too."""
+    """If one lover dies, other dies too — mark lover cause."""
     pair = ctx.get("lover_pair")
     if not pair:
         return
@@ -125,10 +125,12 @@ def follow_lover_deaths(ctx: dict[str, Any]) -> None:
     a, b = parsed
     if a in ctx["deaths"] and b not in ctx["deaths"]:
         ctx["deaths"].add(b)
-        ctx["messages"].append("LoverDied")
+        ctx.setdefault("death_cause", {})[b] = "lover"
+        ctx.setdefault("lover_cause", {})[b] = a
     elif b in ctx["deaths"] and a not in ctx["deaths"]:
         ctx["deaths"].add(a)
-        ctx["messages"].append("LoverDied")
+        ctx.setdefault("death_cause", {})[a] = "lover"
+        ctx.setdefault("lover_cause", {})[a] = b
 
 
 def apply_sweetheart_love(

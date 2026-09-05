@@ -293,10 +293,18 @@ class NightSteps(
 
     async def final_deaths(self, ctx: dict[str, Any]) -> None:
         """Collect leftover kills + cult death effects."""
-        for key in ("wolf_target", "sk_target"):
+        causes = (
+            ("wolf_target", "wolf"),
+            ("sk_target", "sk"),
+        )
+        for key, cause in causes:
             target = ctx.get(key)
             if target is not None:
-                ctx["deaths"].add(int(target))
+                uid = int(target)
+                ctx["deaths"].add(uid)
+                ctx.setdefault("death_cause", {})[
+                    uid
+                ] = cause
         self._v.follow_natasha_death(ctx)
         self._v.convert_wild_child(ctx)
         self._v.promote_apprentice(ctx)

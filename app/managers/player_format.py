@@ -140,10 +140,58 @@ def _cell(name: str) -> str:
     )
 
 
+def ltr(text: str) -> str:
+    """Force LTR rendering for any text (FA/EN alike)."""
+    return f"\u2066{str(text)}\u2069"
+
+
+# ponytail: custom-emoji slot per player — filled
+# role_id/user_id -> icon_custom_emoji_id once premium
+# IDs exist; rich tables keep the column reserved.
+PLAYER_CUSTOM_EMOJI: dict[int, str] = {}
+
+
 # ponytail: custom-emoji slot — fill role_id -> icon_custom_emoji_id
 # once IDs are obtained (needs premium); rich-markdown tables cannot
 # embed custom-emoji IDs, so this stays a wiring hook for now.
 ROLE_CUSTOM_EMOJI: dict[str, str] = {}
+
+
+async def _load_custom_emojis(
+    players: list[dict[str, Any]],
+) -> None:
+    """Fill PLAYER_CUSTOM_EMOJI from Redis user prefs."""
+    redis = await get_redis()
+    keys = RedisKeySpace()
+    for item in players:
+        uid = int(item["user_id"])
+        key = keys.user_custom_emoji(uid)
+        if not key:
+            continue
+        val = await redis.get(key)
+        if val:
+            PLAYER_CUSTOM_EMOJI[uid] = str(val)
+
+
+async def set_user_custom_emoji(
+    user_id: int,
+    emoji: str,
+) -> bool:
+    """Persist one user's custom emoji (picker calls this).
+
+    Reserved emoji (roles, medals, 🥇⚫️🙂☠️) are refused.
+    """
+    from app.managers.nix_medals import is_reserved_emoji
+
+    if not emoji or is_reserved_emoji(emoji):
+        return False
+    redis = await get_redis()
+    key = RedisKeySpace().user_custom_emoji(user_id)
+    if not key:
+        return False
+    await redis.set(key, emoji)
+    PLAYER_CUSTOM_EMOJI[user_id] = emoji
+    return True
 
 
 def _role_label(
@@ -170,23 +218,82 @@ def _role_label(
 
 def _roster_markdown(
     head: str,
-    rows: list[tuple[str, str, str]],
-    player_col: str,
-    role_col: str,
+    rows: list[tuple[str, str, str, str, str]],
 ) -> str:
-    """One Rich-Markdown table: all seats, role shown when dead."""
+    """Rich-Markdown LTR table; blank titles (Amin 0904).
+
+    Row: (custom, name_with_medal, win, status, role)
+    """
     if not rows:
-        return f"**{head}**\n\n-"
+        return f"{head}\n\n-"
     body = "\n".join(
-        f"| {num} | {_cell(name)} | {_cell(role)} |"
-        for num, name, role in rows
+        "| {} | {} | {} | {} | {} |".format(
+            _cell(c), _cell(ltr(n)), _cell(w),
+            _cell(s), _cell(ltr(r)) if r else "",
+        )
+        for c, n, w, s, r in rows
     )
     table = (
-        f"| # | {player_col} | {role_col} |\n"
-        f"|:-:|------|------|\n"
+        "| | | | | |\n"
+        "|:-:|:----|:-:|:-:|:----|\n"
         f"{body}"
     )
-    return f"**{head}**\n\n{table}"
+    return f"{head}\n\n{table}"
+
+
+async def send_win_list(
+    bridge: ChatBridge,
+    texts: TextManager,
+    chat_id: int,
+    lang: str,
+    players: list[dict[str, Any]],
+    winner: str,
+) -> None:
+    """End-game table: every seat, role revealed, win flag."""
+    redis = await get_redis()
+    await _load_custom_emojis(players)
+    roles_map = json.loads(
+        await redis.get(
+            RedisKeySpace().game_roles(chat_id)
+        )
+        or "{}"
+    )
+    registry = RoleRegistry()
+    from app.managers.achievement_rewards import (
+        _player_won,
+    )
+    from app.managers.nix_medals import user_medal
+
+    rows: list[tuple[str, str, str, str, str]] = []
+    for item in players:
+        uid = int(item["user_id"])
+        rid = str(roles_map.get(str(uid), "") or "")
+        # Reveal role for ALL players in end-game list (Amin 0905 LTR)
+        role_cell = _role_label(texts, lang, rid, registry) if rid else ""
+        won = _player_won(winner, rid)
+        medal, _label = await user_medal(uid)
+        custom = PLAYER_CUSTOM_EMOJI.get(uid, "")
+        status = (
+            "🙂" if bool(item.get("alive", True)) else "☠️"
+        )
+        marker = "🥇" if won else "⚫️"
+        rows.append(
+            (
+                custom,
+                f"{player_name(item)} [{medal}]",
+                marker,
+                status,
+                role_cell,
+            )
+        )
+    # Win text is a SEPARATE gif+caption message (Amin 0905) —
+    # header stays pure: #Players (N/N)
+    head = f"#Players ({len(players)}/{len(players)})"
+    md = _roster_markdown(head, rows)
+    if not await bridge.send_rich(chat_id, md):
+        for _c, nm, w, s, r in rows:
+            line = f"{w} {nm} {s} {r}".rstrip()
+            await bridge.send_text(chat_id, ltr(line))
 
 
 async def announce_roster(
@@ -201,6 +308,7 @@ async def announce_roster(
     """Send living (+ dead) roster to the group."""
     if players is None:
         players = await load_game_players(chat_id)
+    await _load_custom_emojis(players)
     living = mention_lines(players, alive=True)
     dead = mention_lines(players, alive=False)
     live_body = "\n".join(
@@ -222,28 +330,29 @@ async def announce_roster(
         or "{}"
     )
     registry = RoleRegistry()
-    rows: list[tuple[str, str, str]] = []
-    for i, item in enumerate(players, 1):
+    rows: list[tuple[str, str, str, str, str]] = []
+    from app.managers.nix_medals import user_medal
+
+    for item in players:
+        uid = int(item["user_id"])
+        alive = bool(item.get("alive", True))
+        rid = str(roles_map.get(str(uid), "") or "")
         role_cell = ""
-        if not bool(item.get("alive", True)):
-            rid = str(
-                roles_map.get(str(item["user_id"]), "")
+        if not alive and rid:
+            role_cell = _role_label(
+                texts, lang, rid, registry,
             )
-            if rid:
-                role_cell = _role_label(
-                    texts, lang, rid, registry,
-                )
-        rows.append((str(i), player_name(item), role_cell))
+        medal, _label = await user_medal(uid)
+        custom = PLAYER_CUSTOM_EMOJI.get(uid, "")
+        status = "🙂" if alive else "☠️"
+        rows.append(
+            (custom,
+             f"{player_name(item)} [{medal}]",
+             status, role_cell)
+        )
     rich_md = _roster_markdown(
-        head=texts.get(
-            "roster_title",
-            lang,
-            len(players),
-            bundle=bundle,
-        ),
+        head=f"#Players ({len(players)})",
         rows=rows,
-        player_col=texts.get("player_col", lang, bundle=bundle),
-        role_col=texts.get("col_role", lang, bundle=bundle),
     )
     if await bridge.send_rich(chat_id, rich_md):
         return

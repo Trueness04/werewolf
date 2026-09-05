@@ -72,6 +72,7 @@ class TimerManager:
         await self._maybe_starter(chat_id, data, lang)
         await self._update_list_and_cap(chat_id, lang)
         await self._warnings(chat_id, left, lang)
+        await self._countdown(chat_id, left, lang)
         if left <= 0:
             await self._finish(chat_id, lang)
 
@@ -214,6 +215,43 @@ class TimerManager:
             self._join_url,
             self._track_delete,
         )
+
+    async def _countdown(
+        self,
+        chat_id: int,
+        left: int,
+        lang: str,
+    ) -> None:
+        """Cadenced join countdown with keyboard."""
+        if left <= 0:
+            return
+        redis = await get_redis()
+        key = self._keys.game_hash(chat_id)
+        field = self._keys.field(
+            "join_countdown_last",
+        )
+        raw = await redis.hget(key, field)
+        last = int(raw) if raw else None
+        from app.managers.timer_warnings import (
+            emit_join_countdown,
+        )
+
+        new_last = await emit_join_countdown(
+            self._bridge,
+            self._texts,
+            chat_id,
+            left,
+            lang,
+            self._join_url,
+            self._track_delete,
+            last_left=last,
+        )
+        if new_last is not None:
+            await redis.hset(
+                key,
+                field,
+                str(new_last),
+            )
 
     async def finish_join(
         self,

@@ -17,11 +17,17 @@ from app.handlers.callback_safe import answer_safe
 from app.keyboards.inline.senior_keyboard import (
     build_senior_keyboard,
 )
+from app.keyboards.inline.lobby_keyboard import (
+    build_join_keyboard,
+)
 from app.managers.end_game_manager import EndGameManager
 from app.managers.game_event import log_game_event
 from app.managers.game_state_manager import GameState
 from app.managers.json_loader import load_json
-from app.managers.lobby_extend import apply_extend
+from app.managers.lobby_extend import (
+    apply_extend,
+    format_hms,
+)
 from app.managers.session_senior import (
     is_session_senior,
     read_panel_flags,
@@ -188,7 +194,7 @@ async def _do_extend(
         deps.lobby_mgr(),
         chat_id,
         cfg,
-        cfg.extend_default_seconds,
+        60,
     )
     text = tm.get(
         "SessionSeniorExtended",
@@ -197,7 +203,18 @@ async def _do_extend(
         bundle="lobby",
     )
     await answer_safe(query, text)
-    await bridge.send_text(chat_id, str(left))
+    url = deps.join_url(chat_id)
+    keyboard = build_join_keyboard(tm, lang, url)
+    await bridge.send_text(
+        chat_id,
+        tm.get(
+            "ExtendConfirm",
+            lang,
+            format_hms(left),
+            bundle="lobby",
+        ),
+        reply_markup=keyboard,
+    )
     log_game_event(
         "session_senior_extend",
         chat_id=chat_id,

@@ -10,10 +10,56 @@ from app.keyboards.inline.lobby_keyboard import (
 )
 from app.managers.chat_bridge import ChatBridge
 from app.managers.json_loader import load_json
+from app.managers.lobby_extend import countdown_due
 from app.managers.text_managers import TextManager
 
 TrackFn = Callable[[int, int], Awaitable[None]]
 JoinUrlFn = Callable[[int], Awaitable[str]]
+
+
+async def emit_join_countdown(
+    bridge: ChatBridge,
+    texts: TextManager,
+    chat_id: int,
+    left: int,
+    lang: str,
+    join_url: JoinUrlFn,
+    track_delete: TrackFn,
+    last_left: int | None = None,
+) -> int | None:
+    """Send cadenced join countdown with keyboard.
+
+    Returns the new last_left to persist, or None when
+    nothing was announced (keep previous state).
+    """
+    announce, new_last = countdown_due(last_left, left)
+    if new_last is None:
+        return None
+    if not announce:
+        # Timer baseline reset (extend bumped left): persist
+        # without announcing.
+        return new_last
+    url = await join_url(chat_id)
+    keyboard = build_join_keyboard(texts, lang, url)
+    text = texts.get(
+        "JoinCountdown",
+        lang,
+        _fmt_mmss(new_last),
+    )
+    mid = await bridge.send_text(
+        chat_id,
+        text,
+        reply_markup=keyboard,
+    )
+    await track_delete(chat_id, mid)
+    return new_last
+
+
+def _fmt_mmss(seconds: int) -> str:
+    """Render seconds as MM:SS."""
+    seconds = max(0, int(seconds))
+    minutes, secs = divmod(seconds, 60)
+    return f"{minutes:02d}:{secs:02d}"
 
 
 async def emit_join_warnings(

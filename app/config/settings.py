@@ -125,6 +125,10 @@ class Settings(BaseSettings):
         default="",
         alias="CHARGE_VERIFY_SECRET",
     )
+    log_group_id: int | None = Field(
+        default=None,
+        alias="LOG_GROUP_ID",
+    )
 
     def sudo_id_set(self) -> set[int]:
         """Parse comma-separated Telegram sudo user ids."""

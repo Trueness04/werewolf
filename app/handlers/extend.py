@@ -7,12 +7,19 @@ from telegram.ext import ContextTypes
 
 from app.filters import game_filters
 from app.handlers import deps
+from app.keyboards.inline.lobby_keyboard import (
+    build_join_keyboard,
+)
 from app.managers.game_event import log_game_event
 from app.managers.game_state_manager import (
     GameState,
     GroupInactive,
 )
-from app.managers.lobby_extend import apply_extend
+from app.managers.lobby_extend import (
+    apply_extend,
+    format_hms,
+    is_allowed_extend,
+)
 
 
 async def extend_join(
@@ -63,6 +70,20 @@ async def extend_join(
         update.message.text or "",
         cfg.extend_default_seconds,
     )
+    if not is_allowed_extend(delta):
+        await context.bot.send_message(
+            chat_id=chat.id,
+            text=tm.get(
+                "ExtendInvalidAmount",
+                lang,
+                "، ".join(
+                    str(v) for v in (
+                        30, 60, 90, 120, 160, 180, 300,
+                    )
+                ),
+            ),
+        )
+        return
     if delta < 0 and not is_admin:
         await context.bot.send_message(
             chat_id=chat.id,
@@ -77,9 +98,16 @@ async def extend_join(
     )
     if left <= 0:
         return
+    url = deps.join_url(chat.id)
+    keyboard = build_join_keyboard(tm, lang, url)
     await context.bot.send_message(
         chat_id=chat.id,
-        text=str(left),
+        text=tm.get(
+            "ExtendConfirm",
+            lang,
+            format_hms(left),
+        ),
+        reply_markup=keyboard,
     )
     log_game_event(
         "extend",

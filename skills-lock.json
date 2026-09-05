@@ -1,11 +1,23 @@
 {
   "version": 1,
   "skills": {
+    "autonomous-agent-patterns": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "skillPath": "cli-tool/components/skills/ai-research/autonomous-agent-patterns/SKILL.md",
+      "computedHash": "bd9e83addd9d65f2ee4eb11a0dcb47079532d76ee8df17bd859b2b52007eb4ed"
+    },
     "railway-deployment": {
       "source": "davila7/claude-code-templates",
       "sourceType": "github",
       "skillPath": "cli-tool/components/skills/railway/deployment/SKILL.md",
       "computedHash": "e30caa1a0235dd93a40e1cac3312e9e291dc337a6352a23ed06bedf809b4736d"
+    },
+    "workflow-orchestration-patterns": {
+      "source": "wshobson/agents",
+      "sourceType": "github",
+      "skillPath": "plugins/backend-development/skills/workflow-orchestration-patterns/SKILL.md",
+      "computedHash": "5c300d6d3241235a765a637c2953faf1ff2b2db4be54038056c6db6d9ff4ce1c"
     }
   }
 }

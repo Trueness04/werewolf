@@ -13,5 +13,9 @@
     "black": "win_black",
     "dinamit": "win_dinamit"
   },
-  "bundle": "night"
+  "bundle": "night",
+  "win_gifs": {
+    "wolf": "https://media.giphy.com/media/rYsvsMUHQncGojmExI/giphy.gif",
+    "rosta": "https://media.giphy.com/media/doPrWYzSG1Vao/giphy.gif"
+  }
 }

@@ -152,5 +152,6 @@
     "vampire_role_on": "VampireRoleOn",
     "bloodthirsty_role_on": "BloodthirstyRoleOn",
     "senior_panel_sent": "SeniorPanelSent"
-  }
+  },
+  "user_custom_emoji": "user:{user_id}:custom_emoji"
 }

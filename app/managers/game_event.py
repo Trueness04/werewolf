@@ -37,6 +37,22 @@ def log_game_event(
     )
 
 
+async def log_to_group(
+    bridge: Any,
+    text: str,
+) -> None:
+    """Send debug text to LOG_GROUP_ID if set."""
+    from app.config.settings import get_settings
+
+    gid = get_settings().log_group_id
+    if not gid:
+        return
+    try:
+        await bridge.send_text(int(gid), text)
+    except Exception:
+        pass
+
+
 def log_debug_tick(
     chat_id: int,
     left_time: int,

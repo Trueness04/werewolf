@@ -137,6 +137,13 @@ class RedisKeySpace:
         template = str(self._raw["player_state"])
         return template.format(user_id=user_id)
 
+    def user_custom_emoji(self, user_id: int) -> str:
+        """Per-user custom-emoji preference key."""
+        template = str(self._raw.get("user_custom_emoji", ""))
+        if not template:
+            return ""
+        return template.format(user_id=user_id)
+
     def night_sent(self, chat_id: int) -> str:
         """Set of users who received night DM."""
         template = str(self._raw["night_sent"])

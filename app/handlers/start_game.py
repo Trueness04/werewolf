@@ -262,11 +262,10 @@ async def _start_new(
         caption = f"{caption}\n{group.settext_start}"
     bridge = deps.bridge(context)
     video_id: int | None = None
+    _urls = load_json(URL_TEMPLATES)
     gif = group.start_gif or str(
-        load_json(URL_TEMPLATES).get(
-            "default_start_gif",
-            "",
-        )
+        _urls.get("default_start_gifs", {}).get(mode, "")
+        or _urls.get("default_start_gif", "")
     )
     if gif:
         try:

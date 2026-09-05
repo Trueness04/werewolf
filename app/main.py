@@ -204,6 +204,24 @@ async def _post_init(app: Application) -> None:
     )
 
 
+async def _safe_ai_tick(
+    ai_bridge: object,
+    log: object,
+) -> None:
+    """Run AI tick guarded; never break phase loop."""
+    from AI.runner import tick_ai_agents
+
+    try:
+        await asyncio.wait_for(
+            tick_ai_agents(ai_bridge),
+            timeout=10,
+        )
+    except asyncio.TimeoutError:
+        log.warning("ai_tick_timeout after 10s")
+    except Exception as exc:
+        log.warning("ai_tick_failed err={err}", err=str(exc))
+
+
 async def _tick_loop(
     app: Application,
     interval: float,
@@ -217,7 +235,11 @@ async def _tick_loop(
             from AI.sender import build_ai_bridge
 
             ai_bridge = build_ai_bridge() or bridge
-            await tick_ai_agents(ai_bridge)
+            # AI on a separate task so an LLM hang
+            # never stalls the phase tick loop.
+            asyncio.create_task(
+                _safe_ai_tick(ai_bridge, log)
+            )
             await tick_end_checks(bridge)
             await tick_active_nights(bridge)
             await tick_active_days(bridge)
