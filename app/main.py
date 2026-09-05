@@ -105,6 +105,7 @@ from app.managers.phase_ticker import (
 from app.managers.timer_manager import TimerManager
 from AI.runner import tick_ai_agents
 from app.handlers.ai_toggle import ai_command
+from app.handlers.hotfix_handler import hotfix_command
 
 
 def _cmd(app: Application, cmds: dict, key: str, handler) -> None:
@@ -142,6 +143,7 @@ def _register_handlers(app: Application) -> None:
     _cmd(app, cmds, "coin", coin_pack_command)
     _cmd(app, cmds, "sudo", sudo_command)
     _cmd(app, cmds, "ai_toggle", ai_command)
+    _cmd(app, cmds, "hotfix", hotfix_command)
     _cmd(app, cmds, "myhero", myhero_command)
     _cmd(app, cmds, "achievement", achievement_command)
     _cmd(app, cmds, "onlinegame", onlinegame_command)

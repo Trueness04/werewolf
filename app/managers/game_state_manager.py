@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from enum import IntEnum
+from json import loads as json_loads
 from time import time
 
 from sqlalchemy import select
@@ -100,6 +101,11 @@ class GameStateManager:
                 )
                 return row
         if row.status != active:
+            log_game_event(
+                "group_inactive_skip",
+                chat_id=chat_id,
+                status=row.status,
+            )
             return None
         return row
 
@@ -170,12 +176,61 @@ class GameStateManager:
         chat_id: int,
         reason: str,
     ) -> None:
-        """Clear live Redis lobby and active set."""
+        """Clear all live Redis lobby keys — no orphans."""
         redis = await get_redis()
-        key = self._keys.game_hash(chat_id)
-        await redis.delete(key)
-        active = self._keys.active_join_chats()
-        await redis.srem(active, str(chat_id))
+        cid = str(chat_id)
+        try:
+            players_raw = await redis.get(self._keys.game_players(chat_id))
+            players = json_loads(players_raw) if players_raw else []
+            for item in players:
+                uid = int(item["user_id"])
+                await redis.delete(self._keys.join_user(uid))
+                await redis.delete(self._keys.player_state(uid))
+                await redis.delete(self._keys.player_role(uid))
+        except Exception as e:
+            log_game_event(
+                "lobby_cleanup_err",
+                chat_id=chat_id,
+                detail=f"player_keys: {e}",
+            )
+        for method in (
+            self._keys.game_hash,
+            self._keys.game_players,
+            self._keys.game_roles,
+            self._keys.night_actions,
+            self._keys.day_actions,
+            self._keys.day_sent,
+            self._keys.vote_ballots,
+            self._keys.vote_sent,
+            self._keys.night_sent,
+            self._keys.role_intro_sent,
+            self._keys.game_flags,
+            self._keys.night_count,
+            self._keys.day_count,
+            self._keys.timer_end,
+        ):
+            try:
+                await redis.delete(method(chat_id))
+            except Exception as e:
+                log_game_event(
+                    "lobby_cleanup_err",
+                    chat_id=chat_id,
+                    detail=f"{method.__name__}: {e}",
+                )
+        for active in (
+            self._keys.active_join_chats(),
+            self._keys.active_night_chats(),
+            self._keys.active_day_chats(),
+            self._keys.active_vote_chats(),
+        ):
+            try:
+                await redis.srem(active, cid)
+            except Exception as e:
+                log_game_event(
+                    "lobby_cleanup_err",
+                    chat_id=chat_id,
+                    detail=f"active_set: {e}",
+                )
         log_game_event(
             "lobby_closed",
             chat_id=chat_id,

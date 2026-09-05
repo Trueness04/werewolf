@@ -53,7 +53,14 @@ class TimerManager:
         active = self._keys.active_join_chats()
         chats = await redis.smembers(active)
         for item in chats:
-            await self.tick(int(item))
+            try:
+                await self.tick(int(item))
+            except Exception as exc:
+                log_game_event(
+                    "tick_error",
+                    chat_id=int(item),
+                    error=f"{type(exc).__name__}: {exc}",
+                )
 
     async def tick(self, chat_id: int) -> None:
         """One join::Handel iteration for a chat."""
