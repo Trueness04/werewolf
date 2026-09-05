@@ -348,13 +348,33 @@ async def announce_roster(
         rows.append(
             (custom,
              f"{player_name(item)} [{medal}]",
+             "",  # win column — roster has no win flag
              status, role_cell)
         )
-    rich_md = _roster_markdown(
-        head=f"#Players ({len(players)})",
-        rows=rows,
-    )
-    if await bridge.send_rich(chat_id, rich_md):
+    try:
+        rich_md = _roster_markdown(
+            head=f"#Players ({len(players)})",
+            rows=rows,
+        )
+    except Exception:
+        # Never let a formatting bug kill the flow — fall back to plain text
+        # and mirror the error to LOG_GROUP_ID (loguru + Telegram).
+        import logging
+        import traceback
+        logging.getLogger(__name__).exception(
+            "roster markdown build failed chat=%s", chat_id,
+        )
+        try:
+            from app.managers.game_event import log_to_group
+            await log_to_group(
+                bridge,
+                f"⚠️ roster build failed chat={chat_id}\n"
+                f"<pre>{traceback.format_exc()[-1500:]}</pre>",
+            )
+        except Exception:
+            pass
+        rich_md = None
+    if rich_md and await bridge.send_rich(chat_id, rich_md):
         return
     # Fallback: legacy two plain messages.
     await bridge.send_text(
