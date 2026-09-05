@@ -335,5 +335,33 @@ def run(settings: Settings) -> None:
     application.bot_data["settings"] = settings
     _register_handlers(application)
     application.add_error_handler(_telegram_error_handler)
+    _wait_polling_free(settings)
     log.info("bot_polling_start")
-    application.run_polling()
+    application.run_polling(
+        drop_pending_updates=True,
+        close_loop=False,
+    )
+
+
+def _wait_polling_free(settings: Settings, attempts: int = 12) -> None:
+    """Block until no other instance holds getUpdates (409-safe)."""
+    import time as _t
+
+    from telegram import Bot
+    from telegram.error import Conflict
+
+    bot = Bot(settings.bot_token)
+    loop = asyncio.get_event_loop()
+    for i in range(attempts):
+        try:
+            loop.run_until_complete(
+                bot.get_updates(timeout=0, offset=-1),
+            )
+            return
+        except Conflict:
+            log.warning(
+                "polling_busy attempt={} — waiting for old instance",
+                i,
+            )
+            _t.sleep(5)
+    # Last try passed through — let run_polling surface it.
