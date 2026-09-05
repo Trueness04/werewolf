@@ -30,25 +30,31 @@ async def night_callback(
     """Store night action from inline callback."""
     query = update.callback_query
     if query is None or query.data is None:
+        log_game_event("night_cb_no_query")
         return
     user = update.effective_user
     if user is None:
+        log_game_event("night_cb_no_user")
         return
     await answer_safe(query)
     tpl = load_json(CALLBACK_TEMPLATES)
     prefix = str(tpl["prefix"])
     data = query.data
     if not data.startswith(prefix):
+        log_game_event("night_cb_bad_prefix", data=data[:20])
         return
     parts = data.split(":")
     if len(parts) < 4:
+        log_game_event("night_cb_parts", count=len(parts))
         return
     try:
         chat_id = int(parts[1])
         actor = int(parts[2])
-    except ValueError:
+    except ValueError as exc:
+        log_game_event("night_cb_parse_err", parts=parts[:3], error=str(exc))
         return
     if actor != user.id:
+        log_game_event("night_cb_actor_mismatch", actor=actor, user=user.id)
         return
     await _night_apply(
         update,

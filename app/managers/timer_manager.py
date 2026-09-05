@@ -61,6 +61,12 @@ class TimerManager:
                     chat_id=int(item),
                     error=f"{type(exc).__name__}: {exc}",
                 )
+        # Periodic orphan cleanup (every call for now, can throttle later)
+        try:
+            from app.managers.orphan_cleaner import clean_orphaned_keys
+            await clean_orphaned_keys()
+        except Exception as exc:
+            log_game_event("orphan_clean_err", error=str(exc))
 
     async def tick(self, chat_id: int) -> None:
         """One join::Handel iteration for a chat."""
