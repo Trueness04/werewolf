@@ -10,10 +10,7 @@ from sqlalchemy import select
 
 from app.cache.redis_client import get_redis
 from app.cache.redis_keys import RedisKeySpace
-from app.config.paths import (
-    ROLE_FILL,
-    ROLE_WEIGHTS,
-)
+from app.config.paths import ROLE_FILL, ROLE_WEIGHTS
 from app.config.settings import Settings, get_settings
 from app.database.models.player import PlayerRow
 from app.database.session import session_scope
@@ -64,9 +61,7 @@ class RoleDistributionManager:
             count=len(players),
         )
         if mode == "Foolish":
-            from app.managers.role_mode_specials import (
-                foolish_roles,
-            )
+            from app.managers.role_mode_specials import foolish_roles
 
             roles = foolish_roles(len(players))
             self._rng.shuffle(roles)
@@ -75,8 +70,7 @@ class RoleDistributionManager:
                 await self._night_starter(chat_id)
             return
         from app.managers.role_pool_filter import (
-            load_mode_pool,
-            lookup_wolf_count,
+            load_mode_pool, lookup_wolf_count,
         )
 
         pool = load_mode_pool(mode, len(players))
@@ -87,8 +81,7 @@ class RoleDistributionManager:
             len(players),
         )
         from app.managers.role_pool_fillers import (
-            append_end_fillers,
-            inject_vampires,
+            append_end_fillers, inject_vampires,
         )
 
         selected = append_end_fillers(
@@ -104,9 +97,7 @@ class RoleDistributionManager:
             mode,
         )
         roles = self._slice_roles(selected, len(players))
-        from app.managers.role_forced import (
-            force_role_pairs,
-        )
+        from app.managers.role_forced import force_role_pairs
 
         roles = force_role_pairs(roles, self._rng)
         roles = balance_roles(
@@ -122,9 +113,7 @@ class RoleDistributionManager:
         self._rng.shuffle(roles)
         await self._assign(chat_id, players, roles)
         if mode == "Romantic":
-            from app.managers.role_mode_specials import (
-                romantic_pairs,
-            )
+            from app.managers.role_mode_specials import romantic_pairs
 
             await romantic_pairs(
                 chat_id,
@@ -199,13 +188,7 @@ class RoleDistributionManager:
         players: list[dict[str, Any]],
         roles: list[str],
     ) -> list[str]:
-        """Swap roles so fewer players repeat last role.
-
-        Greedy: for each player whose assigned role equals
-        their previous game role, find a swap partner whose
-        role differs from both players' last roles.
-        Wolves stay wolves (swap within same team).
-        """
+        """Swap so fewer players repeat last role (greedy)."""
         redis = await get_redis()
         defs = self._registry.all_definitions()
         last: dict[int, str] = {}
@@ -266,12 +249,7 @@ class RoleDistributionManager:
         last: dict[int, str],
         defs: dict[str, Any],
     ) -> bool:
-        """3-way rotation: i<-j<-k<-i, same team, no repeats.
-
-        Used when pairwise swap fails because i's only
-        same-team partner(s) would either hand i back its
-        own last role or would themselves repeat.
-        """
+        """3-way rotation i<-j<-k<-i, same team, no repeats."""
         uid = int(players[i]["user_id"])
         team = defs[roles[i]]["team"]
         same_team_idx = [
@@ -292,9 +270,7 @@ class RoleDistributionManager:
                 if roles[k] == last.get(rj_uid, ""):
                     continue
                 roles[i], roles[j], roles[k] = (
-                    roles[j],
-                    roles[k],
-                    roles[i],
+                    roles[j], roles[k], roles[i],
                 )
                 return True
         return False
@@ -330,19 +306,12 @@ class RoleDistributionManager:
         return out[:need]
 
     def _pad_role(self, current: list[str]) -> str:
-        """Pick a low-weight rosta filler for an empty seat.
-
-        Uses balance_fallback_roles, skipping uniques that
-        are already picked; role_villager only as the very
-        last resort if nothing usable remains.
-        """
+        """Low-weight villager-team filler for an empty seat."""
         defs = self._registry.all_definitions()
         fill = load_json(ROLE_FILL)
-        pool = list(
-            fill.get(
-                "balance_fallback_roles",
-                ["role_villager"],
-            )
+        pool = fill.get(
+            "balance_fallback_roles",
+            ["role_villager"],
         )
         usable = [
             rid
@@ -355,9 +324,10 @@ class RoleDistributionManager:
                 and rid in current
             )
         ]
-        if usable:
-            return self._rng.choice(usable)
-        return "role_villager"
+        return (
+            self._rng.choice(usable) if usable
+            else "role_villager"
+        )
 
     async def _assign(
         self,
@@ -440,7 +410,6 @@ class RoleDistributionManager:
         role_vals = set(roles_map.values())
         if "role_dynamite" in role_vals:
             from random import SystemRandom
-
             pool = [int(u) for u in roles_map]
             SystemRandom().shuffle(pool)
             parts = pool[: min(4, len(pool))]
