@@ -1,7 +1,8 @@
-"""loguru setup for app/debug/games sinks."""
+"""loguru setup for app/debug/games/telegram sinks."""
 
 from __future__ import annotations
 
+import asyncio
 import sys
 from typing import Any
 
@@ -13,6 +14,88 @@ from app.managers.logging_settings import (
 )
 
 _configured = False
+
+# Levels forwarded to the Telegram log group (console parity:
+# INFO + WARNING + ERROR/CRITICAL; DEBUG stays console-only).
+_TG_LEVEL = "INFO"
+
+# Bounded async queue → telegram sender; never blocks the app.
+_tg_queue: asyncio.Queue | None = None
+_TG_QUEUE_MAX = 200
+
+_FMT_COMPACT = (
+    "<c>{time:HH:mm:ss}</c> <b>{level.name}</b> "
+    "{name}:{function} — {message}"
+)
+
+
+def _tg_sender_loop(queue: asyncio.Queue) -> None:
+    """Drain the log queue into the Telegram log group."""
+
+    async def _run() -> None:
+        from app.cache.redis_client import get_redis  # noqa: F401
+
+        while True:
+            record = await queue.get()
+            try:
+                await _send_record(record)
+            except Exception:
+                pass  # logging must never crash the app
+            finally:
+                queue.task_done()
+
+    asyncio.ensure_future(_run())
+
+
+async def _send_record(record: dict[str, Any]) -> None:
+    """Send one formatted record to LOG_GROUP_ID."""
+    from app.config.settings import get_settings
+    from telegram import Bot
+
+    gid = get_settings().log_group_id
+    if not gid:
+        return
+    token = str(get_settings().bot_token or "").strip()
+    if not token:
+        return
+    text = _FMT_COMPACT.format(
+        time=record["time"],
+        level=record["level"],
+        name=record["name"],
+        function=record["function"],
+        message=record["message"],
+    )
+    exc = record.get("exception")
+    if exc:
+        text += f"\n<pre>{str(exc)[-1200:]}</pre>"
+    if len(text) > 3800:
+        text = text[:3800] + "…"
+    bot = Bot(token=token)
+    await bot.send_message(
+        chat_id=int(gid),
+        text=text,
+        parse_mode="HTML",
+    )
+
+
+def _add_telegram_sink(cfg: LoggingConfig) -> None:
+    """Attach a queue-backed sink that mirrors logs to Telegram."""
+    global _tg_queue
+
+    def _sink(message: Any) -> None:
+        global _tg_queue
+        if _tg_queue is None:
+            try:
+                _tg_queue = asyncio.Queue(maxsize=_TG_QUEUE_MAX)
+                _tg_sender_loop(_tg_queue)
+            except Exception:
+                return  # no running loop yet — skip
+        record = message.record
+        if _tg_queue.full():
+            return  # drop instead of blocking the app
+        _tg_queue.put_nowait(record)
+
+    logger.add(_sink, level=_TG_LEVEL)
 
 
 def setup_loguru(debug_mode: bool = False) -> None:
@@ -41,6 +124,7 @@ def setup_loguru(debug_mode: bool = False) -> None:
         "games",
         filter_games=True,
     )
+    _add_telegram_sink(cfg)
     _configured = True
 
 
