@@ -259,9 +259,6 @@ async def send_win_list(
         or "{}"
     )
     registry = RoleRegistry()
-    from app.managers.achievement_rewards import (
-        _player_won,
-    )
     from app.managers.nix_medals import user_medal
 
     rows: list[tuple[str, str, str, str, str]] = []
@@ -270,18 +267,17 @@ async def send_win_list(
         rid = str(roles_map.get(str(uid), "") or "")
         # Reveal role for ALL players in end-game list (Amin 0905 LTR)
         role_cell = _role_label(texts, lang, rid, registry) if rid else ""
-        won = _player_won(winner, rid)
         medal, _label = await user_medal(uid)
         custom = PLAYER_CUSTOM_EMOJI.get(uid, "")
-        status = (
-            "🙂" if bool(item.get("alive", True)) else "☠️"
-        )
-        marker = "🥇" if won else "⚫️"
+        alive = bool(item.get("alive", True))
+        # Amin 0905 final: status 🙂 alive / 🪦 dead —
+        # no winner 🎉, no ⚫️, no 🥇 in status column.
+        status = "🙂" if alive else "🪦"
         rows.append(
             (
                 custom,
                 f"{player_name(item)} [{medal}]",
-                marker,
+                "",
                 status,
                 role_cell,
             )
