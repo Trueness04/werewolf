@@ -5,6 +5,7 @@ from __future__ import annotations
 import asyncio
 import sys
 import threading
+import time
 import traceback
 
 from telegram import BotCommand, Update
@@ -317,7 +318,7 @@ async def _telegram_error_handler(
 
 
 def run(settings: Settings) -> None:
-    """Start telegram bot runtime."""
+    """Start telegram bot runtime (Conflict-resilient)."""
     setup_loguru(settings.debug_mode)
     log = get_logger()
     # Python 3.12+ may have no default loop for PTB.
@@ -335,33 +336,24 @@ def run(settings: Settings) -> None:
     application.bot_data["settings"] = settings
     _register_handlers(application)
     application.add_error_handler(_telegram_error_handler)
-    _wait_polling_free(settings)
     log.info("bot_polling_start")
-    application.run_polling(
-        drop_pending_updates=True,
-        close_loop=False,
-    )
+    # PTB's updater dies on a single 409 Conflict (e.g. deploy overlap
+    # or any other getUpdates client). Wrap: on Conflict, wait and rerun.
+    from telegram.error import Conflict as _C
 
-
-def _wait_polling_free(settings: Settings, attempts: int = 12) -> None:
-    """Block until no other instance holds getUpdates (409-safe)."""
-    import time as _t
-
-    from telegram import Bot
-    from telegram.error import Conflict
-
-    bot = Bot(settings.bot_token)
-    loop = asyncio.get_event_loop()
-    for i in range(attempts):
+    delay_s = 15
+    while True:
         try:
-            loop.run_until_complete(
-                bot.get_updates(timeout=0, offset=-1),
+            application.run_polling(
+                drop_pending_updates=True,
+                close_loop=False,
             )
             return
-        except Conflict:
-            log.warning(
-                "polling_busy attempt={} — wait",
-                i,
-            )
-            _t.sleep(5)
-    # Last try passed through — let run_polling surface it.
+        except _C:
+            log.warning("polling_conflict — retry in {}s", delay_s)
+            time.sleep(delay_s)
+        except SystemExit:
+            raise
+        except Exception:
+            raise
+
