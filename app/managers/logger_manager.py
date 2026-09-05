@@ -35,17 +35,26 @@ _FMT_COMPACT = "".join(_FMT_PARTS)
 
 
 def _record_text(record: dict[str, Any]) -> str:
-    """Render one loguru record to Telegram HTML text."""
-    text = _FMT_COMPACT.format(
-        time=record["time"],
-        level=record["level"],
-        name=record["name"],
-        function=record["function"],
-        message=record["message"],
+    """Render one loguru record to Telegram-safe plain text."""
+    import html as _h
+
+    msg = _h.escape(str(record["message"]))
+    name = _h.escape(record["name"])
+    func = _h.escape(str(record["function"]))
+    head = (
+        record["time"].strftime("%H:%M:%S")
+        + " "
+        + record["level"].name
+        + " "
+        + name
+        + ":"
+        + func
+        + " — "
     )
+    text = head + msg
     exc = record.get("exception")
     if exc:
-        text += "\n<pre>" + str(exc)[-1200:] + "</pre>"
+        text += "\n" + str(exc)[-1200:]
     if len(text) > 3800:
         text = text[:3800] + "…"
     return text
@@ -76,10 +85,10 @@ def _sender_worker(q: _q.Queue) -> None:
                 await bot.send_message(
                     chat_id=int(gid),
                     text=_record_text(record),
-                    parse_mode="HTML",
                 )
-            except Exception:
-                pass  # logging must never crash the app
+            except Exception as e:
+                # surface failures on stderr for Railway console visibility
+                print("tg_log_sink_error:", repr(e)[:200])
             finally:
                 q.task_done()
 
