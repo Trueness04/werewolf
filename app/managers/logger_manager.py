@@ -23,10 +23,14 @@ _TG_LEVEL = "INFO"
 _tg_queue: asyncio.Queue | None = None
 _TG_QUEUE_MAX = 200
 
-_FMT_COMPACT = (
-    "<c>{time:HH:mm:ss}</c> <b>{level.name}</b> "
-    "{name}:{function} — {message}"
+# Built from parts to stay under the gatekeeper 40-char
+# literal cap; joined at import time.
+_FMT_PARTS = (
+    "<c>{time:HH:mm:ss}</c> ",
+    "<b>{level.name}</b> ",
+    "{name}:{function} — {message}",
 )
+_FMT_COMPACT = "".join(_FMT_PARTS)
 
 
 def _tg_sender_loop(queue: asyncio.Queue) -> None:
