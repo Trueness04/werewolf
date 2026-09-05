@@ -95,6 +95,8 @@ class RoleDistributionManager:
             selected,
             len(players),
             mode,
+            feramason_on=False,
+            rosta_on=False,
         )
         selected = inject_vampires(
             selected,
@@ -220,21 +222,82 @@ class RoleDistributionManager:
             uid = int(player["user_id"])
             if uid not in last or roles[i] != last[uid]:
                 continue
-            for j in range(i + 1, len(players)):
-                other = int(players[j]["user_id"])
-                ri, rj = roles[i], roles[j]
-                if rj == last.get(other, rj):
-                    continue
-                if rj == last[uid]:
-                    continue
-                same_team = (
-                    defs[ri]["team"] == defs[rj]["team"]
-                )
-                if not same_team:
-                    continue
-                roles[i], roles[j] = rj, ri
-                break
+            if self._try_pairwise_swap(
+                i, players, roles, last, defs
+            ):
+                continue
+            # Pairwise swap has a gap: if the only same-team
+            # partner also can't take role[i] (or would hand
+            # i back its own last role), the repeat survives.
+            # A 3-way rotation covers that case.
+            self._try_rotation_swap(
+                i, players, roles, last, defs
+            )
         return roles
+
+    def _try_pairwise_swap(
+        self,
+        i: int,
+        players: list[dict[str, Any]],
+        roles: list[str],
+        last: dict[int, str],
+        defs: dict[str, Any],
+    ) -> bool:
+        """Try swapping player i's role with one later player."""
+        uid = int(players[i]["user_id"])
+        for j in range(i + 1, len(players)):
+            other = int(players[j]["user_id"])
+            ri, rj = roles[i], roles[j]
+            if rj == last.get(other, rj):
+                continue
+            if rj == last[uid]:
+                continue
+            if defs[ri]["team"] != defs[rj]["team"]:
+                continue
+            roles[i], roles[j] = rj, ri
+            return True
+        return False
+
+    def _try_rotation_swap(
+        self,
+        i: int,
+        players: list[dict[str, Any]],
+        roles: list[str],
+        last: dict[int, str],
+        defs: dict[str, Any],
+    ) -> bool:
+        """3-way rotation: i<-j<-k<-i, same team, no repeats.
+
+        Used when pairwise swap fails because i's only
+        same-team partner(s) would either hand i back its
+        own last role or would themselves repeat.
+        """
+        uid = int(players[i]["user_id"])
+        team = defs[roles[i]]["team"]
+        same_team_idx = [
+            idx
+            for idx in range(len(roles))
+            if idx != i and defs[roles[idx]]["team"] == team
+        ]
+        for j in same_team_idx:
+            rj_uid = int(players[j]["user_id"])
+            if roles[j] == last[uid]:
+                continue
+            for k in same_team_idx:
+                if k == j:
+                    continue
+                rk_uid = int(players[k]["user_id"])
+                if roles[i] == last.get(rk_uid, ""):
+                    continue
+                if roles[k] == last.get(rj_uid, ""):
+                    continue
+                roles[i], roles[j], roles[k] = (
+                    roles[j],
+                    roles[k],
+                    roles[i],
+                )
+                return True
+        return False
 
     def _slice_roles(
         self,
@@ -263,8 +326,38 @@ class RoleDistributionManager:
             if len(out) >= need:
                 break
         while len(out) < need:
-            out.append("role_villager")
+            out.append(self._pad_role(out))
         return out[:need]
+
+    def _pad_role(self, current: list[str]) -> str:
+        """Pick a low-weight rosta filler for an empty seat.
+
+        Uses balance_fallback_roles, skipping uniques that
+        are already picked; role_villager only as the very
+        last resort if nothing usable remains.
+        """
+        defs = self._registry.all_definitions()
+        fill = load_json(ROLE_FILL)
+        pool = list(
+            fill.get(
+                "balance_fallback_roles",
+                ["role_villager"],
+            )
+        )
+        usable = [
+            rid
+            for rid in pool
+            if rid in self._weights
+            and defs.get(rid, {}).get("team")
+            == "villager"
+            and not (
+                defs.get(rid, {}).get("unique")
+                and rid in current
+            )
+        ]
+        if usable:
+            return self._rng.choice(usable)
+        return "role_villager"
 
     async def _assign(
         self,

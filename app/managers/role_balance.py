@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from random import SystemRandom
 from typing import Any
 
 from app.config.paths import ROLE_FILL
@@ -12,6 +13,51 @@ from app.managers.logger_manager import get_logger
 from app.managers.role_setup_manager import (
     RoleBalanceError,
 )
+
+
+_RNG = SystemRandom()
+_BASELINE_WEIGHT = 2  # role_villager's own weight, used as target
+
+
+def _pick_fallback(
+    current: list[str],
+    defs: dict[str, Any],
+    weights: dict[str, int],
+    fallback_pool: list[str],
+    target_weight: int = _BASELINE_WEIGHT,
+    required_team: str = "villager",
+) -> str:
+    """Pick a low-impact role from fallback_pool.
+
+    Filters out unique roles already present in `current`,
+    requires defs[rid]["team"] == required_team (so a
+    mis-classified entry in the pool config, e.g. a role
+    that's actually wolf-aligned, can never silently swap
+    into a village-side slot), prefers weight within +-1 of
+    target_weight, and always falls back to role_villager if
+    the pool is empty/unusable, so this can never crash a game.
+    """
+    def usable(rid: str) -> bool:
+        if rid not in weights:
+            return False
+        if defs.get(rid, {}).get("team") != required_team:
+            return False
+        if defs.get(rid, {}).get("unique") and rid in current:
+            return False
+        return True
+
+    near = [
+        rid
+        for rid in fallback_pool
+        if usable(rid)
+        and abs(weights[rid] - target_weight) <= 1
+    ]
+    if near:
+        return _RNG.choice(near)
+    any_usable = [rid for rid in fallback_pool if usable(rid)]
+    if any_usable:
+        return _RNG.choice(any_usable)
+    return "role_villager"
 
 
 def balance_roles(
@@ -31,6 +77,9 @@ def balance_roles(
     max_v = max(
         int(fill["min_villagers"]),
         int(len(roles) * float(fill["max_villager_ratio"])),
+    )
+    fallback_pool = fill.get(
+        "balance_fallback_roles", ["role_villager"]
     )
     current = list(roles)
     for attempt in range(max_try):
@@ -60,8 +109,9 @@ def balance_roles(
             current = swap_one(
                 current,
                 defs,
+                weights,
                 from_team="wolf",
-                to_role="role_villager",
+                fallback_pool=fallback_pool,
             )
         else:
             vcount = sum(
@@ -73,6 +123,7 @@ def balance_roles(
                 current,
                 defs,
                 weights,
+                fallback_pool=fallback_pool,
             )
         if current == before:
             break
@@ -127,8 +178,9 @@ def downgrade_heaviest(
     roles: list[str],
     defs: dict[str, Any],
     weights: dict[str, int],
+    fallback_pool: list[str] | None = None,
 ) -> list[str]:
-    """Replace heaviest non-wolf with villager."""
+    """Replace heaviest non-wolf with a low-impact fallback role."""
     best_i, best_w = -1, -1
     for idx, rid in enumerate(roles):
         if defs[rid]["team"] == "wolf":
@@ -141,28 +193,31 @@ def downgrade_heaviest(
     if best_i < 0:
         return roles
     out = list(roles)
-    out[best_i] = "role_villager"
+    pool = fallback_pool or ["role_villager"]
+    out[best_i] = _pick_fallback(out, defs, weights, pool)
     return out
 
 
 def swap_one(
     roles: list[str],
     defs: dict[str, Any],
+    weights: dict[str, int],
     *,
     from_team: str,
-    to_role: str,
+    fallback_pool: list[str] | None = None,
 ) -> list[str]:
-    """Replace one role from team with to_role."""
+    """Replace one role from team with a low-impact fallback role."""
     out = list(roles)
+    pool = fallback_pool or ["role_villager"]
     for idx, rid in enumerate(out):
         if str(defs[rid]["team"]) != from_team:
             continue
         if defs[rid].get("unique"):
             continue
-        out[idx] = to_role
+        out[idx] = _pick_fallback(out, defs, weights, pool)
         return out
     for idx, rid in enumerate(out):
         if str(defs[rid]["team"]) == from_team:
-            out[idx] = to_role
+            out[idx] = _pick_fallback(out, defs, weights, pool)
             return out
     return out
