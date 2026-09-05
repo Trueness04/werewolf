@@ -19,6 +19,77 @@ from app.managers.json_loader import load_json
 from app.managers.text_managers import TextManager
 from app.managers.win_census import WinCensus
 
+# Session points per game result (senior ranking fuel),
+# scaled x10 (xp column is integer):
+# alive+winner 10, dead+winner 5, alive+loser 1,
+# dead+loser 0. (i.e. 1 / 1/2 / 0.1 / 0)
+_POINTS_WIN_ALIVE = 10
+_POINTS_WIN_DEAD = 5
+_POINTS_LOSE_ALIVE = 1
+_POINTS_LOSE_DEAD = 0
+
+
+async def _bump_session_points(
+    chat_id: int,
+    winner: str,
+    *,
+    keys: RedisKeySpace,
+) -> None:
+    """Add per-game result points to UserRow.xp."""
+    from app.database.models.user import UserRow
+    from app.managers.achievement_rewards import (
+        _player_won,
+    )
+
+    if winner in ("killed", ""):
+        return
+    redis = await get_redis()
+    players_raw = await redis.get(
+        keys.game_players(chat_id)
+    )
+    players = (
+        json.loads(players_raw) if players_raw else []
+    )
+    roles = json.loads(
+        await redis.get(keys.game_roles(chat_id))
+        or "{}"
+    )
+    bumps: dict[int, int] = {}
+    for item in players:
+        uid = int(item["user_id"])
+        if uid < 0:
+            continue
+        role = str(roles.get(str(uid)) or "")
+        won = _player_won(winner, role)
+        state = str(
+            await redis.get(keys.player_state(uid)) or ""
+        )
+        alive = state == "alive"
+        if won and alive:
+            pts = _POINTS_WIN_ALIVE
+        elif won:
+            pts = _POINTS_WIN_DEAD
+        elif alive:
+            pts = _POINTS_LOSE_ALIVE
+        else:
+            pts = _POINTS_LOSE_DEAD
+        if pts:
+            bumps[uid] = pts
+    if not bumps:
+        return
+    async with session_scope() as session:
+        for uid, pts in bumps.items():
+            row = await session.get(UserRow, uid)
+            if row is None:
+                row = UserRow(
+                    user_id=uid,
+                    fullname=str(uid),
+                    coins=0,
+                )
+                session.add(row)
+                await session.flush()
+            row.xp = int(row.xp or 0) + pts
+
 
 class EndGameManager:
     """Close a running game with a winner code."""
@@ -165,6 +236,12 @@ class EndGameManager:
             texts=self._texts,
             lang=self._settings.default_lang,
         )
+        await _bump_session_points(
+            chat_id,
+            winner,
+            keys=self._keys,
+        )
+
     async def _mark_db(
         self,
         chat_id: int,

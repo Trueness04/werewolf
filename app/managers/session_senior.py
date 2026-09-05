@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import Any
+
 from sqlalchemy import select
 
 from app.cache.redis_client import get_redis
@@ -31,7 +33,13 @@ async def pick_session_senior(
     players = await lobby.list_players(chat_id)
     if not players:
         return None
-    ids = [int(p["user_id"]) for p in players]
+    ids = [
+        int(p["user_id"])
+        for p in players
+        if int(p["user_id"]) > 0
+    ]
+    if not ids:
+        return None
     async with session_scope() as session:
         rows = (
             await session.execute(
@@ -46,7 +54,7 @@ async def pick_session_senior(
         row = by_id.get(uid)
         rank = int(row.rank) if row is not None else 1
         xp = int(row.xp) if row is not None else 0
-        return (rank, xp, -uid)
+        return (rank, xp, uid)
 
     best = max(ids, key=sort_key)
     redis = await get_redis()
@@ -280,3 +288,60 @@ async def _group_row(chat_id: int) -> GroupRow | None:
                 )
             )
         ).scalar_one_or_none()
+
+
+async def ensure_senior_at_start(
+    chat_id: int,
+    players: list[dict[str, Any]],
+    *,
+    bridge: ChatBridge,
+    keys: RedisKeySpace | None = None,
+    texts: TextManager | None = None,
+    lang: str | None = None,
+) -> int | None:
+    """Pick senior from game players at game start.
+
+    Runs after role assignment so every running game has
+    exactly one senior, even if no lobby tick fired.
+    """
+    keys = keys or RedisKeySpace()
+    ids = [
+        int(p["user_id"])
+        for p in players
+        if int(p["user_id"]) > 0
+    ]
+    if not ids:
+        return None
+    async with session_scope() as session:
+        rows = (
+            await session.execute(
+                select(UserRow).where(
+                    UserRow.user_id.in_(ids)
+                )
+            )
+        ).scalars().all()
+    by_id = {int(r.user_id): r for r in rows}
+
+    def sort_key(uid: int) -> tuple[int, int, int]:
+        row = by_id.get(uid)
+        rank = int(row.rank) if row is not None else 1
+        xp = int(row.xp) if row is not None else 0
+        return (rank, xp, uid)
+
+    best = max(ids, key=sort_key)
+    redis = await get_redis()
+    await redis.hset(
+        keys.game_flags(chat_id),
+        keys.field("session_senior"),
+        str(best),
+    )
+    await send_senior_panel(
+        chat_id,
+        best,
+        bridge=bridge,
+        texts=texts,
+        keys=keys,
+        lang=lang,
+        force=True,
+    )
+    return best

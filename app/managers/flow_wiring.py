@@ -43,5 +43,14 @@ def wire_role_assignment(
             mode,
             players,
         )
+        from app.managers.session_senior import (
+            ensure_senior_at_start,
+        )
+
+        await ensure_senior_at_start(
+            chat_id,
+            players,
+            bridge=bridge,
+        )
 
     roles.set_assign_hook(_assign)
