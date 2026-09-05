@@ -60,19 +60,31 @@ async def announce_night_results(
         role_id = str(prow.get("role")) if prow else ""
         role_name = ""
         if role_id:
+            defn = registry.definition(role_id)
+            msg_keys = defn.get("message_keys", {})
             role_name = texts.get(
-                str(registry.definition(role_id).get("message_keys", {}).get("name", "")),
+                str(msg_keys.get("name", "")),
                 lang,
                 bundle="roles",
             )
         cause = (ctx.get("death_cause") or {}).get(int(uid))
         if cause == "wolf":
-            text = texts.get("WolfKilled", lang, name, role_name, bundle="results")
+            text = texts.get(
+                "WolfKilled",
+                lang,
+                name,
+                role_name,
+                bundle="results",
+            )
         elif cause == "lover":
             from app.managers.game_event import log_to_group
 
             partner_id = (ctx.get("lover_cause") or {}).get(int(uid))
-            await log_to_group(bridge, f"[NIGHT] lover {uid}<-{partner_id} pair={ctx.get('lover_pair')}")
+            await log_to_group(
+                bridge,
+                f"[NIGHT] lover {uid}<-{partner_id}"
+                f" pair={ctx.get('lover_pair')}",
+            )
             partner_name = name
             if partner_id is not None:
                 prow2 = player(ctx, int(partner_id))
@@ -80,16 +92,47 @@ async def announce_night_results(
                 partner_name = mention_html(int(partner_id), raw2)
             short = texts.get("LoverDied", lang, bundle="results")
             if "{0}" not in short:
-                text = texts.get("LoverDied", lang, partner_name, name, role_name, bundle="general")
+                text = texts.get(
+                    "LoverDied",
+                    lang,
+                    partner_name,
+                    name,
+                    role_name,
+                    bundle="general",
+                )
             else:
-                text = texts.get("LoverDied", lang, partner_name, name, role_name, bundle="results")
+                text = texts.get(
+                    "LoverDied",
+                    lang,
+                    partner_name,
+                    name,
+                    role_name,
+                    bundle="results",
+                )
         else:
-            text = texts.get("DefaultKilled", lang, name, role_name, bundle="results")
+            text = texts.get(
+                "DefaultKilled",
+                lang,
+                name,
+                role_name,
+                bundle="results",
+            )
         await bridge.send_text(chat_id, text)
         if int(uid) < 0:
             continue
         pv_key = death_pvs.get(int(uid)) or death_pvs.get(uid)
         if pv_key:
-            await bridge.send_text(int(uid), texts.get(str(pv_key), lang, bundle="results"))
+            await bridge.send_text(
+                int(uid),
+                texts.get(str(pv_key), lang, bundle="results"),
+            )
         else:
-            await bridge.send_text(int(uid), texts.get("you_died_night", lang, role_name or name, bundle="results"))
+            await bridge.send_text(
+                int(uid),
+                texts.get(
+                    "you_died_night",
+                    lang,
+                    role_name or name,
+                    bundle="results",
+                ),
+            )
