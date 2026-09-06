@@ -121,11 +121,15 @@ async def _night_apply(
             # Second pick stores "target_id" (completes pair)
             # At night resolution, if value ends with ":1", it means pending.
             # The resolver splits at ":" and combines.
-            # To handle this simply, we append ":1" then on next pick overwrite with "target1:target2".
+            # To handle this simply, we append ":1"
+            # then on next pick overwrite with
+            # "target1:target2".
 
             # Get current stored value to check if it's the second pick
             # Redis hget returns a string or None
-            current_entry = await redis.hget(keys.night_actions(chat_id), str(actor))
+            current_entry = await redis.hget(
+                keys.night_actions(chat_id), str(actor),
+            )
 
             if current_entry and str(current_entry).endswith(":1"):
                 # This is the second pick
@@ -146,7 +150,7 @@ async def _night_apply(
                 target_id,
             )
 
-        # Regular single target handling (if not cupid or if ok_key logic needs adjustment outside the block)
+        # Regular single target handling (non-cupid only)
         if role_id != "role_elahe":
             value = str(target_id)
             ok_key = "SelectOk"

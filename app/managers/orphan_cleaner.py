@@ -36,7 +36,9 @@ async def clean_orphaned_keys() -> dict[str, int]:
     # Scan all game:* keys
     all_game_keys = await redis.keys("game:*")
     for key in all_game_keys:
-        # Extract chat_id from key like "game:-1002763212841" or "game:-1002763212841:roles"
+        # Extract chat_id from key like
+        # "game:-1002763212841" or
+        # "game:-1002763212841:roles"
         parts = key.split(":")
         if len(parts) < 2:
             continue

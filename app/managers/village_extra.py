@@ -24,9 +24,9 @@ async def resolve_cupid(ctx: dict[str, Any]) -> None:
             if len(parts) == 2:
                 a, b = int(parts[0]), int(parts[1])
             else:
-                continue # Expect exactly two parts if fully selected, ignore otherwise
-        except Exception:
-            continue
+                # Expect exactly two picks (a:b);
+                # ignore single/incomplete picks
+                continue
         except ValueError:
             continue
         if a == b:
@@ -107,7 +107,9 @@ async def resolve_babr(ctx: dict[str, Any]) -> None:
             continue
         if not item.get("alive", True):
             continue
-        raw = ctx["actions"].get(str(item["user_id"]))
+        raw = ctx["actions"].get(
+            str(item["user_id"]),
+        )
         if not raw:
             continue
         tid = int(raw)
