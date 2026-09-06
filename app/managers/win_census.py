@@ -52,7 +52,7 @@ class WinCensus:
             state = await redis.get(
                 self._keys.player_state(uid)
             )
-            if state == "dead":
+            if state in ("dead", "neutral"):
                 continue
             role_id = str(roles.get(str(uid), "") or "")
             out.append(

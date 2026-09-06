@@ -120,12 +120,13 @@ async def _kill_afk(
     roles: dict,
 ) -> None:
     redis = await get_redis()
-    await redis.set(keys.player_state(uid), "dead")
+    await redis.set(keys.player_state(uid), "neutral")
     name = str(uid)
     for row in players:
         if int(row["user_id"]) == uid:
             name = str(row["fullname"])
             row["alive"] = False
+            row["neutral"] = True
             break
     await redis.set(
         keys.game_players(chat_id),
@@ -136,7 +137,7 @@ async def _kill_afk(
     await bridge.send_text(
         chat_id,
         texts.get(
-            "afkedPlayerMessage",
+            "afkNeutralMessage",
             lang,
             name,
             role_name,

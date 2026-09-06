@@ -64,6 +64,10 @@ async def _bump_session_points(
         state = str(
             await redis.get(keys.player_state(uid)) or ""
         )
+        if state == "neutral":
+            # AFK / fugitive: win/lose is neutral —
+            # no XP either way (Amin 0906).
+            continue
         alive = state == "alive"
         if won and alive:
             pts = _POINTS_WIN_ALIVE

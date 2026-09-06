@@ -127,6 +127,8 @@ async def load_game_players(
         elif "name" not in row:
             row["name"] = player_name(row)
         row["alive"] = state != "dead"
+        if state == "neutral":
+            row["neutral"] = True
         out.append(row)
     return out
 
@@ -270,9 +272,16 @@ async def send_win_list(
         medal, _label = await user_medal(uid)
         custom = PLAYER_CUSTOM_EMOJI.get(uid, "")
         alive = bool(item.get("alive", True))
-        # Amin 0905 final: status 🙂 alive / 🪦 dead —
-        # no winner 🎉, no ⚫️, no 🥇 in status column.
-        status = "🙂" if alive else "🪦"
+        neutral = bool(item.get("neutral", False))
+        # Amin 0906: 🙂 alive / 🪦 dead /
+        # 😴 AFK / 🏃 fugitive — neutral
+        # shows as neither alive nor dead.
+        if neutral:
+            status = (
+                "🏃" if item.get("fugitive") else "😴"
+            )
+        else:
+            status = "🙂" if alive else "🪦"
         rows.append(
             (
                 custom,
