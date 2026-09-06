@@ -24,17 +24,9 @@ async def resolve_cupid(ctx: dict[str, Any]) -> None:
             if len(parts) == 2:
                 a, b = int(parts[0]), int(parts[1])
             else:
-                a = int(parts[0])
-                others = [
-                    int(p["user_id"])
-                    for p in ctx["players"]
-                    if p.get("alive", True)
-                    and int(p["user_id"])
-                    not in {a, int(item["user_id"])}
-                ]
-                if not others:
-                    continue
-                b = SystemRandom().choice(others)
+                continue # Expect exactly two parts if fully selected, ignore otherwise
+        except Exception:
+            continue
         except ValueError:
             continue
         if a == b:

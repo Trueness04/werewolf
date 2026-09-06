@@ -113,16 +113,49 @@ async def _night_apply(
             target_id = int(choice)
         except ValueError:
             return
-        value = str(target_id)
-        ok_key = "SelectOk"
-        label = await _target_name(
-            redis,
-            keys,
-            chat_id,
-            target_id,
-        )
-    else:
-        return
+
+        # Special case: Cupid gets two targets
+        if role_id == "role_elahe":
+            # Check if this is the first pick or second pick
+            # First pick stores "target_id:1" (first pending)
+            # Second pick stores "target_id" (completes pair)
+            # At night resolution, if value ends with ":1", it means pending.
+            # The resolver splits at ":" and combines.
+            # To handle this simply, we append ":1" then on next pick overwrite with "target1:target2".
+
+            # Get current stored value to check if it's the second pick
+            # Redis hget returns a string or None
+            current_entry = await redis.hget(keys.night_actions(chat_id), str(actor))
+
+            if current_entry and str(current_entry).endswith(":1"):
+                # This is the second pick
+                first_part = str(current_entry).split(":")[0]
+                value = f"{first_part}:{target_id}"
+            else:
+                # This is the first pick
+                value = f"{target_id}:1"
+                ok_key = "SelectOk_Cupid" # Or similar message
+
+        else:
+            value = str(target_id)
+            ok_key = "SelectOk"
+            label = await _target_name(
+                redis,
+                keys,
+                chat_id,
+                target_id,
+            )
+
+        # Regular single target handling (if not cupid or if ok_key logic needs adjustment outside the block)
+        if role_id != "role_elahe":
+            value = str(target_id)
+            ok_key = "SelectOk"
+            label = await _target_name(
+                redis,
+                keys,
+                chat_id,
+                target_id,
+            )
     await redis.hset(
         keys.night_actions(chat_id),
         str(actor),
