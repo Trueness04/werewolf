@@ -82,6 +82,13 @@ class RedisKeySpace:
         template = str(self._raw["game_vote_sent"])
         return template.format(chat_id=chat_id)
 
+    def vote_ui_msgs(self, chat_id: int) -> str:
+        """Hash voter_id -> vote prompt msg id."""
+        template = str(
+            self._raw["game_vote_ui_msgs"]
+        )
+        return template.format(chat_id=chat_id)
+
     def game_flags(self, chat_id: int) -> str:
         """Hash of phase flags for a game."""
         template = str(self._raw["game_flags"])

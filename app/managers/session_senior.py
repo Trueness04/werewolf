@@ -539,28 +539,16 @@ async def ensure_senior_at_start(
             )
         except Exception as exc:
             get_logger().exception(
-                "session_senior.py: ensure_senior_at_start hset senior chat={} best={} exc={}",
+                "session_senior.py:"
+                " ensure_senior_at_start hset"
+                " senior chat={} best={} exc={}",
                 chat_id,
                 best,
                 exc,
             )
-        # Once-per-game: do not force; send_senior_panel guards on senior_panel_sent
-        try:
-            await send_senior_panel(
-                chat_id,
-                best,
-                bridge=bridge,
-                texts=texts,
-                keys=keys,
-                lang=lang,
-            )
-        except Exception as exc:
-            get_logger().exception(
-                "session_senior.py: ensure_senior_at_start send_panel chat={} best={} exc={}",
-                chat_id,
-                best,
-                exc,
-            )
+        # Lobby tick already sent the panel once
+        # (senior_panel_sent flag). Start-time
+        # path must NOT resend — only pick.
         return best
     except Exception as exc:
         get_logger().exception(

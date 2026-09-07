@@ -153,9 +153,12 @@ class TimerManager:
             )
         count = await self._lobby.count_players(chat_id)
         if self._settings.enable_bot_to_bot and count > 0:
-            from AI.lobby_fill import ensure_ai_from_redis
+            from app.integrations.ai_gate import maybe_run_ai
 
-            await ensure_ai_from_redis(
+            await maybe_run_ai(
+                "AI.lobby_fill",
+                "ensure_ai_from_redis",
+                "timer_manager.py:_update_list_and_cap",
                 chat_id,
                 self._bridge,
                 self._lobby,
@@ -308,9 +311,12 @@ class TimerManager:
         info = _get_mode(mode_name)
         count = await self._lobby.count_players(chat_id)
         if count > 0 and self._settings.enable_bot_to_bot:
-            from AI.lobby_fill import ensure_ai_from_redis
+            from app.integrations.ai_gate import maybe_run_ai
 
-            await ensure_ai_from_redis(
+            await maybe_run_ai(
+                "AI.lobby_fill",
+                "ensure_ai_from_redis",
+                "timer_manager.py:_finish_body",
                 chat_id,
                 self._bridge,
                 self._lobby,

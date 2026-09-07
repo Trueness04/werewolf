@@ -16,6 +16,7 @@
   "game_day_sent": "game:{chat_id}:day_sent",
   "game_vote_ballots": "game:{chat_id}:vote_ballots",
   "game_vote_sent": "game:{chat_id}:vote_sent",
+  "game_vote_ui_msgs": "game:{chat_id}:vote_ui_msgs",
   "game_flags": "game:{chat_id}:flags",
   "game_ai_players": "game:{chat_id}:ai_players",
   "game_ai_personas": "game:{chat_id}:ai_personas",

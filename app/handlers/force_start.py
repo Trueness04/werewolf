@@ -7,11 +7,11 @@ from time import time
 from telegram import Update
 from telegram.ext import ContextTypes
 
-from AI.lobby_fill import ensure_ai_lobby_fill
 from app.cache.redis_client import get_redis
 from app.cache.redis_keys import RedisKeySpace
 from app.filters import game_filters
 from app.handlers import deps
+from app.integrations.ai_gate import maybe_run_ai
 from app.managers.game_event import log_game_event
 from app.managers.game_state_manager import (
     GameState,
@@ -62,7 +62,10 @@ async def force_start(
         keys.game_hash(chat.id),
         keys.field("game_mode"),
     )
-    await ensure_ai_lobby_fill(
+    await maybe_run_ai(
+        "AI.lobby_fill",
+        "ensure_ai_lobby_fill",
+        "force_start.py:force_start",
         chat.id,
         str(mode or "Normal"),
         bridge=bridge,

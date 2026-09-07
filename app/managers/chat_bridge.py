@@ -23,13 +23,37 @@ class ChatBridge:
         self._log = get_logger()
 
     def _ai_id_base(self) -> int | None:
-        """AI seat id base; None when unknown."""
+        """AI seat id base; None when AI is unavailable."""
         if self._ai_base is None:
             try:
-                from AI.registry import AgentRegistry
-                cfg = AgentRegistry().config
+                from app.integrations.ai_gate import ai_class
+
+                registry = ai_class(
+                    "AI.registry",
+                    "AgentRegistry",
+                    "chat_bridge.py:_ai_id_base",
+                )
+                if registry is None:
+                    raise ImportError(
+                        "AI package disabled or absent"
+                    )
+                cfg = registry().config
                 self._ai_base = int(cfg["id_base"])
-            except Exception:
+            except ImportError as exc:
+                self._log.warning(
+                    "ai_pkg_absent "
+                    "mod=AI.registry "
+                    "err={err}",
+                    err=str(exc),
+                )
+                self._ai_base = 0
+            except Exception as exc:
+                self._log.warning(
+                    "ai_cfg_unreadable "
+                    "ctx=cb "
+                    "err={err}",
+                    err=str(exc),
+                )
                 self._ai_base = 0
         if self._ai_base == 0:
             return None

@@ -56,9 +56,15 @@ class DayManager:
         phases = load_json(GAME_PHASES)
         day = str(phases["redis_phases"]["day"])
         await self._state.set_phase(chat_id, day)
-        from AI.talker import reset_day_chat_counts
+        from app.integrations.ai_gate import maybe_run_ai
 
-        await reset_day_chat_counts(chat_id, self._keys)
+        await maybe_run_ai(
+            "AI.talker",
+            "reset_day_chat_counts",
+            "day_manager.py:start_day",
+            chat_id,
+            self._keys,
+        )
         redis = await get_redis()
         key = self._keys.game_hash(chat_id)
         day_raw = await redis.get(

@@ -103,7 +103,6 @@ from app.managers.phase_ticker import (
     tick_end_checks,
 )
 from app.managers.timer_manager import TimerManager
-from AI.runner import tick_ai_agents
 from app.handlers.ai_toggle import ai_command
 from app.handlers.hotfix_handler import hotfix_command
 from app.handlers.smite_handler import smite_command
@@ -213,12 +212,21 @@ async def _safe_ai_tick(
     ai_bridge: object,
     log: object,
 ) -> None:
-    """Run AI tick guarded; never break phase loop."""
-    from AI.runner import tick_ai_agents
+    """Run AI tick guarded; never break phase loop.
+
+    Returns immediately (no-op) when the AI package is
+    absent or disabled.
+    """
+    from app.integrations.ai_gate import maybe_run_ai
 
     try:
         await asyncio.wait_for(
-            tick_ai_agents(ai_bridge),
+            maybe_run_ai(
+                "AI.runner",
+                "tick_ai_agents",
+                "main.py:_safe_ai_tick",
+                ai_bridge,
+            ),
             timeout=10,
         )
     except asyncio.TimeoutError:
@@ -237,9 +245,17 @@ async def _tick_loop(
         try:
             bridge = ChatBridge(app.bot)
             await TimerManager(bridge).tick_all()
-            from AI.sender import build_ai_bridge
+            from app.integrations.ai_gate import (
+                maybe_run_ai,
+            )
 
-            ai_bridge = build_ai_bridge() or bridge
+            ai_bridge = (
+                await maybe_run_ai(
+                    "AI.sender",
+                    "build_ai_bridge",
+                    "main.py:_tick_loop",
+                )
+            ) or bridge
             # AI on a separate task so an LLM hang
             # never stalls the phase tick loop.
             asyncio.create_task(

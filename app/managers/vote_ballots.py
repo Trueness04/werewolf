@@ -40,6 +40,18 @@ class VoteBallots:
     ) -> bool:
         """Record vote once; announce public/secret."""
         redis = await get_redis()
+        # Vote only counts while phase == vote;
+        # stale keyboards from older days
+        # must never register ballots.
+        phase = await self._state.get_phase(
+            chat_id
+        )
+        phases = load_json(GAME_PHASES)
+        vote_phase = str(
+            phases["redis_phases"]["vote"]
+        )
+        if phase != vote_phase:
+            return False
         ballots_key = self._keys.vote_ballots(chat_id)
         all_ballots = await redis.hgetall(ballots_key)
         for raw in all_ballots.values():

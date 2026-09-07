@@ -63,6 +63,36 @@ async def finish_vote_round(
         )
         trouble = None
     need_second = bool(trouble)
+    # Vote timer is over: strip stale
+    # keyboards from every player's PV
+    # so dead buttons vanish at once.
+    ui_msgs = keys.vote_ui_msgs(chat_id)
+    stored = await redis.hgetall(ui_msgs)
+    for voter_s, msg_s in stored.items():
+        try:
+            await bridge.edit_text(
+                chat_id,
+                int(msg_s),
+                texts.get(
+                    "vote_closed",
+                    lang,
+                    bundle="vote",
+                ),
+            )
+        except Exception as exc:
+            from app.managers.logger_manager import (
+                get_logger,
+            )
+
+            get_logger().warning(
+                "vote_finish.py:"
+                " close_vote_ui chat={}"
+                " voter={} exc={}",
+                chat_id,
+                voter_s,
+                exc,
+            )
+    await redis.delete(ui_msgs)
     await lynch(
         chat_id,
         winner_id=winner,

@@ -198,6 +198,10 @@ class VoteManager:
             chat_id,
         )
         sent = self._keys.vote_sent(chat_id)
+        ui_msgs = self._keys.vote_ui_msgs(
+            chat_id
+        )
+        await redis.delete(ui_msgs)
         flags = self._keys.game_flags(chat_id)
         ruler_ok = await redis.hget(
             flags,
@@ -269,7 +273,7 @@ class VoteManager:
                 if only_ruler
                 else "vote_prompt"
             )
-            await self._bridge.send_text(
+            msg_id = await self._bridge.send_text(
                 vid,
                 self._texts.get(
                     prompt,
@@ -278,6 +282,12 @@ class VoteManager:
                 ),
                 reply_markup=markup,
             )
+            if msg_id:
+                await redis.hset(
+                    ui_msgs,
+                    str(vid),
+                    str(msg_id),
+                )
             await redis.sadd(sent, str(vid))
 
     async def cast_vote(
