@@ -242,6 +242,13 @@ class NightManager:
         await redis.delete(
             self._keys.night_actions(chat_id)
         )
+        # Night DMs are per-night, not
+        # per-game: clear the sent-gate
+        # so every active role gets its
+        # action prompt again tonight.
+        await redis.delete(
+            self._keys.night_sent(chat_id)
+        )
         players = await self._load_players(chat_id)
         from app.managers.bloodmoon import (
             activate_blood_moon_night,
