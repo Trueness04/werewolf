@@ -121,8 +121,7 @@ async def _tick_loop(
         except Exception as exc:
             log.exception(
                 "phase_tick_failed"
-                " err={err}"
-                " step=end/nights/days/votes",
+                " err={err}",
                 err=str(exc),
             )
         await asyncio.sleep(interval)

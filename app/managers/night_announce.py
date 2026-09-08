@@ -25,7 +25,7 @@ async def announce_night_results(
     registry = _Registry()
     get_logger().info(
         "night_announce"
-        " group_keys={g} dm_count={d}",
+        " g={g} dm={d}",
         g=[str(m) for m in ctx["messages"]],
         d=len(ctx.get("dm_messages") or []),
     )
