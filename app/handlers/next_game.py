@@ -49,6 +49,15 @@ async def next_game_command(
         )
         return
     if state == GameState.JOINING:
+        from app.keyboards.inline.lobby_keyboard import (
+            build_join_keyboard,
+        )
+
+        kb = build_join_keyboard(
+            tm,
+            lang,
+            deps.join_url(chat.id),
+        )
         await context.bot.send_message(
             chat_id=chat.id,
             text=tm.get(
@@ -56,6 +65,7 @@ async def next_game_command(
                 lang,
                 bundle="lobby",
             ),
+            reply_markup=kb,
         )
         return
     await enqueue_next(
@@ -131,6 +141,15 @@ async def next_join_callback(
         )
         return
     if state == GameState.JOINING:
+        from app.keyboards.inline.lobby_keyboard import (
+            build_join_keyboard,
+        )
+
+        kb = build_join_keyboard(
+            tm,
+            lang,
+            deps.join_url(chat.id),
+        )
         await context.bot.send_message(
             chat_id=chat.id,
             text=tm.get(
@@ -138,6 +157,7 @@ async def next_join_callback(
                 lang,
                 bundle="lobby",
             ),
+            reply_markup=kb,
         )
         return
     await enqueue_next(
