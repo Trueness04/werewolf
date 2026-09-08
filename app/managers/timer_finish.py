@@ -5,8 +5,14 @@ from __future__ import annotations
 import json
 from time import time
 
+from importlib import import_module
+
 from app.cache.redis_client import get_redis
 from app.managers.game_event import log_game_event
+
+_get_mode = import_module(
+    "app.class.game_mode"
+).get_mode
 
 
 class TimerFinishMixin:
