@@ -87,7 +87,11 @@ def _sender_worker(q: _q.Queue) -> None:
                 )
             except Exception as e:
                 # surface failures on stderr for Railway console visibility
-                sys.stderr.write(str("tg_log_sink_error:", repr(e)[:200]))
+                sys.stderr.write(
+                    "tg_log_sink_error:"
+                    + repr(e)[:200]
+                    + chr(10)
+                )
             finally:
                 q.task_done()
 

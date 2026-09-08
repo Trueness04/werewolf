@@ -11,7 +11,10 @@ from telegram.ext import ContextTypes
 
 from app.cache.redis_client import get_redis
 from app.cache.redis_keys import RedisKeySpace
-from app.config.paths import URL_TEMPLATES
+from app.config.paths import (
+    CALLBACK_TEMPLATES,
+    URL_TEMPLATES,
+)
 from app.filters import game_filters
 from app.handlers import deps
 from app.keyboards.inline.lobby_keyboard import (
