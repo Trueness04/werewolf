@@ -37,6 +37,26 @@ def _ensure_venv():
     return str(_VENV_DIR / "Scripts" / "python.exe")
 
 
+def _materialize_env() -> None:
+    """Write data/env/.env from DEPLOY_ENV_FILE (base64) when missing."""
+    import base64
+
+    raw = os.environ.get("DEPLOY_ENV_FILE")
+    dotenv = _ENV_DIR / ".env"
+    if not raw or dotenv.is_file():
+        return
+    try:
+        dotenv.parent.mkdir(
+            parents=True, exist_ok=True
+        )
+        dotenv.write_bytes(base64.b64decode(raw))
+        print("env materialized from DEPLOY_ENV_FILE")
+    except Exception as exc:
+        print(
+            "env materialize failed:", repr(exc)
+        )
+
+
 def _kill_old_bot(token: str):
     """Kill processes running launcher.py (Windows-only)."""
     if os.name != "nt":
@@ -109,6 +129,7 @@ def _start_webapp(host: str, port: int) -> None:
 def main() -> None:
     """Gatekeeper → DB → webapp thread → Telegram bot."""
     setup_loguru(debug_mode=False)
+    _materialize_env()
     Gatekeeper().enforce()
     from app.config.settings import get_settings
     from app.main import run
