@@ -80,9 +80,9 @@ async def _ensure_database() -> None:
                 name=settings.db_name,
             )
             await conn.execute(text(stmt))
-            sys.stderr.write(str("created_db", settings.db_name))
+            sys.stderr.write("created_db." + str(settings.db_name) + chr(10))
         else:
-            sys.stderr.write(str("db_exists", settings.db_name))
+            sys.stderr.write("db_exists." + str(settings.db_name) + chr(10))
     await engine.dispose()
 
 
@@ -111,10 +111,10 @@ async def _seed_user(user_id: int) -> None:
                     coins=coins,
                 )
             )
-            sys.stderr.write(str("user_created", user_id))
+            sys.stderr.write("user_created." + str(user_id) + chr(10))
         else:
             row.coins = max(int(row.coins), coins)
-            sys.stderr.write(str("user_updated", user_id))
+            sys.stderr.write("user_updated." + str(user_id) + chr(10))
 
 
 

@@ -12,7 +12,7 @@
     "data/gatekeeper/patterns.json": "efcba15ad04883ef283de7e8d1ebf7eb3a2a6b3c9f3dd610cf041c6c98c08de1",
     "data/gatekeeper/structure.json": "c24a0233d436406d4ce8da216bd489e29ceede0b119fb8cfb39444fba660d946",
     "data/text/errors.json": "3b8bbe1beedbd91109283f24de4bf9cd05cb3b4418b5af43894a5e23b485bc38",
-    "launcher.py": "aca1126c13547c6d21797dd2670d691e1e4935904ce1c4abc3f6e45d485abd77"
+    "launcher.py": "0a9cf72b0a8e6c84b306870be6a8b1dfb1b56448fc5b708151e69ff89c189866"
   },
-  "signature": "5f8b415dd2627848099c5e5fba7c77bccb8be900c8d10ba03dbc173fc23e3f6e"
+  "signature": "f05e5ac38856568ff3dfa35e9b0f2c44ef2707db6a3ab878a1fa395f882328b9"
 }
