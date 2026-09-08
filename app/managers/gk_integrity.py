@@ -34,8 +34,23 @@ from app.config.paths import (
 from app.managers.console_manager import ConsoleManager
 from app.managers.logger_manager import get_logger
 
-# Typed by the human operator at re-baseline time.
-SEAL_WORD = "SEAL-ONYX-GATEKEEPER"
+# Seal word lives OUTSIDE the repo: env GK_SEAL_WORD or
+# ~/.onyx_gatekeeper/gk_seal_word. No source copy — an agent reading
+# the repo can never re-baseline on its own.
+
+
+def _seal_word() -> str:
+    """Load the operator seal word from env or golden dir."""
+    import os
+    from app.config.paths import GK_GOLDEN_DIR
+
+    env = os.environ.get("GK_SEAL_WORD", "").strip()
+    if env:
+        return env
+    f = GK_GOLDEN_DIR / "gk_seal_word"
+    if f.is_file():
+        return f.read_text(encoding="utf-8").strip()
+    return ""
 
 PROTECTED: tuple[str, ...] = (
     "launcher.py",
@@ -155,7 +170,7 @@ def verify() -> list[tuple[str, dict[str, str]]]:
 def write_baseline(confirmation: str) -> int:
     """Seal the protected tree; return a process exit code."""
     log = get_logger()
-    if confirmation.strip() != SEAL_WORD:
+    if confirmation.strip() != _seal_word():
         log.error("gatekeeper_seal_word_rejected")
         return 1
     GK_GOLDEN_KEY.parent.mkdir(parents=True, exist_ok=True)
