@@ -29,7 +29,8 @@
     "data/gatekeeper",
     "data/config",
     "data/docs",
-    "data/tests",
+    "app/tests",
+    "app/scripts",
     "data/archive",
     "webapp",
     "webapp/api",
@@ -75,6 +76,8 @@
     "app/managers/console_manager.py",
     "app/managers/gk_structure.py",
     "app/managers/gk_hardcoding.py",
+    "app/managers/gk_integrity.py",
+    "data/gatekeeper/integrity.json",
     "app/managers/ban_manager.py",
     "app/managers/lobby_manager.py",
     "app/managers/timer_manager.py",
@@ -180,10 +183,15 @@
     "data/config/cult_rules.json",
     "data/config/village_chances.json"
   ],
-  "app_only_files": [
+  "app_py_only": [
     "app"
   ],
   "data_no_python": [
     "data"
+  ],
+  "ignore_dirs": [
+    "__pycache__",
+    "node_modules",
+    ".pytest_cache"
   ]
 }

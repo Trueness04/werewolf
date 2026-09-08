@@ -38,5 +38,8 @@
   "select_majik_handler_pattern": "^mj:",
   "senior_action": "sr:{chat_id}:{action}:{value}",
   "senior_prefix": "sr:",
-  "senior_handler_pattern": "^sr:"
+  "senior_handler_pattern": "^sr:",
+  "next_join": "nq:{chat_id}:{user_id}",
+  "next_join_prefix": "nq:",
+  "next_join_handler_pattern": "^nq:"
 }

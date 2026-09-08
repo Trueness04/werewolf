@@ -23,6 +23,7 @@ from app.managers.game_state_manager import (
     GameStateManager,
 )
 from app.managers.json_loader import load_json
+from app.managers.logger_manager import get_logger
 from app.managers.text_managers import TextManager
 from app.managers.vote_alive import load_vote_alive
 from app.managers.vote_ballots import VoteBallots
@@ -65,6 +66,13 @@ class VoteManager:
         bump_day: bool = True,
     ) -> None:
         """Enter vote; bump day_count here (doc)."""
+        log = get_logger()
+        log.info(
+            "start_vote"
+            " ENTER c={c} bump={b}",
+            c=chat_id,
+            b=bump_day,
+        )
         lang = self._settings.default_lang
         phases = load_json(GAME_PHASES)
         vote = str(phases["redis_phases"]["vote"])

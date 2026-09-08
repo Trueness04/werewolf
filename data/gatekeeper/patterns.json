@@ -1,8 +1,17 @@
 {
-  "max_literal_length": 40,
+  "scan_roots": ["app", "AI", "webapp"],
+  "scan_files": ["launcher.py"],
+  "max_key_token_length": 48,
   "skip_docstrings": true,
   "skip_files": [
     "app/config/paths.py"
+  ],
+  "ast_rules": [
+    "inline_url",
+    "non_ascii",
+    "text_literal",
+    "long_literal",
+    "word_set"
   ],
   "rules": [
     {
@@ -34,6 +43,11 @@
       "id": "hardcoded_numeric_id",
       "flags": "",
       "pattern": "(?<![\\w.])\\d{8,}(?![\\w.])"
+    },
+    {
+      "id": "print_statement",
+      "flags": "",
+      "pattern": "\\bprint\\s*\\("
     }
   ]
 }

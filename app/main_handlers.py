@@ -65,6 +65,8 @@ from app.handlers.night_action_handler import (
 from app.handlers.next_game import (
     cancel_next_callback,
     cancel_next_pattern,
+    next_join_callback,
+    next_join_pattern,
     next_game_command,
 )
 from app.handlers.players_list import players_list
@@ -146,6 +148,7 @@ def _register_handlers(app) -> None:
     _cbq(app, config_callback, config_pattern)
     _cbq(app, senior_callback, senior_callback_pattern)
     _cbq(app, cancel_next_callback, cancel_next_pattern)
+    _cbq(app, next_join_callback, next_join_pattern)
     if get_settings().debug_mode:
         app.add_handler(
             MessageHandler(filters.COMMAND, _debug_unhandled_command),
@@ -164,7 +167,8 @@ async def _debug_unhandled_command(
     if msg is None or chat is None:
         return
     get_logger().info(
-        "cmd_seen chat={c} text={t}",
+        "cmd_seen"
+        " c={c} t={t}",
         c=chat.id,
         t=msg.text,
     )

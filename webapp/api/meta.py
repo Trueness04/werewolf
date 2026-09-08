@@ -24,7 +24,14 @@ from app.database.models.user import UserRow
 from app.database.session import session_scope
 from app.managers.rank_governor import royal_family
 from app.managers.sudo import load_sudo_cfg
+from app.managers.text_managers import TextManager
 from webapp.api.auth import current_user
+
+_texts = TextManager()
+
+
+def _wmsg(key: str, /, *args: object) -> str:
+    return _texts.get(key, "fa", *args, bundle="webapp")
 from webapp.api.helpers import (
     ensure_user,
     get_user,
@@ -208,7 +215,7 @@ async def shop_catalog() -> dict:
             settings.debug_mode or live
         ),
         "notes": data.get("notes") or {},
-        "currency_label": "تومان",
+        "currency_label": _wmsg("webapp_currency"),
     }
 
 
@@ -284,7 +291,7 @@ async def sandbox_pay_charge(
     ):
         raise HTTPException(
             403,
-            "sandbox-pay requires DEBUG_MODE or charge_live",
+            _wmsg("webapp_sandbox_guard"),
         )
     me_u = await ensure_user(tg)
     return await _credit_pending_order(
@@ -689,7 +696,7 @@ async def online_status(
         "status": str(online.get("status") or "open"),
         "message_fa": str(
             online.get("message_fa")
-            or "صف مچ‌میکینگ آماده است."
+            or _wmsg("webapp_queue_ready")
         ),
         "matchmaking": "queue",
         "queue_size": len(members),
@@ -794,7 +801,7 @@ async def create_tournament(
         (body.title or "").strip()
         or str(
             tcfg.get("title_default")
-            or "تورنمنت اونیکس"
+            or _wmsg("webapp_tournament_default")
         )
     )
     max_m = int(tcfg.get("max_members") or 32)

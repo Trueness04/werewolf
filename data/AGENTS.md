@@ -36,7 +36,7 @@ onyx/
 | `data/env/` | `.env` / requirements |
 | `data/gatekeeper/` | محدودیت‌های GK |
 | `data/docs/` | مستندات اسپرینت و تصمیم |
-| `data/tests/` | pytest |
+| `app/tests/` | pytest |
 | `data/archive/` | آرشیو خام (XML قدیمی PHP) |
 | `data/AGENTS.md` | همین منشور |
 
@@ -128,3 +128,14 @@ PTB async · PostgreSQL (+ SQLAlchemy async) · Redis · loguru · TextManager
 - docs / tests / archive در ریشه
 - شاپ کامل داخل بات
 - هاردکد راز؛ نادیده گرفتن Gatekeeper؛ کامیت خودسر
+
+---
+
+## گیت‌کیپر مهر‌شده — ممنوعیت ویرایش (قانون سخت)
+
+- فایل‌های گیت‌کیپر با مانیفست SHA-256 در `data/gatekeeper/integrity.json` قفل شده‌اند؛ کپی طلایی + کلید HMAC بیرون از ریپو در `~/.onyx_gatekeeper/` است.
+- فایل‌های گیت‌کیپر `root:root 444 + chattr +i` هستند؛ بدون sudo تغییر نمی‌کنند.
+- هر تغییری در فایل‌های محافظت‌شده (کد گیت‌کیپر، launcher.py، app/main.py، paths.py، errors.json) استارت را با `rule=integrity` fail می‌کند.
+- re-baseline فقط تعاملی: `python -m app.managers.gk_integrity --rebaseline` + تایپ کلمه مهری. ایجنت/CI (ترمینال غیرتعاملی) اجازه ندارند.
+- برای ایجنت‌ها: ویرایش فایل‌های گیت‌کیپر ممنوع. تغییر قانون فقط با تأیید کاربر و re-baseline توسط خود کاربر.
+- ساختار: تست‌ها به `app/tests/` و اسکریپت‌ها به `app/scripts/` منتقل شدند (data فقط غیر-py).

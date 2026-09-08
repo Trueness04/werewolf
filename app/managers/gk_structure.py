@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 from typing import Any, Callable
 
@@ -127,4 +128,128 @@ def check_line_length(
                         line=idx,
                     )
                 )
+    return issues
+
+
+def _walk_files(
+    rel: str,
+    ignore: set[str],
+) -> list[Path]:
+    """List files under ROOT/rel, skipping hidden/ignored."""
+    base = ROOT / rel
+    if not base.is_dir():
+        return []
+    out: list[Path] = []
+    for path in base.rglob("*"):
+        parts = path.relative_to(ROOT).parts
+        if any(
+            part.startswith(".") or part in ignore
+            for part in parts
+        ):
+            continue
+        if path.is_file():
+            out.append(path)
+    return out
+
+
+def check_app_py_only(
+    dirs: list[str],
+    ignore: set[str],
+    errors: ErrorManager,
+    issue_cls: IssueFactory,
+) -> list[Any]:
+    """Enforce: every file under app/ is a .py file."""
+    issues: list[Any] = []
+    for rel in dirs:
+        for path in _walk_files(rel, ignore):
+            if path.suffix == ".py":
+                continue
+            r = path.relative_to(ROOT).as_posix()
+            msg = errors.get(
+                "gatekeeper.structure.non_py_in_app",
+                file=r,
+            )
+            issues.append(
+                issue_cls(rule="structure", message=msg)
+            )
+    return issues
+
+
+def check_data_no_python(
+    dirs: list[str],
+    ignore: set[str],
+    errors: ErrorManager,
+    issue_cls: IssueFactory,
+) -> list[Any]:
+    """Enforce: no .py file anywhere under data/."""
+    issues: list[Any] = []
+    for rel in dirs:
+        for path in _walk_files(rel, ignore):
+            if path.suffix != ".py":
+                continue
+            r = path.relative_to(ROOT).as_posix()
+            msg = errors.get(
+                "gatekeeper.structure.py_in_data",
+                file=r,
+            )
+            issues.append(
+                issue_cls(rule="structure", message=msg)
+            )
+    return issues
+
+
+_BARE_EXCEPT = re.compile(r"^\s*except\s*:")
+
+
+def check_pep8(
+    files: list[Path],
+    rules: set[str],
+    errors: ErrorManager,
+    issue_cls: IssueFactory,
+) -> list[Any]:
+    """PEP8 subset: tabs, trailing ws, final nl, except."""
+    issues: list[Any] = []
+    for path in files:
+        rel = path.relative_to(ROOT).as_posix()
+        text = path.read_text(encoding="utf-8")
+        lines = text.splitlines()
+        hits: dict[str, tuple[int, int]] = {}
+
+        def bump(rule: str, line: int) -> None:
+            first, count = hits.get(rule, (line, 0))
+            hits[rule] = (min(first, line), count + 1)
+
+        for idx, line in enumerate(lines, start=1):
+            pad = line[: len(line) - len(line.lstrip())]
+            if "tabs_indent" in rules and "\t" in pad:
+                bump("tabs_indent", idx)
+            if (
+                "trailing_whitespace" in rules
+                and line != line.rstrip()
+            ):
+                bump("trailing_whitespace", idx)
+            if (
+                "bare_except" in rules
+                and _BARE_EXCEPT.match(line)
+            ):
+                bump("bare_except", idx)
+        if (
+            "final_newline" in rules
+            and text
+            and not text.endswith("\n")
+        ):
+            bump("final_newline", len(lines))
+        for rule, (first, count) in sorted(hits.items()):
+            msg = errors.get(
+                "gatekeeper.pep8." + rule,
+                file=rel,
+                line=first,
+                count=count,
+            )
+            issues.append(issue_cls(
+                rule="pep8",
+                message=msg,
+                file=rel,
+                line=first,
+            ))
     return issues

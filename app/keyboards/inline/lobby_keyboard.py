@@ -26,6 +26,25 @@ def build_join_keyboard(
     return InlineKeyboardMarkup([[button]])
 
 
+def build_next_keyboard(
+    texts: TextManager,
+    lang: str,
+    callback_data: str,
+) -> InlineKeyboardMarkup:
+    """Button to queue for the next game while one runs."""
+    label = texts.get(
+        "nextgame_btn",
+        lang,
+        bundle="lobby",
+    )
+    button = inline_button(
+        label,
+        style_key="cancel_nextgame",
+        callback_data=callback_data,
+    )
+    return InlineKeyboardMarkup([[button]])
+
+
 def build_cancel_next_keyboard(
     texts: TextManager,
     lang: str,

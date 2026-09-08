@@ -58,20 +58,37 @@ async def next_game_command(
             ),
         )
         return
+    await enqueue_next(
+        context.bot,
+        tm,
+        chat.id,
+        user.id,
+        lang,
+    )
+
+
+async def enqueue_next(
+    bot,
+    tm,
+    chat_id: int,
+    user_id: int,
+    lang: str,
+) -> None:
+    """Queue user for next game + send confirm keyboard."""
     mgr = NextGameManager()
-    await mgr.add(chat.id, user.id)
+    await mgr.add(chat_id, user_id)
     tpl = load_json(CALLBACK_TEMPLATES)
     data = str(tpl["cancel_nextgame"]).format(
-        chat_id=chat.id,
-        user_id=user.id,
+        chat_id=chat_id,
+        user_id=user_id,
     )
     markup = build_cancel_next_keyboard(
         tm,
         lang,
         data,
     )
-    await context.bot.send_message(
-        chat_id=chat.id,
+    await bot.send_message(
+        chat_id=chat_id,
         text=tm.get(
             "NextGame",
             lang,
@@ -81,9 +98,61 @@ async def next_game_command(
     )
     log_game_event(
         "nextgame_add",
-        chat_id=chat.id,
-        user_id=user.id,
+        chat_id=chat_id,
+        user_id=user_id,
     )
+
+
+async def next_join_callback(
+    update: Update,
+    context: ContextTypes.DEFAULT_TYPE,
+) -> None:
+    """Inline button: join the next-game queue."""
+    query = update.callback_query
+    chat = update.effective_chat
+    user = update.effective_user
+    if query is None or chat is None or user is None:
+        return
+    await answer_safe(query)
+    if not await game_filters.is_group(update):
+        return
+    lang = deps.lang_of(update)
+    tm = deps.texts()
+    try:
+        state = await deps.state_mgr().get_group_state(
+            chat.id,
+        )
+    except GroupInactive:
+        return
+    if state == GameState.NO_GAME:
+        await context.bot.send_message(
+            chat_id=chat.id,
+            text=tm.get("GameNotCreate", lang),
+        )
+        return
+    if state == GameState.JOINING:
+        await context.bot.send_message(
+            chat_id=chat.id,
+            text=tm.get(
+                "NextGameAlreadyJoin",
+                lang,
+                bundle="lobby",
+            ),
+        )
+        return
+    await enqueue_next(
+        context.bot,
+        tm,
+        chat.id,
+        user.id,
+        lang,
+    )
+
+
+def next_join_pattern() -> str:
+    """Regex for the next-queue button callback."""
+    tpl = load_json(CALLBACK_TEMPLATES)
+    return str(tpl["next_join_handler_pattern"])
 
 
 async def cancel_next_callback(

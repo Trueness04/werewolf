@@ -146,7 +146,8 @@ async def handle_start_game(
         await _remind_join(update, context, lang, True)
         return
     log.debug(
-        "sg_new c={}",
+        "sg_new"
+        " c={}",
         c=chat.id,
     )
     await _start_new(
@@ -249,6 +250,23 @@ async def _start_new(
     )
     url = deps.join_url(chat.id)
     keyboard = build_join_keyboard(tm, lang, url)
+    from app.keyboards.inline.lobby_keyboard import (
+        build_next_keyboard,
+    )
+
+    next_data = (
+        load_json(CALLBACK_TEMPLATES)
+        .get("next_join", "")
+        .format(chat_id=chat.id, user_id=user.id)
+    )
+    next_kb = build_next_keyboard(
+        tm, lang, next_data
+    )
+    rows = list(keyboard.inline_keyboard)
+    rows.extend(next_kb.inline_keyboard)
+    from telegram import InlineKeyboardMarkup
+
+    keyboard = InlineKeyboardMarkup(rows)
     mention_tpl = load_json(URL_TEMPLATES)[
         "user_mention_html"
     ]

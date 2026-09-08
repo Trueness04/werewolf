@@ -1,4 +1,10 @@
 {
   "max_file_lines": 350,
-  "max_line_length": 78
+  "max_line_length": 78,
+  "pep8_rules": [
+    "tabs_indent",
+    "trailing_whitespace",
+    "final_newline",
+    "bare_except"
+  ]
 }

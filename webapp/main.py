@@ -11,9 +11,17 @@ from fastapi.staticfiles import StaticFiles
 
 from app.database.models import social as _social  # noqa: F401
 from app.database.models import admin as _admin  # noqa: F401
+from app.managers.text_managers import TextManager
 from webapp.api.admin import router as admin_router
 from webapp.api.meta import router as meta_router
 from webapp.api.social import router as social_router
+
+_texts = TextManager()
+
+
+def _msg(key: str) -> str:
+    return _texts.get(key, "fa", bundle="webapp")
+
 
 DIST = Path(__file__).resolve().parent / "dist"
 INDEX = DIST / "index.html"
@@ -22,10 +30,7 @@ INDEX = DIST / "index.html"
 def _need_build() -> HTTPException:
     return HTTPException(
         status_code=503,
-        detail=(
-            "webapp/dist missing — "
-            "cd webapp/ui && npm run build"
-        ),
+        detail=_msg("webapp_need_build"),
     )
 
 

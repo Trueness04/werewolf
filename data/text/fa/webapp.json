@@ -1,0 +1,8 @@
+{
+  "webapp_need_build": "webapp/dist missing — cd webapp/ui && npm run build",
+  "webapp_sandbox_guard": "sandbox-pay requires DEBUG_MODE or charge_live",
+  "webapp_currency": "تومان",
+  "webapp_queue_ready": "صف مچ‌میکینگ آماده است.",
+  "webapp_tournament_default": "تورنمنت اونیکس",
+  "webapp_sponsor_default": "اسپانسر"
+}

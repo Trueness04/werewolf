@@ -23,6 +23,9 @@ from app.database.models.social import (
 )
 from app.database.models.user import UserRow
 from app.database.session import session_scope
+from app.managers.text_managers import TextManager
+
+_texts = TextManager()
 from app.managers.sudo import (
     audit,
     is_sudo,
@@ -78,7 +81,14 @@ class ChargeFixIn(BaseModel):
 
 class SponsorIn(BaseModel):
     user_id: int
-    title: str = Field(default="اسپانسر", max_length=128)
+    title: str = Field(
+        default=_texts.get(
+            "webapp_sponsor_default",
+            "fa",
+            bundle="webapp",
+        ),
+        max_length=128,
+    )
     amount_toman: int = Field(default=0, ge=0)
     active: bool = True
     note: str = Field(default="", max_length=280)

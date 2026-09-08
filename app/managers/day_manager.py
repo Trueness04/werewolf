@@ -18,6 +18,7 @@ from app.managers.day_role_ui import send_day_role_ui
 from app.managers.game_event import log_game_event
 from app.managers.game_state_manager import GameStateManager
 from app.managers.json_loader import load_json
+from app.managers.logger_manager import get_logger
 from app.managers.player_snapshot import load_enriched_players
 from app.managers.text_managers import TextManager
 from importlib import import_module
@@ -48,6 +49,12 @@ class DayManager:
 
     async def start_day(self, chat_id: int) -> None:
         """Enter day without bumping day_count."""
+        log = get_logger()
+        log.info(
+            "start_day"
+            " ENTER c={c}",
+            c=chat_id,
+        )
         lang = self._settings.default_lang
         phases = load_json(GAME_PHASES)
         day = str(phases["redis_phases"]["day"])
