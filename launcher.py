@@ -37,6 +37,28 @@ def _ensure_venv():
     return str(_VENV_DIR / "Scripts" / "python.exe")
 
 
+def _materialize_gatekeeper() -> None:
+    """Write ~/.onyx_gatekeeper golden+key from base64 env vars."""
+    import base64
+    import pathlib
+
+    home = pathlib.Path.home() / ".onyx_gatekeeper"
+    manifest = os.environ.get("GK_GOLDEN_MANIFEST_B64")
+    key = os.environ.get("GK_GOLDEN_KEY_B64")
+    if not manifest or not key:
+        return
+    try:
+        home.mkdir(parents=True, exist_ok=True)
+        (home / "manifest.json").write_bytes(
+            base64.b64decode(manifest)
+        )
+        (home / "gk.key").write_bytes(
+            base64.b64decode(key)
+        )
+    except Exception as exc:
+        print("gatekeeper materialize failed:", repr(exc))
+
+
 def _materialize_env() -> None:
     """Write data/env/.env from DEPLOY_ENV_FILE (base64) when missing."""
     import base64
@@ -130,6 +152,7 @@ def main() -> None:
     """Gatekeeper → DB → webapp thread → Telegram bot."""
     setup_loguru(debug_mode=False)
     _materialize_env()
+    _materialize_gatekeeper()
     Gatekeeper().enforce()
     from app.config.settings import get_settings
     from app.main import run
