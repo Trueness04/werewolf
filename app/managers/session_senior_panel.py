@@ -51,8 +51,8 @@ async def send_senior_panel(
     except Exception as exc:
         get_logger().exception(
             "session_senior.py:"
-            + " send_senior_panel"
-            + " hget sent chat={}"
+            + ".send_senior_panel"
+            + "hget.sent.chat={}"
             + "senior={}.exc={}",
             chat_id,
             senior_id,
@@ -72,9 +72,7 @@ async def send_senior_panel(
             )
         except Exception as exc:
             get_logger().exception(
-                "session_senior.py: send_senior_pan" +
-                "el log skipped chat={} senior={} e" +
-                "xc={}",
+                "senior.log_skipped.c={c}.s={s}.e={e}",
                 chat_id,
                 senior_id,
                 exc,
@@ -144,8 +142,8 @@ async def send_senior_panel(
         )
     except Exception as exc:
         get_logger().exception(
-            "session_senior.py: send_senior_pan" +
-            "el texts.get chat={} exc={}",
+            "session_senior.py:.send_senior_pan" +
+            "el.texts.get.chat={}.exc={}",
             chat_id,
             exc,
         )
@@ -154,13 +152,19 @@ async def send_senior_panel(
     try:
         msg_id = await bridge.send_text(
             senior_id,
-            f"<b>{title}</b>\n\n{body}",
+            texts.get(
+                "senior_panel_text",
+                "fa",
+                title,
+                body,
+                bundle="webapp",
+            ),
             reply_markup=markup,
         )
     except Exception as exc:
         get_logger().exception(
-            "session_senior.py: send_senior_pan" +
-            "el send_text chat={} senior={} exc" +
+            "session_senior.py:.send_senior_pan" +
+            "el.send_text.chat={}.senior={}.exc" +
             "={}",
             chat_id,
             senior_id,
@@ -177,8 +181,8 @@ async def send_senior_panel(
         )
     except Exception as exc:
         get_logger().exception(
-            "session_senior.py: send_senior_pan" +
-            "el hset sent chat={} senior={} exc" +
+            "session_senior.py:.send_senior_pan" +
+            "el.hset.sent.chat={}.senior={}.exc" +
             "={}",
             chat_id,
             senior_id,
@@ -193,9 +197,7 @@ async def send_senior_panel(
         )
     except Exception as exc:
         get_logger().exception(
-            "session_senior.py: send_senior_pan" +
-            "el log event chat={} senior={} exc" +
-            "={}",
+            "senior.log_event.c={c}.s={s}.e={e}",
             chat_id,
             senior_id,
             exc,
@@ -224,8 +226,8 @@ async def maybe_refresh_session_senior(
         )
     except Exception as exc:
         get_logger().exception(
-            "session_senior.py: maybe_refresh r" +
-            "oles_locked chat={} exc={}",
+            "senior.maybe_refresh.r" +
+            "oles_locked.c={c}.e={e}",
             chat_id,
             exc,
         )
@@ -238,8 +240,8 @@ async def maybe_refresh_session_senior(
             )
         except Exception as exc:
             get_logger().exception(
-                "session_senior.py: maybe_refresh h" +
-                "get senior chat={} exc={}",
+                "senior.mr.h" +
+                "get.senior.c={c}.e={e}",
                 chat_id,
                 exc,
             )
@@ -259,8 +261,7 @@ async def maybe_refresh_session_senior(
         )
     except Exception as exc:
         get_logger().exception(
-            "session_senior.py: maybe_refresh h" +
-            "get sent chat={} exc={}",
+            "senior.mr.h6.get_sent.c={c}.e={e}",
             chat_id,
             exc,
         )
@@ -278,8 +279,8 @@ async def maybe_refresh_session_senior(
         )
     except Exception as exc:
         get_logger().exception(
-            "session_senior.py: maybe_refresh s" +
-            "end_panel chat={} senior={} exc={}",
+            "senior.maybe_refresh.s" +
+            "end_panel.c={c}.s={s}.e={e}",
             chat_id,
             senior,
             exc,

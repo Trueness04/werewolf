@@ -20,7 +20,6 @@ from app.managers.game_event import log_game_event
 from app.managers.json_loader import load_json
 from app.managers.text_managers import TextManager
 
-
 class LobbyManager:
     """Create lobbies and register players."""
 
@@ -346,6 +345,6 @@ class LobbyManager:
             "lobby_summary",
             "fa",
             header,
-            "\n".join(lines),
+            ".".join(lines),
             bundle="webapp",
         )

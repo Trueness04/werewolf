@@ -40,8 +40,8 @@ async def _do_extend(
                 )
             except Exception as exc:
                 get_logger().exception(
-                    "senior_handler.py: _do_extend not-" +
-                    "join answer chat={} exc={}",
+                    "senior.do_extend.not" +
+                    "join.answer.c={c}.e={e}",
                     chat_id,
                     exc,
                 )
@@ -56,9 +56,9 @@ async def _do_extend(
             )
         except Exception as exc:
             get_logger().exception(
-                "senior_handler.py: _do_extend appl" +
+                "senior_handler.py:._do_extend.appl"
                 "y_extend",
-                + " chat={} exc={}",
+                + ".c={c}.e={e}",
                 chat_id,
                 exc,
             )
@@ -72,8 +72,8 @@ async def _do_extend(
             )
         except Exception as exc:
             get_logger().exception(
-                "senior_handler.py: _do_extend text" +
-                "s chat={} exc={}",
+                "senior.do_extend.text" +
+                "s.c={c}.e={e}",
                 chat_id,
                 exc,
             )
@@ -82,8 +82,8 @@ async def _do_extend(
             await answer_safe(query, text)
         except Exception as exc:
             get_logger().exception(
-                "senior_handler.py: _do_extend answ" +
-                "er chat={} exc={}",
+                "senior_handler.py:._do_extend.answ" +
+                "er.chat={}.exc={}",
                 chat_id,
                 exc,
             )
@@ -104,7 +104,7 @@ async def _do_extend(
             get_logger().exception(
                 "senior_handler.py:._do_extend.send"
                 "_text",
-                + " chat={} exc={}",
+                + "chat={}.exc={}",
                 chat_id,
                 exc,
             )
@@ -117,15 +117,14 @@ async def _do_extend(
             )
         except Exception as exc:
             get_logger().exception(
-                "senior_handler.py: _do_extend log " +
-                "chat={} exc={}",
+                "senior_handler.py:._do_extend.log" +
+                "chat={}.exc={}",
                 chat_id,
                 exc,
             )
     except Exception as exc:
         get_logger().exception(
-            "senior.do_extend_outer"
-            " user={u} exc={e}",
+            "senior.do_extend_outer.u={u}.e={e}",
             user_id,
             exc,
         )
@@ -154,8 +153,7 @@ async def _do_force(
                 )
             except Exception as exc:
                 get_logger().exception(
-                    "senior_handler.py: _do_force not-j" +
-                    "oin answer chat={} exc={}",
+                    "senior.do_force.notjoin.c={c}.e={e}",
                     chat_id,
                     exc,
                 )
@@ -170,8 +168,7 @@ async def _do_force(
             )
         except Exception as exc:
             get_logger().exception(
-                "senior_handler.py: _do_force hget " +
-                "mode chat={} exc={}",
+                "senior.do_force.hget.mode.c={c}.e={e}",
                 chat_id,
                 exc,
             )
@@ -193,8 +190,8 @@ async def _do_force(
             )
         except Exception as exc:
             get_logger().exception(
-                "senior_handler.py: _do_force ai fi" +
-                "ll chat={} exc={}",
+                "senior.do_force.ai_fill" +
+                "ll.c={c}.e={e}",
                 chat_id,
                 exc,
             )
@@ -208,9 +205,8 @@ async def _do_force(
             await TimerManager(bridge).finish_join(chat_id, lang)
         except Exception as exc:
             get_logger().exception(
-                "senior_handler.py: _do_force finis"
-                "h_join",
-                + " chat={} exc={}",
+                "senior.do_force_finish_join",
+                ".c={c}.e={e}",
                 chat_id,
                 exc,
             )
@@ -225,8 +221,7 @@ async def _do_force(
             )
         except Exception as exc:
             get_logger().exception(
-                "senior_handler.py: _do_force answe" +
-                "r chat={} exc={}",
+                "senior.do_force.answer.c={c}.e={e}",
                 chat_id,
                 exc,
             )
@@ -238,15 +233,15 @@ async def _do_force(
             )
         except Exception as exc:
             get_logger().exception(
-                "senior_handler.py: _do_force log c" +
-                "hat={} exc={}",
+                "senior.do_force.log_c" +
+                "hat={h}.e={e}",
                 chat_id,
                 exc,
             )
     except Exception as exc:
         get_logger().exception(
-            "senior_handler.py: _do_force outer" +
-            " chat={} user={} exc={}",
+            "senior.do_force.outer"
+            ".c={c}.u={u}.e={e}",
             chat_id,
             user_id,
             exc,
@@ -273,8 +268,8 @@ async def _refresh_markup(
         )
     except Exception as exc:
         get_logger().exception(
-            "senior_handler.py: _refresh_markup" +
-            " log chat={} exc={}",
+            "senior.refresh_markup" +
+            ".log.c={c}.e={e}",
             chat_id,
             exc,
         )

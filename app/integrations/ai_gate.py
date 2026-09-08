@@ -33,7 +33,7 @@ def ai_available() -> bool:
 
 def _warn_absent(module: str, context: str) -> None:
     get_logger().warning(
-        "{} module={} context={} \u2014 skipped",
+        "{}.module={}.context={}.skipped",
         AI_ABSENT_LOG_PREFIX,
         module,
         context,
@@ -58,7 +58,7 @@ def _ai_feature(
         return getattr(mod, attr)
     except ImportError as exc:
         get_logger().warning(
-            "{} module={} context={} err={} — skipped",
+            "{}.m={}.ctx={}.e={}",
             AI_ABSENT_LOG_PREFIX,
             module,
             context,

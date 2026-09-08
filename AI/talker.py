@@ -175,7 +175,7 @@ class AiTalker:
         rules = str(self._cfg["chat_user_rules"])
         user = tmpl.format(
             my_name=my_name,
-            alive=", ".join(names),
+            alive=",".join(names),
             team=team_fa,
             target=target,
             rules=rules,

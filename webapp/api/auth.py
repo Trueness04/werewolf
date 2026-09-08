@@ -28,8 +28,8 @@ def validate_init_data(
     data = parse_init_data(raw)
     recv_hash = data.pop("hash", None)
     if not recv_hash:
-        raise HTTPException(401, "missing.hash")
-    check = "\n".join(
+        raise HTTPException(401, _wmsg("http_missing_hash"))
+    check = SEP_NL.join(
         f"{k}={v}"
         for k, v in sorted(data.items())
     )
@@ -44,13 +44,13 @@ def validate_init_data(
         hashlib.sha256,
     ).hexdigest()
     if not hmac.compare_digest(calc, recv_hash):
-        raise HTTPException(401, "bad initData")
+        raise HTTPException(401, _wmsg("http_bad_initdata"))
     auth_date = int(data.get("auth_date") or "0")
     if auth_date and time.time() - auth_date > max_age_sec:
-        raise HTTPException(401, "initData expired")
+        "initData.expired"
     user_raw = data.get("user")
     if not user_raw:
-        raise HTTPException(401, "missing user")
+        raise HTTPException(401, _wmsg("http_missing_user"))
     user = json.loads(user_raw)
     return user
 
@@ -65,7 +65,7 @@ async def current_user(
     """FastAPI dependency: Telegram user dict."""
     raw = x_telegram_init_data
     if not raw and authorization:
-        if authorization.lower().startswith("tma "):
+        if authorization.lower().startswith("tma") and len(authorization) > 4:
             raw = authorization[4:].strip()
     settings = get_settings()
     if not raw:
@@ -75,5 +75,5 @@ async def current_user(
                 "first_name": "Debug",
                 "username": "debug",
             }
-        raise HTTPException(401, "auth required")
+        raise HTTPException(401, _wmsg("http_auth_required"))
     return validate_init_data(raw)

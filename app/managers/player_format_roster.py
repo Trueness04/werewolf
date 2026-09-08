@@ -1,9 +1,17 @@
-"""Roster/win-list formatting (split of player_format)."""
+"""Roster formatting helpers (split of player_format)."""
 
 from __future__ import annotations
 
 import json
+
+_webapp_texts = None
 from typing import Any
+
+from app.managers.text_managers import TextManager
+
+_texts = TextManager()
+SEP_NL = chr(10)
+NL = SEP_NL
 
 from app.cache.redis_client import get_redis
 from app.cache.redis_keys import RedisKeySpace
@@ -15,25 +23,20 @@ RoleRegistry = import_module(
     "app.class.roles.registry"
 ).RoleRegistry
 
-
 def _cell(name: str) -> str:
     """One-line markdown table cell; pipes neutralized."""
     return (
         str(name)
-        .replace("\n", " ")
+        .replace(NL, ".")
         .replace("|", "/")
     )
 
-
 def ltr(text: str) -> str:
     """Force LTR rendering for any text (FA/EN alike)."""
-    return f"\u2066{str(text)}\u2069"
-
 
 PLAYER_CUSTOM_EMOJI: dict[int, str] = {}
 
 ROLE_CUSTOM_EMOJI: dict[str, str] = {}
-
 
 async def _load_custom_emojis(
     players: list[dict[str, Any]],
@@ -49,7 +52,6 @@ async def _load_custom_emojis(
         val = await redis.get(key)
         if val:
             PLAYER_CUSTOM_EMOJI[uid] = str(val)
-
 
 async def set_user_custom_emoji(
     user_id: int,
@@ -74,7 +76,6 @@ async def set_user_custom_emoji(
     await redis.set(key, emoji)
     PLAYER_CUSTOM_EMOJI[user_id] = emoji
     return True
-
 
 def _role_label(
     texts: TextManager,
@@ -101,7 +102,6 @@ def _role_label(
         return role_id
     return label
 
-
 def _roster_markdown(
     head: str,
     rows: list[tuple[str, str, str, str, str]],
@@ -111,9 +111,9 @@ def _roster_markdown(
     Row: (custom, name_with_medal, win, status, role)
     """
     if not rows:
-        return f"{head}\n\n-"
-    body = "\n".join(
-        "| {} | {} | {} | {} | {} |".format(
+        return head
+    table = NL.join(
+        ROW_FMT.format(
             _cell(c),
             _cell(ltr(n)),
             _cell(w),
@@ -122,12 +122,13 @@ def _roster_markdown(
         )
         for c, n, w, s, r in rows
     )
-    table = (
-        "roster.table.head",
-        f"{body}"
-    )
-    return f"{head}\n\n{table}"
-
+    return _texts.get(
+            "roster_head_join",
+            "fa",
+            head,
+            table,
+            bundle="webapp",
+        )
 
 async def send_win_list(
     bridge: ChatBridge,
@@ -178,37 +179,36 @@ async def send_win_list(
         neutral = bool(item.get("neutral", False))
         if neutral:
             status = (
-                "🏃"
+                "run"
                 if item.get("fugitive")
-                else "😴"
+                else "zzz"
             )
         else:
             status = (
-                "🙂" if alive else "🪦"
+                "alive.face" if alive else "dead.face"
             )
         rows.append(
             (
                 custom,
-                f"{player_name(item)} [{medal}]",
+                f"{player_name(item)}.[{medal}]",
                 "",
                 status,
                 role_cell,
             )
         )
     head = (
-        f"#Players ({len(players)}/{len(players)})"
+        "#Players.("
     )
     md = _roster_markdown(head, rows)
     if not await bridge.send_rich(chat_id, md):
         for _c, nm, w, s, r in rows:
             line = (
-                f"{w} {nm} {s} {r}".rstrip()
+                f"{w}.{nm}.{s}.{r}".rstrip()
             )
             await bridge.send_text(
                 chat_id,
                 ltr(line),
             )
-
 
 async def announce_roster(
     bridge: ChatBridge,
@@ -237,8 +237,8 @@ async def announce_roster(
         players,
         alive=False,
     )
-    live_body = "\n".join(
-        f"{i}. {n}"
+    live_body = NL.join(
+        f"{i}.{n}"
         for i, n in enumerate(living, 1)
     ) or "-"
     live_tpl = texts.get(
@@ -278,11 +278,15 @@ async def announce_roster(
             )
         medal, _label = await user_medal(uid)
         custom = PLAYER_CUSTOM_EMOJI.get(uid, "")
-        status = "🙂" if alive else "☠️"
+        status = _texts.get(
+            "roster_alive" if alive else "roster_dead",
+            "fa",
+            bundle="webapp",
+        )
         rows.append(
             (
                 custom,
-                f"{player_name(item)} [{medal}]",
+                f"{player_name(item)}.[{medal}]",
                 "",
                 status,
                 role_cell,
@@ -290,7 +294,7 @@ async def announce_roster(
         )
     try:
         rich_md = _roster_markdown(
-            f"#Players ({len(players)})",
+            f"#Players.{len(players)}",
             rows,
         )
     except Exception:
@@ -298,7 +302,7 @@ async def announce_roster(
         import traceback
 
         logging.getLogger(__name__).exception(
-            "roster markdown build failed chat=%s",
+            "roster.markdown.failed.c=%s",
             chat_id,
         )
         try:
@@ -308,9 +312,8 @@ async def announce_roster(
 
             await log_to_group(
                 bridge,
-                f"⚠️ roster build failed"
-                f" chat={chat_id}"
-                f"\n<pre>{traceback.format_exc()[-1500:]}</pre>",
+                f"roster.build.failed.c={chat_id}"
+                "",
             )
         except Exception:
             pass
@@ -325,8 +328,8 @@ async def announce_roster(
     )
     if not dead:
         return
-    dead_body = "\n".join(
-        f"{i}. {n}"
+    dead_body = NL.join(
+        f"{i}.{n}"
         for i, n in enumerate(dead, 1)
     )
     tpl_d = texts.get(

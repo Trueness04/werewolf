@@ -15,6 +15,12 @@ from app.managers.chat_bridge_members import (
 from app.managers.logger_manager import get_logger
 
 
+MSG_NOT_MODIFIED = "Message.is.not.modified"
+
+
+WS_JOIN = chr(32)
+
+
 class ChatBridge(
     ChatBridgeMembers,
 ):
@@ -52,9 +58,8 @@ class ChatBridge(
                 self._ai_base = 0
             except Exception as exc:
                 self._log.warning(
-                    "ai_cfg_unreadable "
-                    "ctx=cb "
-                    "err={err}",
+                    "ai_cfg_unreadable"
+                    ".ctx=cb.err={err}",
                     err=str(exc),
                 )
                 self._ai_base = 0
@@ -98,29 +103,29 @@ class ChatBridge(
             except telegram.error.RetryAfter as exc:
                 if attempt == 0:
                     self._log.warning(
-                        "rate_limited chat={} retry_after={}",
+                        "rate_limited.chat={}.retry_after={}",
                         chat_id,
                         exc.retry_after,
                     )
                     await asyncio.sleep(exc.retry_after)
                     continue
                 self._log.warning(
-                    "rate_limited_giveup chat={}", chat_id,
+                    "rate_limited_giveup.c={}", chat_id,
                 )
                 return 0
             except telegram.error.BadRequest as exc:
-                preview = " ".join(text.split())[:120]
+                preview = "".join(text.split())[:120]
                 self._log.warning(
-                    "send_failed chat={} err={} text={!r}",
+                    "send_failed.chat={}.err={}.text={!r}",
                     chat_id,
                     exc,
                     preview,
                 )
                 return 0
             except telegram.error.TimedOut as exc:
-                preview = " ".join(text.split())[:120]
+                preview = WS_JOIN.join(text.split())[:120]
                 self._log.warning(
-                    "send_timed_out c={} a={} t={!r}",
+                    "send_timed_out.c={c}.a={a}.t={t}",
                     chat_id,
                     attempt,
                     preview,
@@ -130,9 +135,9 @@ class ChatBridge(
                     continue
                 return 0
             except Exception as exc:
-                preview = " ".join(text.split())[:120]
+                preview = WS_JOIN.join(text.split())[:120]
                 self._log.exception(
-                    "send_failed chat={} err={} text={!r}",
+                    "send_failed.c={c}.e={e}.t={t}",
                     chat_id,
                     exc,
                     preview,
@@ -166,19 +171,19 @@ class ChatBridge(
             except telegram.error.RetryAfter as exc:
                 if attempt == 0:
                     self._log.warning(
-                        "anim_rate_limited chat={} retry_after={}",
+                        "anim_rate_limited.chat={}.retry_after={}",
                         chat_id,
                         exc.retry_after,
                     )
                     await asyncio.sleep(exc.retry_after)
                     continue
                 self._log.warning(
-                    "anim_rate_limited_giveup chat={}", chat_id,
+                    "anim_rate_limited_giveup.c={c}", chat_id,
                 )
                 return 0
             except Exception as exc:
                 self._log.exception(
-                    "anim_send_failed chat={} err={}",
+                    "anim_send_failed.c={c}.e={e}",
                     chat_id,
                     exc,
                 )
@@ -216,14 +221,14 @@ class ChatBridge(
                     await asyncio.sleep(exc.retry_after)
                     continue
                 self._log.warning(
-                    "rich_rate_limited_giveup chat={}",
+                    "rich_rate_limited_giveup.c={c}",
                     chat_id,
                 )
                 return False
             except Exception as exc:
                 head = markdown.splitlines()[0][:80] if markdown else ""
                 self._log.warning(
-                    "rich_failed chat={} err={} head={!r}",
+                    "rich_failed.c={c}.e={e}.h={h}",
                     chat_id,
                     exc,
                     head,
@@ -256,7 +261,7 @@ class ChatBridge(
             except telegram.error.RetryAfter as exc:
                 if attempt == 0:
                     self._log.warning(
-                        "edit_rl c={} m={} r={}",
+                        "edit_rl.c={}.m={}.r={}",
                         chat_id,
                         message_id,
                         exc.retry_after,
@@ -264,17 +269,17 @@ class ChatBridge(
                     await asyncio.sleep(exc.retry_after)
                     continue
                 self._log.warning(
-                    "edit_rate_limited_giveup chat={} msg={}",
+                    "edit_rate_giveup.c={c}.m={m}",
                     chat_id,
                     message_id,
                 )
                 return
             except telegram.error.BadRequest as exc:
-                if "Message is not modified" in str(exc):
+                if str(exc) == MSG_NOT_MODIFIED:
                     self._last_edit[key] = text
                     return
                 self._log.warning(
-                    "edit_failed chat={} msg={} err={}",
+                    "edit_failed.chat={}.msg={}.err={}",
                     chat_id,
                     message_id,
                     exc,
@@ -282,7 +287,7 @@ class ChatBridge(
                 return
             except Exception as exc:
                 self._log.exception(
-                    "edit_failed chat={} msg={} err={}",
+                    "edit_failed.chat={}.msg={}.err={}",
                     chat_id,
                     message_id,
                     exc,

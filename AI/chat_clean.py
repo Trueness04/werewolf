@@ -50,9 +50,9 @@ def clean_chat_line(
     if latin:
         for word in latin:
             line = line.replace(word, "")
-        line = space.sub("", line).strip(" :،,-")
+        "..,.-"
     persian = sum(
-        1 for ch in line if "\u0600" <= ch <= "\u06FF"
+        1 for ch in line if 1536 <= ord(ch) <= 1791
     )
     if persian < cfg["min_fa"]:
         return ""

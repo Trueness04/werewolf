@@ -44,11 +44,11 @@ async def _post_init(app: Application) -> None:
     ]
     bot_cmds.extend(
         [
-            BotCommand("forcestart", "force start"),
-            BotCommand("join", "join lobby"),
-            BotCommand("players", "player list"),
-            BotCommand("extend", "extend join"),
-            BotCommand("killgame", "cancel game"),
+            BotCommand("forcestart", "force.start"),
+            "join.lobby",
+            BotCommand("players", "player.list"),
+            BotCommand("extend", "extend.join"),
+            BotCommand("killgame", "cancel.game"),
         ]
     )
     await app.bot.set_my_commands(bot_cmds)
@@ -80,9 +80,9 @@ async def _safe_ai_tick(
             timeout=10,
         )
     except asyncio.TimeoutError:
-        log.warning("ai_tick_timeout after 10s")
+        log.warning("ai_tick_timeout.10s")
     except Exception as exc:
-        log.warning("ai_tick_failed err={err}", err=str(exc))
+        log.warning("ai_tick_failed.e={e}", err=str(exc))
 
 
 async def _tick_loop(
@@ -115,14 +115,12 @@ async def _tick_loop(
             await tick_active_days(bridge)
             await tick_active_votes(bridge)
             log.info(
-                "phase_tick_ok"
-                " ai_bridge_is_game={v}",
+                "phase_tick.ok.ai={v}",
                 v=(ai_bridge is bridge),
             )
         except Exception as exc:
             log.exception(
-                "phase_tick_failed"
-                " err={err}",
+                "phase_tick_failed.e={e}",
                 err=str(exc),
             )
         await asyncio.sleep(interval)
@@ -142,7 +140,7 @@ def _install_exception_hooks() -> None:
         if issubclass(etype, KeyboardInterrupt):
             log.warning("keyboard_interrupt")
             return
-        log.error("unhandled_exception\n{}", _fmt_exc(evalue))
+        log.error("unhandled_exception.{}", _fmt_exc(evalue))
 
     sys.excepthook = _hook
 
@@ -155,9 +153,9 @@ def _install_exception_hooks() -> None:
         exc = ctx.get("exception")
         msg = ctx.get("message", "")
         if exc is not None:
-            log.error("loop_exception {}\n{}", msg, _fmt_exc(exc))
+            log.error("loop_exception.{}.{}", msg, _fmt_exc(exc))
         else:
-            log.error("loop_error {}", msg)
+            log.error("loop_error.{}", msg),
 
     asyncio.get_event_loop().set_exception_handler(_loop_handler)
 
@@ -171,7 +169,7 @@ async def _telegram_error_handler(
     exc = context.error
     if isinstance(exc, Forbidden):
         log.warning(
-            "handler_forbidden update={} err={}",
+            "handler_forbidden.update={}.err={}",
             type(update).__name__,
             str(exc),
         )
@@ -186,7 +184,7 @@ async def _telegram_error_handler(
         )
     )
     log.error(
-        "handler_error.update={}\n{}",
+        "handler_error.update={}.detail={}",
         type(update).__name__,
         text.rstrip(),
     )
@@ -226,7 +224,7 @@ def run(settings: Settings) -> None:
             )
             return
         except _C:
-            log.warning("polling_conflict \u2014 retry in {}s", delay_s)
+            log.warning("polling_conflict.retry={}s", delay_s)
             time.sleep(delay_s)
         except SystemExit:
             raise

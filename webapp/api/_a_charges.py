@@ -218,7 +218,7 @@ async def fix_charge(
             if bal < 0:
                 raise HTTPException(
                     400,
-                    "cannot reverse \u2014 insufficient coins",
+                    "cannot.reverse.insufficient.coins",
                 )
             row.coins = bal
             session.add(

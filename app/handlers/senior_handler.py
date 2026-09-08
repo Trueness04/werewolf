@@ -73,8 +73,8 @@ async def senior_callback(
             chat_id = int(parts[1])
         except (ValueError, TypeError) as exc:
             get_logger().exception(
-                "senior_handler.py: senior_callback bad"
-                + " chat_id data={} exc={}",
+                "senior_handler.py:.senior_callback.bad"
+                + "chat_id.data={}.exc={}",
                 query.data,
                 exc,
             )
@@ -87,8 +87,8 @@ async def senior_callback(
             keys = RedisKeySpace()
         except Exception as exc:
             get_logger().exception(
-                "senior_handler.py: senior_callback deps"
-                + " chat={} exc={}",
+                "senior_handler.py:.senior_callback.deps"
+                + "chat={}.exc={}",
                 chat_id,
                 exc,
             )
@@ -101,9 +101,8 @@ async def senior_callback(
             )
         except Exception as exc:
             get_logger().exception(
-                "senior_handler.py: senior_callback"
-                + " is_session_senior chat={} user={}"
-                + " exc={}",
+                "senior.cb_is_senior"
+                ".c={c}.u={u}.e={e}",
                 chat_id,
                 user.id,
                 exc,
@@ -121,9 +120,8 @@ async def senior_callback(
                 )
             except Exception as exc:
                 get_logger().exception(
-                    "senior_handler.py: senior_callback"
-                    + " answer not-you chat={} user={}"
-                    + " exc={}",
+                    "senior.cb.not_you.c={c}.u={u}",
+                    + ".exc={}",
                     chat_id,
                     user.id,
                     exc,
@@ -133,8 +131,8 @@ async def senior_callback(
             await answer_safe(query)
         except Exception as exc:
             get_logger().exception(
-                "senior_handler.py: senior_callback"
-                + " answer chat={} user={} exc={}",
+                "senior_handler.py:.senior_callback"
+                + ".a.c={c}.u={u}.e={e}",
                 chat_id,
                 user.id,
                 exc,
@@ -143,8 +141,7 @@ async def senior_callback(
             bridge = deps.bridge(context)
         except Exception as exc:
             get_logger().exception(
-                "senior_handler.py: senior_callback"
-                + " bridge/redis chat={} exc={}",
+                "senior.cb_bridge.redis.c={c}.e={e}",
                 chat_id,
                 exc,
             )
@@ -173,8 +170,7 @@ async def senior_callback(
                 )
             except Exception as exc:
                 get_logger().exception(
-                    "senior_handler.py: senior_callback"
-                    + " toggle chat={} action={} exc={}",
+                    "senior.cb_toggle.c={c}.a={a}.e={e}",
                     chat_id,
                     action,
                     exc,
@@ -190,9 +186,7 @@ async def senior_callback(
                     )
                 except Exception as exc:
                     get_logger().exception(
-                        "senior_handler.py: senior_callback"
-                        + " log toggle chat={} user={}"
-                        + " action={} exc={}",
+                        "senior.cb6.log_toggle",
                         chat_id,
                         user.id,
                         action,
@@ -211,8 +205,8 @@ async def senior_callback(
                 )
             except Exception as exc:
                 get_logger().exception(
-                    "senior_handler.py: senior_callback"
-                    + " extend chat={} user={} exc={}",
+                    "senior_handler.py:.senior_callback"
+                    + "extend.chat={}.user={}.exc={}",
                     chat_id,
                     user.id,
                     exc,
@@ -230,8 +224,8 @@ async def senior_callback(
                 )
             except Exception as exc:
                 get_logger().exception(
-                    "senior_handler.py: senior_callback force"
-                    + " chat={} user={} exc={}",
+                    "senior_handler.py:.senior_callback.force"
+                    + "chat={}.user={}.exc={}",
                     chat_id,
                     user.id,
                     exc,
@@ -251,8 +245,8 @@ async def senior_callback(
                 )
             except Exception as exc:
                 get_logger().exception(
-                    "senior_handler.py: senior_callback kill"
-                    + " chat={} user={} value={} exc={}",
+                    "senior_handler.py:.senior_callback.kill"
+                    + "chat={}.user={}.value={}.exc={}",
                     chat_id,
                     user.id,
                     value,

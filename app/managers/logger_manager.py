@@ -29,7 +29,7 @@ _TG_QUEUE_MAX = 200
 _FMT_PARTS = (
     "<c>{time:HH:mm:ss}</c>",
     "<b>{level.name}</b>",
-    "{name}:{function} \u2014 {message}",
+    "{name}:{function}.--.{message}"
 )
 _FMT_COMPACT = "".join(_FMT_PARTS)
 
@@ -43,20 +43,19 @@ def _record_text(record: dict[str, Any]) -> str:
     func = _h.escape(str(record["function"]))
     head = (
         record["time"].strftime("%H:%M:%S")
-        + " "
+        + ""
         + record["level"].name
-        + " "
+        + ""
         + name
         + ":"
         + func
-        + " — "
     )
     text = head + msg
     exc = record.get("exception")
     if exc:
         text = _join_exc(text, str(exc)[-1200:])
     if len(text) > 3800:
-        text = text[:3800] + "…"
+        text = text[:3800] + "..."
     return text
 
 

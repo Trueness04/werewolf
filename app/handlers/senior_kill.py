@@ -121,8 +121,8 @@ async def _do_kill(
                 await answer_safe(query, text)
             except Exception as exc:
                 get_logger().exception(
-                    "senior_handler.py: _do_kill ask an" +
-                    "swer chat={} exc={}",
+                    "senior.do_kill.ask_an" +
+                    "swer.c={c}.e={e}",
                     chat_id,
                     exc,
                 )
@@ -132,8 +132,8 @@ async def _do_kill(
                 await answer_safe(query)
             except Exception as exc:
                 get_logger().exception(
-                    "senior_handler.py: _do_kill no ans" +
-                    "wer chat={} exc={}",
+                    "senior_handler.py:._do_kill.no.ans" +
+                    "wer.chat={}.exc={}",
                     chat_id,
                     exc,
                 )
@@ -161,8 +161,8 @@ async def _do_kill(
             )
         except Exception as exc:
             get_logger().exception(
-                "senior_handler.py: _do_kill texts " +
-                "chat={} exc={}",
+                "senior_handler.py:._do_kill.texts" +
+                "chat={}.exc={}",
                 chat_id,
                 exc,
             )
@@ -171,9 +171,8 @@ async def _do_kill(
             await answer_safe(query, text)
         except Exception as exc:
             get_logger().exception(
-                "senior_handler.py: _do_kill answer" +
-                " killed",
-                + " chat={} exc={}",
+                "senior.kill_answer"
+                ".c={c}.e={e}",
                 chat_id,
                 exc,
             )
@@ -181,9 +180,9 @@ async def _do_kill(
             await bridge.send_text(user_id, text)
         except Exception as exc:
             get_logger().exception(
-                "senior_handler.py: _do_kill send_t" +
-                "ext killed",
-                + " chat={} exc={}",
+                "senior.kill_send_text"
+                ".ext.killed"
+                ".c={c}.e={e}",
                 chat_id,
                 exc,
             )
@@ -195,8 +194,7 @@ async def _do_kill(
             )
         except Exception as exc:
             get_logger().exception(
-                "senior_handler.py: _do_kill log ch" +
-                "at={} exc={}",
+                "senior.kill_log6.at={a}.e={e}",
                 chat_id,
                 exc,
             )

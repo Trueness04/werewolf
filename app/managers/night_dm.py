@@ -129,11 +129,11 @@ class NightDmSender:
                 and p.get("alive", True)
             ]
             body = (
-                f"{body}\n"
+                "log"
                 + self._texts.get(
                     str(team_key),
                     lang,
-                    ", ".join(mates),
+                    ",".join(mates),
                     bundle="roles",
                 )
             )

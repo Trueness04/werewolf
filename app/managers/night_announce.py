@@ -31,7 +31,7 @@ async def announce_night_results(
     for msg in ctx["messages"]:
         text = texts.get(str(msg), lang, bundle="results")
         get_logger().info(
-            "night_announce_group key={k} chat={c}",
+            "night_announce_group.key={k}.chat={c}",
             k=str(msg),
             c=chat_id,
         )
@@ -92,8 +92,8 @@ async def announce_night_results(
             partner_id = (ctx.get("lover_cause") or {}).get(int(uid))
             await log_to_group(
                 bridge,
-                f"[NIGHT] lover {uid}<-{partner_id}"
-                f" pair={ctx.get('lover_pair')}",
+                f"[NIGHT].lover.{uid}<-{partner_id}"
+                f"pair={ctx.get('lover_pair')}",
             )
             partner_name = name
             if partner_id is not None:

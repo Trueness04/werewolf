@@ -153,7 +153,7 @@ async def verify_charge_callback(
             order.gateway_ref = body.gateway_ref
             order.updated_at = datetime.now(timezone.utc)
             order.note = (
-                (order.note or "") + " | " + _wmsg("note_gateway_failed")
+                "log"
             ).strip("|")
             return {"ok": True, "status": "failed"}
         uid = int(order.user_id)

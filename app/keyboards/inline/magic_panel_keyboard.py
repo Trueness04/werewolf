@@ -45,7 +45,7 @@ def build_magic_panel_keyboard(
         rows: list[list[InlineKeyboardButton]] = [
             [
                 _btn(
-                    _flag("🔮 Magic", enabled),
+                    _flag("Magic", enabled),
                     chat_id,
                     "toggle",
                 )
@@ -56,15 +56,14 @@ def build_magic_panel_keyboard(
             rows.append(
                 [
                     InlineKeyboardButton(
-                        text="🌌 Open Magic WebApp",
+                        text="Open.Magic.WebApp",
                         web_app=WebAppInfo(url=f"{url}/?view=magic"),
                     )
                 ]
             )
         rows.append(
             [
-                _btn("\u2139\ufe0f Info", chat_id, "info"),
-                _btn("✕", chat_id, "noop"),
+                "i.Info."
             ]
         )
         return InlineKeyboardMarkup(rows)

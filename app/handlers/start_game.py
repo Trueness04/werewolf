@@ -64,8 +64,7 @@ async def handle_start_game(
         )
     except GroupInactive:
         log.debug(
-            "sg_skip"
-            " chat={c} reason=inactive",
+            "sg_skip4.inactive.c={c}",
             chat.id,
         )
         return
@@ -74,8 +73,7 @@ async def handle_start_game(
     )
     if group is None:
         log.debug(
-            "sg_skip"
-            " chat={c} reason=no_group",
+            "sg_skip.c={c}.reason=no_group",
             chat.id,
         )
         return
@@ -124,23 +122,20 @@ async def handle_start_game(
         return
     if state == GameState.RUNNING:
         log.debug(
-            "sg_skip"
-            " chat={c} reason=running",
+            "sg_skip.chat={c}.reason=running",
             chat.id,
         )
         return
     if state == GameState.JOINING:
         log.debug(
-            "sg_skip"
-            " chat={c} reason=joining",
+            "sg_skip.c={c}.reason=joining",
             chat.id,
         )
         await _remind_join(update, context, lang, False)
         return
     if state == GameState.CHALLENGE_JOINING:
         log.debug(
-            "sg_skip"
-            " chat={c} reason=challenge",
+            "sg_skip.challenge.c={c}",
             chat.id,
         )
         await _remind_join(update, context, lang, True)
@@ -251,7 +246,13 @@ async def _start_new(
         bundle="webapp",
     )
     if group.settext_start:
-        caption = f"{caption}\n{group.settext_start}"
+        caption = tm.get(
+        "start_game.caption",
+        lang,
+        caption,
+        group.settext_start,
+        bundle="webapp",
+    )
     bridge = deps.bridge(context)
     video_id: int | None = None
     _urls = load_json(URL_TEMPLATES)

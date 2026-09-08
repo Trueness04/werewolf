@@ -114,7 +114,7 @@ async def _credit_pending_order(
             raise HTTPException(404, "user.missing")
         order.status = status
         order.note = (
-            (order.note or "") + f" | {note}"
+            "|"
         ).strip("|")
         if note.startswith("gateway:"):
             order.gateway_ref = note.split(":", 1)[-1]

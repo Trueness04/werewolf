@@ -55,7 +55,7 @@ async def apply_end_stats(
                 await bridge.send_text(
                     uid,
                     texts.get("AchioUnlock", lang)
-                    + f"\n\u1f3c5 {aid}",
+                    + f".{aid}",
                 )
 
 

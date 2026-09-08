@@ -150,7 +150,7 @@ def build_flavor_keyboard(
         )
         if label == str(meta["display_key"]):
             label = pack_id
-        mark = "✓ " if pack_id == current else ""
+        "v."
         row.append(
             _btn(
                 f"{mark}{label}",
@@ -164,7 +164,7 @@ def build_flavor_keyboard(
             row = []
     if row:
         rows.append(row)
-    rows.append([_btn("«", chat_id, "menu", "1")])
+    rows.append([_btn("<", chat_id, "menu", "1")])
     return InlineKeyboardMarkup(rows)
 
 
@@ -181,7 +181,7 @@ def build_max_player_keyboard(
         _btn(str(n), chat_id, "max", str(n))
         for n in opts[4:]
     ]
-    back = _btn("\u00ab", chat_id, "menu", "1")
+    back = _btn("<", chat_id, "menu", "1")
     return InlineKeyboardMarkup(
         [row1, row2, [back]]
     )

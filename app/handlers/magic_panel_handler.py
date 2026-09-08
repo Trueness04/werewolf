@@ -33,7 +33,7 @@ async def magic_panel_callback(
                 await answer_safe(query)
             except Exception as exc:
                 get_logger().exception(
-                    "magic_panel.answer_error exc={}",
+                    "magic_panel.answer_error.exc={}",
                     exc,
                 )
             return
@@ -42,7 +42,7 @@ async def magic_panel_callback(
         except (ValueError, TypeError) as exc:
             get_logger().exception(
                 "magic_panel_handler.py:"
-                + " magic_panel_callback bad chat_id"
+                + "magic_panel_callback.bad.chat_id"
                 + "data={}.exc={}",
                 data,
                 exc,
@@ -52,8 +52,8 @@ async def magic_panel_callback(
             except Exception as exc2:
                 get_logger().exception(
                     "magic_panel_handler.py:"
-                    + " magic_panel_callback answer bad_chat"
-                    + " exc={}",
+                    + ".bad_chat"
+                    + ".exc={}",
                     exc2,
                 )
             return
@@ -66,9 +66,8 @@ async def magic_panel_callback(
                 await answer_safe(query)
             except Exception as exc:
                 get_logger().exception(
-                    "magic_panel_handler.py:"
-                    + " magic_panel_callback noop/info chat={}"
-                    + " user={} exc={}",
+                    "magic_panel.noop.info.c={c}"
+                    + "user={}.exc={}",
                     chat_id,
                     user.id,
                     exc,
@@ -82,8 +81,8 @@ async def magic_panel_callback(
             except Exception as exc:
                 get_logger().exception(
                     "magic_panel_handler.py:"
-                    + " magic_panel_callback unknown action={}"
-                    + " chat={} exc={}",
+                    + "action={}"
+                    + "chat={}.exc={}",
                     action,
                     chat_id,
                     exc,
@@ -96,7 +95,7 @@ async def magic_panel_callback(
         except Exception as exc:
             get_logger().exception(
                 "magic_panel_handler.py:"
-                + " magic_panel_callback sudo_id_set"
+                + ".sudo_id_set"
                 + "chat={}.exc={}",
                 chat_id,
                 exc,
@@ -109,8 +108,8 @@ async def magic_panel_callback(
             except Exception as exc:
                 get_logger().exception(
                     "magic_panel_handler.py:"
-                    + " magic_panel_callback not sudo chat={}"
-                    + " user={} exc={}",
+                    + ".not_sudo.c={c}"
+                    + ".u={u}.e={e}",
                     chat_id,
                     user.id,
                     exc,
@@ -133,9 +132,8 @@ async def magic_panel_callback(
             await redis.hset(flags_key, field, new_val)
         except Exception as exc:
             get_logger().exception(
-                "magic_panel_handler.py:"
-                + " magic_panel_callback toggle hset"
-                + "chat={}.user={}.exc={}",
+                "magic_panel.toggle_hset"
+                ".c={c}.u={u}.e={e}",
                 chat_id,
                 user.id,
                 exc,
@@ -145,8 +143,8 @@ async def magic_panel_callback(
             except Exception as exc2:
                 get_logger().exception(
                     "magic_panel_handler.py:"
-                    + " magic_panel_callback answer after hset"
-                    + " fail exc={}",
+                    + ".hset"
+                    + ".fail.e={e}",
                     exc2,
                 )
             return
@@ -157,7 +155,7 @@ async def magic_panel_callback(
         except Exception as exc:
             get_logger().exception(
                 "magic_panel_handler.py:"
-                + " magic_panel_callback answer after"
+                + ".answer.after"
                 + "toggle.chat={}.exc={}",
                 chat_id,
                 exc,
