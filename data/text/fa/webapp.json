@@ -26,5 +26,11 @@
   "http_follow_self": "cannot follow self",
   "http_user_not_found": "user not found",
   "http_group_missing": "group not found",
-  "note_gateway_failed": "gateway_failed"
+  "note_gateway_failed": "gateway_failed",
+  "start_game.caption": "{0}\n{1}",
+  "start_game_caption": "{0}\n{1}",
+  "roster.table.head": "|.|.|.|.|.|\n|:-:|:----|:-:|:-:|:----|\n",
+  "roster_head_join": "{0}\n\n{1}",
+  "senior_panel_text": "<b>{0}</b>\n\n{1}",
+  "lobby_summary": "{0}\n{1}"
 }

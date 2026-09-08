@@ -247,12 +247,12 @@ async def _start_new(
     )
     if group.settext_start:
         caption = tm.get(
-        "start_game.caption",
-        lang,
-        caption,
-        group.settext_start,
-        bundle="webapp",
-    )
+            "start_game.caption",
+            lang,
+            caption,
+            group.settext_start,
+            bundle="webapp",
+        )
     bridge = deps.bridge(context)
     video_id: int | None = None
     _urls = load_json(URL_TEMPLATES)
