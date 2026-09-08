@@ -23,8 +23,18 @@ async def announce_night_results(
 ) -> None:
     """Send night result messages to group + victims."""
     registry = _Registry()
+    get_logger().info(
+        "night_announce group_keys={g} dm_count={d}",
+        g=[str(m) for m in ctx["messages"]],
+        d=len(ctx.get("dm_messages") or []),
+    )
     for msg in ctx["messages"]:
         text = texts.get(str(msg), lang, bundle="results")
+        get_logger().info(
+            "night_announce_group key={k} chat={c}",
+            k=str(msg),
+            c=chat_id,
+        )
         await bridge.send_text(chat_id, text)
     for entry in ctx.get("dm_messages") or []:
         if not entry:

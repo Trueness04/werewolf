@@ -169,7 +169,9 @@ async def resolve_vampire(ctx: dict[str, Any]) -> None:
     outcome = _vamp_branch(ctx, tid)
     if outcome == "bitten":
         ctx["flags_out"]["convert_vampire"] = str(tid)
-        ctx["messages"].append("PlayerBitten")
+        ctx["dm_messages"].append(
+            (tid, "PlayerBitten")
+        )
     elif outcome == "killed":
         ctx["deaths"].add(tid)
         ctx["messages"].append("VampireKill")

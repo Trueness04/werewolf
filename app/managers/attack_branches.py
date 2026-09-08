@@ -170,7 +170,9 @@ def wolf_role_branch(
             ctx["flags_out"]["convert_enchanter"] = str(
                 target_id
             )
-            ctx["messages"].append("PlayerBitten")
+            ctx["dm_messages"].append(
+                (target_id, "PlayerBitten")
+            )
             return "bitten"
     alpha_dead = bool(
         ctx.get("alpha_dead")
@@ -183,12 +185,16 @@ def wolf_role_branch(
             ctx["flags_out"]["convert_wolf"] = str(
                 target_id
             )
-            ctx["messages"].append("PlayerBitten")
+            ctx["dm_messages"].append(
+                (target_id, "PlayerBitten")
+            )
             return "bitten"
     if rng.randrange(100) < _chance("alpha_convert"):
         ctx["flags_out"]["convert_wolf"] = str(target_id)
         ctx["flags_out"]["dozd_alpha_hit"] = "1"
-        ctx["messages"].append("PlayerBitten")
+        ctx["dm_messages"].append(
+            (target_id, "PlayerBitten")
+        )
         return "bitten"
     ctx["deaths"].add(target_id)
     return "eaten"

@@ -94,17 +94,16 @@ async def _tick_loop(
         try:
             bridge = ChatBridge(app.bot)
             await TimerManager(bridge).tick_all()
-            from app.integrations.ai_gate import (
-                maybe_run_ai,
-            )
+            from app.integrations.ai_gate import ai_class
 
             ai_bridge = (
-                await maybe_run_ai(
+                ai_class(
                     "AI.sender",
                     "build_ai_bridge",
                     "main.py:_tick_loop",
                 )
-            ) or bridge
+                or bridge
+            )
             # AI on a separate task so an LLM hang
             # never stalls the phase tick loop.
             asyncio.create_task(
@@ -114,9 +113,14 @@ async def _tick_loop(
             await tick_active_nights(bridge)
             await tick_active_days(bridge)
             await tick_active_votes(bridge)
+            log.info(
+                "phase_tick_ok ai_bridge_is_game={v}",
+                v=(ai_bridge is bridge),
+            )
         except Exception as exc:
             log.exception(
-                "phase_tick_failed err={err}",
+                "phase_tick_failed err={err} "
+                "step=end/nights/days/votes",
                 err=str(exc),
             )
         await asyncio.sleep(interval)
