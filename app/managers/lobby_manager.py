@@ -341,7 +341,7 @@ class LobbyManager:
         header = self._texts.get("player", lang, count)
         if not lines:
             return header
-        return texts.get(
+        return self._texts.get(
             "lobby_summary",
             "fa",
             header,
