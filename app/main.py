@@ -114,13 +114,15 @@ async def _tick_loop(
             await tick_active_days(bridge)
             await tick_active_votes(bridge)
             log.info(
-                "phase_tick_ok ai_bridge_is_game={v}",
+                "phase_tick_ok"
+                " ai_bridge_is_game={v}",
                 v=(ai_bridge is bridge),
             )
         except Exception as exc:
             log.exception(
-                "phase_tick_failed err={err} "
-                "step=end/nights/days/votes",
+                "phase_tick_failed"
+                " err={err}"
+                " step=end/nights/days/votes",
                 err=str(exc),
             )
         await asyncio.sleep(interval)
