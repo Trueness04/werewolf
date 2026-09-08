@@ -61,5 +61,12 @@ async def mode_info(
     )
     await context.bot.send_message(
         chat_id=chat.id,
-        text=f"{text}\n{footer}\n/{info.command}",
+        text=texts.get(
+            "mode_info_footer",
+            lang,
+            text,
+            footer,
+            info.command,
+            bundle="webapp",
+        ),
     )

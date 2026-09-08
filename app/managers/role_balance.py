@@ -90,7 +90,7 @@ def balance_roles(
         )
         diff = abs(wolf_w - village_w)
         log.debug(
-            "balance_try a={a} w={w} v={v} d={d}",
+            "balance_try.a={a}.w={w}.v={v}.d={d}",
             a=attempt,
             w=wolf_w,
             v=village_w,

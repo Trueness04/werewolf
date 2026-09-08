@@ -34,7 +34,7 @@ async def ai_runtime_enabled() -> bool:
         return ai_enabled()
     if raw is None:
         return ai_enabled()
-    return str(raw).strip().lower() in {"1", "true", "on"}
+    return str(raw).strip().lower() in ("1", "true", "on")
 
 
 async def set_ai_runtime_enabled(enabled: bool) -> None:

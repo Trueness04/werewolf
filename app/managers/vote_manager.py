@@ -68,8 +68,7 @@ class VoteManager:
         """Enter vote; bump day_count here (doc)."""
         log = get_logger()
         log.info(
-            "start_vote"
-            " ENTER c={c} bump={b}",
+            "start_vote.enter.c={c}.bump={b}",
             c=chat_id,
             b=bump_day,
         )

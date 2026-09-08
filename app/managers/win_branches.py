@@ -9,7 +9,7 @@ from typing import Any
 from app.cache.redis_client import get_redis
 from app.cache.redis_keys import RedisKeySpace
 
-_NO_WIN_SOLO = {
+_NO_WIN_SOLO = (
     "role_WolfJadogar",
     "role_monafeq",
     "role_Honey",
@@ -20,7 +20,7 @@ _NO_WIN_SOLO = {
     "role_dynamite",
     "role_joker",
     "role_harley",
-}
+)
 
 
 def solo_winner(player: dict[str, Any]) -> str:
@@ -29,7 +29,7 @@ def solo_winner(player: dict[str, Any]) -> str:
     if role in _NO_WIN_SOLO:
         return "nothing"
     team = str(player.get("win_team") or "rosta")
-    if team in {"monafeq", "dinamit", "joker"}:
+    if team in ("monafeq", "dinamit", "joker"):
         return "nothing"
     return team
 

@@ -67,16 +67,16 @@ async def pick_session_senior(
             )
         except Exception as exc:
             get_logger().exception(
-                "session_senior.py: pick_session_senior"
-                + " hset chat={} exc={}",
+                "session_senior.py:.pick_session_senior"
+                + "hset.chat={}.exc={}",
                 chat_id,
                 exc,
             )
         return best
     except Exception as exc:
         get_logger().exception(
-            "session_senior.py: pick_session_senior"
-            + " chat={} exc={}",
+            "session_senior.py:.pick_session_senior"
+            + "chat={}.exc={}",
             chat_id,
             exc,
         )
@@ -100,8 +100,8 @@ async def roles_locked(
         return str(state) != "join"
     except Exception as exc:
         get_logger().exception(
-            "session_senior.py: roles_locked chat={}"
-            + " exc={}",
+            "session_senior.py:.roles_locked.chat={}"
+            + "exc={}",
             chat_id,
             exc,
         )
@@ -127,8 +127,8 @@ async def read_panel_flags(
                 raw = await redis.hget(flags, keys.field(field))
             except Exception as exc:
                 get_logger().exception(
-                    "session_senior.py: read_panel_flags hget"
-                    + " field={} chat={} exc={}",
+                    "session_senior.py:.read_panel_flags.hget"
+                    + "field={}.chat={}.exc={}",
                     field,
                     chat_id,
                     exc,
@@ -179,9 +179,7 @@ async def read_panel_flags(
         }
     except Exception as exc:
         get_logger().exception(
-            "session_senior.py: read_panel_flags"
-            + " chat={} exc={}",
-            chat_id,
+            "senior.read_flags",
             exc,
         )
         return {
@@ -211,8 +209,8 @@ async def is_session_senior(
         return int(raw) == int(user_id)
     except Exception as exc:
         get_logger().exception(
-            "session_senior.py: is_session_senior"
-            + " chat={} user={} exc={}",
+            "session_senior.py:.is_session_senior"
+            + "chat={}.user={}.exc={}",
             chat_id,
             user_id,
             exc,
@@ -232,8 +230,8 @@ async def _group_row(chat_id: int) -> GroupRow | None:
             ).scalar_one_or_none()
     except Exception as exc:
         get_logger().exception(
-            "session_senior.py: _group_row chat={}"
-            + " exc={}",
+            "session_senior.py:._group_row.chat={}"
+            + "exc={}",
             chat_id,
             exc,
         )

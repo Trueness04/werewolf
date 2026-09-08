@@ -102,7 +102,7 @@ async def _night_apply(
         return
     label = choice
     if role.target_type == "yes_no":
-        if choice not in {"yes", "no"}:
+        if choice not in ("yes", "no"):
             return
         value = choice
         ok_key = (

@@ -17,8 +17,8 @@ from app.database.session import session_scope
 # Reserved emoji: role emojis + medal emojis are NOT
 # custom-emoji candidates — the picker must refuse them.
 RESERVED_EMOJI: frozenset[str] = frozenset(
-    {
-        "🥇",
+    (
+        "\u1f947",
         "⚫️",
         "🙂",
         "☠️",
@@ -36,7 +36,7 @@ RESERVED_EMOJI: frozenset[str] = frozenset(
         "☀️",
         "🦅",
         "🪬",
-    }
+    )
 )
 
 

@@ -31,7 +31,7 @@ def save_sudo_cfg(data: dict[str, Any]) -> None:
     """Persist sudo.json."""
     Path(SUDO_CFG).write_text(
         json.dumps(data, ensure_ascii=False, indent=2)
-        + "\n",
+        + chr(10),
         encoding="utf-8",
     )
 

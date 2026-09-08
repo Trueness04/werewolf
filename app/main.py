@@ -186,7 +186,7 @@ async def _telegram_error_handler(
         )
     )
     log.error(
-        "handler_error update={}\n{}",
+        "handler_error.update={}\n{}",
         type(update).__name__,
         text.rstrip(),
     )
@@ -226,7 +226,7 @@ def run(settings: Settings) -> None:
             )
             return
         except _C:
-            log.warning("polling_conflict — retry in {}s", delay_s)
+            log.warning("polling_conflict \u2014 retry in {}s", delay_s)
             time.sleep(delay_s)
         except SystemExit:
             raise

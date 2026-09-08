@@ -28,7 +28,7 @@ def validate_init_data(
     data = parse_init_data(raw)
     recv_hash = data.pop("hash", None)
     if not recv_hash:
-        raise HTTPException(401, "missing hash")
+        raise HTTPException(401, "missing.hash")
     check = "\n".join(
         f"{k}={v}"
         for k, v in sorted(data.items())

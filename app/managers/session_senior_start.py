@@ -77,9 +77,7 @@ async def ensure_senior_at_start(
             )
         except Exception as exc:
             get_logger().exception(
-                "session_senior.py: ensure_senior_a" +
-                "t_start hset senior"
-                "} exc={}",
+                "senior.hset",
                 chat_id,
                 best,
                 exc,
@@ -87,8 +85,8 @@ async def ensure_senior_at_start(
         return best
     except Exception as exc:
         get_logger().exception(
-            "session_senior.py: ensure_senior_a" +
-            "t_start chat={} exc={}",
+            "session_senior.py:.ensure_senior_a" +
+            "t_start.chat={}.exc={}",
             chat_id,
             exc,
         )

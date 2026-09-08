@@ -50,15 +50,15 @@ class PersonaBook:
             raise RuntimeError("empty_name_pool")
         for _ in range(80):
             name = (
-                f"{self._rng.choice(self._first)} "
+                f"{self._rng.choice(self._first)}"
                 f"{self._rng.choice(self._epithet)}"
             )
             if name not in used:
                 return name
         return (
-            f"{self._rng.choice(self._first)} "
+            f"{self._rng.choice(self._first)}"
             f"{self._rng.choice(self._epithet)}"
-            f" {self._rng.randrange(10, 99)}"
+            f"{self._rng.randrange(10,.99)}"
         )
 
     def _hydrate(

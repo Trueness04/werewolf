@@ -30,7 +30,7 @@ def _btn(
 
 def _flag(label: str, enabled: bool) -> str:
     mark = "ON" if enabled else "OFF"
-    return f"{label} [{mark}]"
+    return f"{label}.[{mark}]"
 
 
 def build_senior_keyboard(

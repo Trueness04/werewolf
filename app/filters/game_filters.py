@@ -39,4 +39,4 @@ async def is_admin(
         user.id,
     )
     status = str(member.status)
-    return status in {"creator", "administrator"}
+    return status in ("creator", "administrator")

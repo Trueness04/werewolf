@@ -76,7 +76,7 @@ async def tick_end_checks(bridge):
             if winner is None:
                 continue
             L.info(
-                "end_check hit={} w={}",
+                "end_check.hit={}.w={}",
                 chat_id, winner,
             )
             await ender.end(chat_id, winner)
@@ -103,7 +103,7 @@ async def tick_active_nights(bridge):
                     str(chat_id),
                 )
                 L.debug(
-                    "night SKIP ended={}",
+                    "night.SKIP.ended={}",
                     chat_id,
                 )
                 continue
@@ -111,7 +111,7 @@ async def tick_active_nights(bridge):
                 chat_id,
             ):
                 L.debug(
-                    "night WAIT={}",
+                    "night_wait={}",
                     chat_id,
                 )
                 continue
@@ -127,7 +127,7 @@ async def tick_active_nights(bridge):
                 chat_id,
             )
             L.info(
-                "night DONE={} held={}",
+                "night.DONE={}.held={}",
                 chat_id, held,
             )
             if held:
@@ -155,7 +155,7 @@ async def tick_active_days(bridge):
                     str(chat_id),
                 )
                 L.debug(
-                    "day SKIP ended={}",
+                    "day.SKIP.ended={}",
                     chat_id,
                 )
                 continue
@@ -163,7 +163,7 @@ async def tick_active_days(bridge):
                 chat_id,
             ):
                 L.debug(
-                    "day WAIT={}",
+                    "day.WAIT={}",
                     chat_id,
                 )
                 continue
@@ -197,7 +197,7 @@ async def tick_active_days(bridge):
                 chat_id=chat_id,
             )
             await resolver.resolve(chat_id)
-            L.info("day DONE={}", chat_id)
+            L.info("day.DONE={}", chat_id)
 
 
 async def tick_active_votes(bridge):
@@ -223,7 +223,7 @@ async def tick_active_votes(bridge):
                     str(chat_id),
                 )
                 L.debug(
-                    "vote SKIP ended={}",
+                    "vote.SKIP.ended={}",
                     chat_id,
                 )
                 continue
@@ -231,7 +231,7 @@ async def tick_active_votes(bridge):
                 chat_id,
             ):
                 L.debug(
-                    "vote WAIT={}",
+                    "vote.WAIT={}",
                     chat_id,
                 )
                 continue
@@ -299,4 +299,4 @@ async def tick_active_votes(bridge):
                 chat_id=chat_id,
             )
             await vote.finish_vote(chat_id)
-            L.info("vote DONE={}", chat_id)
+            L.info("vote.DONE={}", chat_id)

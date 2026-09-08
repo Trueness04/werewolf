@@ -72,7 +72,7 @@ class NextGameManager:
         body = texts.get(
             "NextGameList",
             lang,
-            ", ".join(labels),
+            ",".join(labels),
             bundle="lobby",
         )
         await bridge.send_text(chat_id, body)

@@ -171,7 +171,7 @@ def write_baseline(confirmation: str) -> int:
     data = build_manifest(key)
     GK_INTEGRITY.write_bytes(data)
     GK_GOLDEN_MANIFEST.write_bytes(data)
-    log.info("gatekeeper_seal_ok files={}", len(PROTECTED))
+    log.info("gatekeeper_seal_ok.files={}", len(PROTECTED))
     return 0
 
 

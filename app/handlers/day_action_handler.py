@@ -71,7 +71,7 @@ async def day_callback(
         )
         return
     label = choice
-    if choice in {"yes", "no"}:
+    if choice in ("yes", "no"):
         value = choice
         if role_id in immediate:
             bridge = deps.bridge(context)

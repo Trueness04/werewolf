@@ -27,7 +27,6 @@ _Registry = import_module(
     "app.class.roles.registry"
 ).RoleRegistry
 
-
 class DayManager:
     """Start and maintain the day discussion phase."""
 
@@ -49,24 +48,20 @@ class DayManager:
 
     async def start_day(self, chat_id: int) -> None:
         """Enter day without bumping day_count."""
-        log = get_logger()
-        log.info(
-            "start_day"
-            " ENTER c={c}",
+        get_logger().info(
+            "start_day.enter.c={c}",
             c=chat_id,
         )
         lang = self._settings.default_lang
         phases = load_json(GAME_PHASES)
         day = str(phases["redis_phases"]["day"])
         await self._state.set_phase(chat_id, day)
-        from app.integrations.ai_gate import maybe_run_ai
+        from app.managers.day_reset import (
+            reset_ai_day_counts,
+        )
 
-        await maybe_run_ai(
-            "AI.talker",
-            "reset_day_chat_counts",
-            "day_manager.py:start_day",
-            chat_id,
-            self._keys,
+        await reset_ai_day_counts(
+            chat_id, self._keys
         )
         redis = await get_redis()
         key = self._keys.game_hash(chat_id)

@@ -17,7 +17,7 @@ from app.managers.special_teams import (
 )
 from app.managers.text_managers import TextManager
 
-_DODGE_DAY_ROLES = {
+_DODGE_DAY_ROLES = (
     "role_tofangdar",
     "role_Spy",
     "role_karagah",
@@ -25,7 +25,7 @@ _DODGE_DAY_ROLES = {
     "role_dian",
     "role_dynamite",
     "role_BlackKnight",
-}
+)
 
 
 async def dodge_day_owner(

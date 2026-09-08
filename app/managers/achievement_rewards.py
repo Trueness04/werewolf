@@ -15,9 +15,9 @@ from app.database.session import session_scope
 from app.managers.chat_bridge import ChatBridge
 from app.managers.text_managers import TextManager
 
-_WOLF_CODES = frozenset({"wolf"})
+_WOLF_CODES = frozenset(("wolf"))
 _VILLAGE_CODES = frozenset(
-    {"rosta", "Firefighter"}
+    ("rosta", "Firefighter")
 )
 
 
@@ -55,7 +55,7 @@ async def apply_end_stats(
                 await bridge.send_text(
                     uid,
                     texts.get("AchioUnlock", lang)
-                    + f"\n🏅 {aid}",
+                    + f"\n\u1f3c5 {aid}",
                 )
 
 
@@ -78,25 +78,25 @@ def _player_won(winner: str, role: str) -> bool:
     if winner == "ferqeTeem":
         return team == "cult"
     if winner == "monafeq":
-        return role in {"role_monafeq", "role_Monafeq"}
+        return role in ("role_monafeq", "role_Monafeq")
     if winner == "qatel":
-        return team == "solo" or role in {
+        return team == "solo" or role in (
             "role_Qatel",
             "role_Archer",
-        }
+        )
     if winner == "black":
         return role == "role_BlackKnight"
     if winner == "joker":
-        return role in {"role_joker", "role_harley"}
+        return role in ("role_joker", "role_harley")
     if winner == "dinamit":
         return role == "role_dinamit"
     if winner == "lover":
         return True
     if winner == "Firefighter":
-        return role in {
+        return role in (
             "role_Firefighter",
             "role_forestQueen",
-        }
+        )
     return False
 
 

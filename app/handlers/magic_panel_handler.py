@@ -33,10 +33,7 @@ async def magic_panel_callback(
                 await answer_safe(query)
             except Exception as exc:
                 get_logger().exception(
-                    "magic_panel_handler.py:"
-                    + " magic_panel_callback answer len<3"
-                    + " chat=? user={} exc={}",
-                    getattr(user, "id", "?"),
+                    "magic_panel.answer_error exc={}",
                     exc,
                 )
             return
@@ -46,7 +43,7 @@ async def magic_panel_callback(
             get_logger().exception(
                 "magic_panel_handler.py:"
                 + " magic_panel_callback bad chat_id"
-                + " data={} exc={}",
+                + "data={}.exc={}",
                 data,
                 exc,
             )
@@ -100,7 +97,7 @@ async def magic_panel_callback(
             get_logger().exception(
                 "magic_panel_handler.py:"
                 + " magic_panel_callback sudo_id_set"
-                + " chat={} exc={}",
+                + "chat={}.exc={}",
                 chat_id,
                 exc,
             )
@@ -138,7 +135,7 @@ async def magic_panel_callback(
             get_logger().exception(
                 "magic_panel_handler.py:"
                 + " magic_panel_callback toggle hset"
-                + " chat={} user={} exc={}",
+                + "chat={}.user={}.exc={}",
                 chat_id,
                 user.id,
                 exc,
@@ -161,7 +158,7 @@ async def magic_panel_callback(
             get_logger().exception(
                 "magic_panel_handler.py:"
                 + " magic_panel_callback answer after"
-                + " toggle chat={} exc={}",
+                + "toggle.chat={}.exc={}",
                 chat_id,
                 exc,
             )
@@ -169,7 +166,7 @@ async def magic_panel_callback(
     except Exception as exc:
         get_logger().exception(
             "magic_panel_handler.py:"
-            + " magic_panel_callback unhandled exc={}",
+            + "magic_panel_callback.unhandled.exc={}",
             exc,
         )
         try:

@@ -53,13 +53,13 @@ BLOOD_MOON_BURN_STEPS: dict[str, str] = {
 }
 
 # Roles that still get night keyboards on blood moon.
-BLOOD_MOON_ALLOWED_ROLES = {
+BLOOD_MOON_ALLOWED_ROLES = (
     "role_vampire",
     "role_BeladMoon",
     "role_chiang",
     "role_Kent",
     "role_Bloodthirsty",
-}
+)
 
 
 def blood_moon_active(ctx: dict[str, Any]) -> bool:

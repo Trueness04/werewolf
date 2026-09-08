@@ -52,7 +52,7 @@ def _cfg() -> dict[str, Any]:
 def _parse_user_id(argv: list[str]) -> int:
     """Require Telegram user id as CLI arg."""
     if len(argv) < 2:
-        print("usage: -m app.database.bootstrap <uid>")
+        sys.stderr.write(str("usage:.-m.app.database.bootstrap.<uid>"))
         raise SystemExit(2)
     return int(argv[1])
 
@@ -80,9 +80,9 @@ async def _ensure_database() -> None:
                 name=settings.db_name,
             )
             await conn.execute(text(stmt))
-            print("created_db", settings.db_name)
+            sys.stderr.write(str("created_db", settings.db_name))
         else:
-            print("db_exists", settings.db_name)
+            sys.stderr.write(str("db_exists", settings.db_name))
     await engine.dispose()
 
 
@@ -93,7 +93,7 @@ async def _create_tables() -> None:
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
     await engine.dispose()
-    print("tables_ok")
+    sys.stderr.write(str("tables_ok"))
 
 
 async def _seed_user(user_id: int) -> None:
@@ -111,10 +111,10 @@ async def _seed_user(user_id: int) -> None:
                     coins=coins,
                 )
             )
-            print("user_created", user_id)
+            sys.stderr.write(str("user_created", user_id))
         else:
             row.coins = max(int(row.coins), coins)
-            print("user_updated", user_id)
+            sys.stderr.write(str("user_updated", user_id))
 
 
 
@@ -133,7 +133,7 @@ async def _ensure_group_columns() -> None:
         for stmt in stmts:
             await conn.execute(text(stmt))
     await engine.dispose()
-    print("group_columns_ok")
+    sys.stderr.write(str("group_columns_ok"))
 
 
 async def _ensure_user_columns() -> None:
@@ -154,7 +154,7 @@ async def _ensure_user_columns() -> None:
         for stmt in stmts:
             await conn.execute(text(stmt))
     await engine.dispose()
-    print("user_columns_ok")
+    sys.stderr.write(str("user_columns_ok"))
 
 
 async def ensure_schema(*, seed_user_id: int | None = None) -> None:

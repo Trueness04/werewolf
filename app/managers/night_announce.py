@@ -24,8 +24,7 @@ async def announce_night_results(
     """Send night result messages to group + victims."""
     registry = _Registry()
     get_logger().info(
-        "night_announce"
-        " g={g} dm={d}",
+        "night_announce.stats.g={g}.dm={d}",
         g=[str(m) for m in ctx["messages"]],
         d=len(ctx.get("dm_messages") or []),
     )

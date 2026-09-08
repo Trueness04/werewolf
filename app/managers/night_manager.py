@@ -108,7 +108,7 @@ class NightManager(
         """Phase night + DM roles + arm timer."""
         log = get_logger()
         log.info(
-            "start_night_ENTER chat={c}",
+            "start_night_ENTER.chat={c}",
             c=chat_id,
         )
         redis = await get_redis()
@@ -121,12 +121,12 @@ class NightManager(
         )
         if not lock:
             log.warning(
-                "start_night_LOCKED chat={c} SKIP",
+                "start_night_LOCKED.chat={c}.SKIP",
                 c=chat_id,
             )
             return
         log.info(
-            "start_night_LOCKED chat={c}",
+            "start_night_LOCKED.chat={c}",
             c=chat_id,
         )
         lang = self._settings.default_lang

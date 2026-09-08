@@ -11,14 +11,14 @@ from app.managers.json_loader import load_json
 from app.managers.night_village import player
 
 _CHANCES = ROOT / "data" / "config" / "field_chances.json"
-_TEAMS = {
+_TEAMS = (
     "rosta",
     "wolf",
     "ferqeTeem",
     "vampire",
     "qatel",
-}
-_NIGHT_STEAL = {
+)
+_NIGHT_STEAL = (
     "role_pishgo",
     "role_Natasha",
     "role_Fereshte",
@@ -31,13 +31,13 @@ _NIGHT_STEAL = {
     "role_ngativ",
     "role_vampire",
     "role_Chemist",
-}
-_DAY_STEAL = {
+)
+_DAY_STEAL = (
     "role_Spy",
     "role_Princess",
     "role_tofangdar",
     "role_karagah",
-}
+)
 
 
 def _chance(key: str) -> int:
@@ -215,10 +215,10 @@ async def resolve_dynamite_night(
     parts = set(ctx.get("bomber_parts") or [])
     finds = int(ctx.get("dinamit_finds") or 0)
     for item in ctx["players"]:
-        if item.get("role") not in {
+        if item.get("role") not in (
             "role_dynamite",
             "role_dinamit",
-        }:
+        ):
             continue
         if not item.get("alive", True):
             continue

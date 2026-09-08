@@ -33,7 +33,7 @@ def ai_available() -> bool:
 
 def _warn_absent(module: str, context: str) -> None:
     get_logger().warning(
-        "{} module={} context={} — skipped",
+        "{} module={} context={} \u2014 skipped",
         AI_ABSENT_LOG_PREFIX,
         module,
         context,

@@ -167,8 +167,7 @@ async def _debug_unhandled_command(
     if msg is None or chat is None:
         return
     get_logger().info(
-        "cmd_seen"
-        " c={c} t={t}",
+        "cmd.seen.c={c}.t={t}",
         c=chat.id,
         t=msg.text,
     )

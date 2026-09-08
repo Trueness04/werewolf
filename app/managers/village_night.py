@@ -263,7 +263,7 @@ async def deliver_seer_notes(
         if len(note) < 3:
             continue
         uid, role_id, key = note[0], note[1], note[2]
-        if key in {
+        if key in (
             "AugurSeesNothing",
             "No_role",
             "WatermelonChoseSuccess",
@@ -273,7 +273,7 @@ async def deliver_seer_notes(
             "DinamitFindPart",
             "DinamitMiss",
             "PlayerDead",
-        }:
+        ):
             await bridge.send_text(
                 int(uid),
                 texts.get(key, lang, bundle="results"),

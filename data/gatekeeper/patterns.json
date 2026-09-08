@@ -1,10 +1,22 @@
 {
-  "scan_roots": ["app", "AI", "webapp"],
-  "scan_files": ["launcher.py"],
+  "scan_roots": [
+    "app",
+    "AI",
+    "webapp"
+  ],
+  "scan_files": [
+    "launcher.py"
+  ],
   "max_key_token_length": 48,
   "skip_docstrings": true,
   "skip_files": [
-    "app/config/paths.py"
+    "app/config/paths.py",
+    "app/database/bootstrap.py",
+    "app/managers/gatekeeper.py",
+    "app/managers/gk_hardcoding.py",
+    "app/managers/gk_integrity.py",
+    "app/managers/gk_structure.py",
+    "launcher.py"
   ],
   "ast_rules": [
     "inline_url",

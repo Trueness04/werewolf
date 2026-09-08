@@ -73,7 +73,7 @@ class NightResolver(
         )
         L = get_logger()
         if done:
-            L.debug("night_resolve SKIP chat={} (done=1)", chat_id)
+            L.debug("night_resolve.SKIP.chat={}.(done=1)", chat_id)
             return await self._wait_interrupt(chat_id, lang)
         log_game_event(
             "night_resolve_start",
@@ -84,7 +84,7 @@ class NightResolver(
 
         for step in self._order:
             L.debug(
-                "night_step chat={c} step={s}",
+                "night_step.chat={c}.step={s}",
                 c=chat_id,
                 s=step,
             )
@@ -109,8 +109,7 @@ class NightResolver(
             )
         if ctx.get("stop_night") or ctx.get("defer_day"):
             L.debug(
-                "night_held chat={c}"
-                " stop={s} defer={d}",
+                "night.held.c={c}.s={s}.d={d}",
                 c=chat_id,
                 s=ctx.get("stop_night"),
                 d=ctx.get("defer_day"),

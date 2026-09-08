@@ -40,15 +40,13 @@ class ChatBridge(
                 )
                 if registry is None:
                     raise ImportError(
-                        "AI package disabled or absent"
+                        "AI.package.disabled.or.absent"
                     )
                 cfg = registry().config
                 self._ai_base = int(cfg["id_base"])
             except ImportError as exc:
                 self._log.warning(
-                    "ai_pkg_absent "
-                    "mod=AI.registry "
-                    "err={err}",
+                    "ai_pkg_absent.registry.err={err}",
                     err=str(exc),
                 )
                 self._ai_base = 0
@@ -85,7 +83,7 @@ class ChatBridge(
         """
         if self._is_ai_target(chat_id):
             self._log.warning(
-                "skip_ai_dm chat={}", chat_id,
+                "skip_ai_dm.chat={}", chat_id,
             )
             return 0
         for attempt in range(2):
@@ -152,7 +150,7 @@ class ChatBridge(
         """Send GIF/animation; return message_id (0 on fail)."""
         if self._is_ai_target(chat_id):
             self._log.warning(
-                "skip_ai_anim chat={}", chat_id,
+                "skip_ai_anim.chat={}", chat_id,
             )
             return 0
         for attempt in range(2):
@@ -198,7 +196,7 @@ class ChatBridge(
         """
         if self._is_ai_target(chat_id):
             self._log.warning(
-                "skip_ai_rich chat={}", chat_id,
+                "skip_ai_rich.chat={}", chat_id,
             )
             return False
         for attempt in range(2):
@@ -305,7 +303,7 @@ class ChatBridge(
             )
         except Exception as exc:
             self._log.warning(
-                "pin_failed chat={} msg={} err={}",
+                "pin_failed.chat={}.msg={}.err={}",
                 chat_id,
                 message_id,
                 exc,

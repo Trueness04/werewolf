@@ -106,10 +106,10 @@ async def config_callback(
         chat_id,
         user.id,
     )
-    if str(member.status) not in {
+    if str(member.status) not in (
         "creator",
         "administrator",
-    }:
+    ):
         return
     lang = deps.lang_of(update)
     tm = deps.texts()

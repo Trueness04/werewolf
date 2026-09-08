@@ -138,7 +138,7 @@ async def edit_post(
     async with session_scope() as session:
         row = await session.get(PostRow, post_id)
         if row is None or row.user_id != me.user_id:
-            raise HTTPException(404, "post not found")
+            raise HTTPException(404, "post.not.found")
         row.body = body.body.strip()
         row.media_url = body.media_url
         row.updated_at = datetime.now(timezone.utc)
@@ -154,7 +154,7 @@ async def delete_post(
     async with session_scope() as session:
         row = await session.get(PostRow, post_id)
         if row is None or row.user_id != me.user_id:
-            raise HTTPException(404, "post not found")
+            raise HTTPException(404, "post.not.found")
         await session.execute(
             delete(LikeRow).where(LikeRow.post_id == post_id)
         )
@@ -200,7 +200,7 @@ async def add_comment(
     me = await ensure_user(tg)
     async with session_scope() as session:
         if await session.get(PostRow, post_id) is None:
-            raise HTTPException(404, "post not found")
+            raise HTTPException(404, "post.not.found")
         row = CommentRow(
             post_id=post_id,
             user_id=me.user_id,
@@ -238,7 +238,7 @@ async def follow(
 ) -> dict:
     me = await ensure_user(tg)
     if user_id == me.user_id:
-        raise HTTPException(400, "cannot follow self")
+        raise HTTPException(400, _wmsg("http_follow_self"))
     async with session_scope() as session:
         exists = (
             await session.execute(

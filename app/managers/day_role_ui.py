@@ -130,11 +130,11 @@ async def send_day_role_ui(
             if not any(
                 int(p["user_id"]) == t[0]
                 and p.get("role")
-                in {
+                in (
                     "role_BlackKnight",
                     "role_BrideTheDead",
                     "role_dian",
-                }
+                )
                 for p in players
             )
         ]

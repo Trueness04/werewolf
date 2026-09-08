@@ -61,9 +61,9 @@ class NightVillage:
             masks = ctx.get("beta_masks") or {}
             if str(target_id) in masks:
                 role_id = str(masks[str(target_id)])
-        if role_id in {"role_Khaen", "role_NefrinShode"}:
+        if role_id in ("role_Khaen", "role_NefrinShode"):
             role_id = "role_Shahzade"
-        if role_id in {
+        if role_id in (
             "role_WhiteWolf",
             "role_mighty_white_wolf",
             "role_Gorgname",
@@ -74,7 +74,7 @@ class NightVillage:
             "role_betaWolf",
             "role_Honey",
             "role_enchanter",
-        }:
+        ):
             role_id = "role_wolf"
         mk = self._registry.definition(role_id)[
             "message_keys"

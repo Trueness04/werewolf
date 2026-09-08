@@ -82,7 +82,7 @@ async def resolve_chiang(ctx: dict[str, Any]) -> None:
             for p in ctx["players"]
             if p.get("alive", True)
             and p.get("team")
-            not in {"villager", None}
+            not in ("villager", None)
             and p.get("role") != "role_chiang"
         ]
         if not enemies:
@@ -216,7 +216,7 @@ def _vamp_branch(ctx: dict[str, Any], tid: int) -> str:
         ):
             return "blocked"
     # Attacker dies vs SK / hunter
-    if role in {"role_Qatel", "role_shekar"}:
+    if role in ("role_Qatel", "role_shekar"):
         attacker = ctx.get("last_vamp_voter")
         if attacker is not None:
             ctx["deaths"].add(int(attacker))

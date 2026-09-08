@@ -58,7 +58,7 @@ async def run_forever() -> None:
     cfg = load_json(AI_AGENTS)
     interval = float(cfg.get("service_tick_seconds", 3))
     log.info(
-        "ai_service_start bot={b}",
+        "ai_service_start.bot={b}",
         b=settings.ai_bot_username or "-",
     )
     if not settings.nvidia_api_key:
@@ -70,7 +70,7 @@ async def run_forever() -> None:
 
         me = await Bot(settings.ai_bot_token).get_me()
         log.info(
-            "ai_bot_ok username={u}",
+            "ai_bot_ok.username={u}",
             u=me.username,
         )
     while True:
@@ -79,7 +79,7 @@ async def run_forever() -> None:
                 await _tick()
         except Exception as exc:
             log.exception(
-                "ai_service_tick_failed err={e}",
+                "ai_service_tick_failed.err={e}",
                 e=str(exc),
             )
         await asyncio.sleep(interval)

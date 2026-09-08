@@ -161,7 +161,13 @@ class AiTalker:
             )
         )
         extra = str(self._cfg.get("chat_system_extra", ""))
-        system = f"{persona['system']}\n{extra}".strip()
+        system = self._texts.get(
+            "ai_system_join",
+            "fa",
+            persona["system"],
+            extra,
+            bundle="webapp",
+        ).strip()
         target = (
             self._rng.choice(names) if names else my_name
         )

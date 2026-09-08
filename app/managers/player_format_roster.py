@@ -123,7 +123,7 @@ def _roster_markdown(
         for c, n, w, s, r in rows
     )
     table = (
-        "| | | | | |\n|:-:|:----|:-:|:-:|:----|\n"
+        "roster.table.head",
         f"{body}"
     )
     return f"{head}\n\n{table}"

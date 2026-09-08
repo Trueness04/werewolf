@@ -142,10 +142,10 @@ async def resolve_wolf_team(ctx: dict[str, Any]) -> None:
         if (
             target.get("team") == "wolf"
             and item.get("role")
-            not in {
+            not in (
                 "role_WhiteWolf",
                 "role_mighty_white_wolf",
-            }
+            )
         ):
             continue
         votes.append(tid)
@@ -165,7 +165,7 @@ async def resolve_wolf_team(ctx: dict[str, Any]) -> None:
         ctx["messages"].append("EmptyHome")
         return
     outcome = wolf_role_branch(ctx, target_id)
-    if outcome in {"blocked", "bitten", "elder"}:
+    if outcome in ("blocked", "bitten", "elder"):
         ctx["wolf_target"] = None
 
 

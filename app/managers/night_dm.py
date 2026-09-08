@@ -49,7 +49,7 @@ class NightDmSender:
         sent_key = self._keys.night_sent(chat_id)
         already = await redis.sismember(sent_key, str(uid))
         log.info(
-            "role_dm_check uid={} sent={}",
+            "role_dm_check.uid={}.sent={}",
             uid, already,
         )
         if already:
@@ -112,7 +112,13 @@ class NightDmSender:
             lang,
             bundle="roles",
         )
-        body = f"{name}\n{desc}"
+        body = texts.get(
+            "night_dm_body",
+            "fa",
+            name,
+            desc,
+            bundle="webapp",
+        )
         team_key = mk.get("team_info")
         if team_key:
             mates = [
@@ -207,10 +213,10 @@ class NightDmSender:
                     return True
         if role.team != "wolf":
             return False
-        if role.role_id in {
+        if role.role_id in (
             "role_WhiteWolf",
             "role_mighty_white_wolf",
-        }:
+        ):
             return False
         mast = await redis.hget(
             flags,

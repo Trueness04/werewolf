@@ -63,7 +63,7 @@ class TimerManager(
                 log_game_event(
                     "tick_error",
                     chat_id=int(item),
-                    error=f"{type(exc).__name__}: {exc}",
+                    error=f"{type(exc).__name__}:.{exc}",
                 )
         # Periodic orphan cleanup (every call for now, can throttle later)
         try:

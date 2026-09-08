@@ -342,4 +342,10 @@ class LobbyManager:
         header = self._texts.get("player", lang, count)
         if not lines:
             return header
-        return f"{header}\n" + "\n".join(lines)
+        return texts.get(
+            "lobby_summary",
+            "fa",
+            header,
+            "\n".join(lines),
+            bundle="webapp",
+        )

@@ -146,8 +146,7 @@ async def handle_start_game(
         await _remind_join(update, context, lang, True)
         return
     log.debug(
-        "sg_new"
-        " c={}",
+        "sg.new.c={c}",
         c=chat.id,
     )
     await _start_new(
@@ -157,37 +156,6 @@ async def handle_start_game(
         lang,
         group,
     )
-
-
-async def _remind_join(
-    update: Update,
-    context: ContextTypes.DEFAULT_TYPE,
-    lang: str,
-    challenge: bool,
-) -> None:
-    """Resend join button for existing lobby."""
-    chat = update.effective_chat
-    if chat is None:
-        return
-    tm = deps.texts()
-    url = deps.join_url(chat.id)
-    keyboard = build_join_keyboard(
-        tm,
-        lang,
-        url,
-        challenge=challenge,
-    )
-    key_name = (
-        "StartLastChallenge"
-        if challenge
-        else "startLastGame"
-    )
-    mid = await context.bot.send_message(
-        chat_id=chat.id,
-        text=tm.get(key_name, lang),
-        reply_markup=keyboard,
-    )
-    await _track_delete(chat.id, mid.message_id)
 
 
 async def _start_new(
@@ -275,7 +243,13 @@ async def _start_new(
         name=fullname,
     )
     caption = tm.get(info.start_text_key, lang, mention)
-    caption = f"{caption}\n{tm.get('StartGameFooter', lang)}"
+    caption = tm.get(
+        "start_game_caption",
+        lang,
+        caption,
+        tm.get("StartGameFooter", lang),
+        bundle="webapp",
+    )
     if group.settext_start:
         caption = f"{caption}\n{group.settext_start}"
     bridge = deps.bridge(context)

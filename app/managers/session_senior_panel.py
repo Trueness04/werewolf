@@ -53,7 +53,7 @@ async def send_senior_panel(
             "session_senior.py:"
             + " send_senior_panel"
             + " hget sent chat={}"
-            + " senior={} exc={}",
+            + "senior={}.exc={}",
             chat_id,
             senior_id,
             exc,
@@ -86,8 +86,8 @@ async def send_senior_panel(
         )
     except Exception as exc:
         get_logger().exception(
-            "session_senior.py: send_senior_pan" +
-            "el read_panel_flags chat={} exc={}",
+            "session_senior.py:.send_senior_pan" +
+            "el.read_panel_flags.chat={}.exc={}",
             chat_id,
             exc,
         )
@@ -104,8 +104,8 @@ async def send_senior_panel(
         )
     except Exception as exc:
         get_logger().exception(
-            "session_senior.py: send_senior_pan" +
-            "el roles_locked chat={} exc={}",
+            "session_senior.py:.send_senior_pan" +
+            "el.roles_locked.chat={}.exc={}",
             chat_id,
             exc,
         )
@@ -126,8 +126,7 @@ async def send_senior_panel(
         )
     except Exception as exc:
         get_logger().exception(
-            "session_senior.py: send_senior_pan" +
-            "el build_keyboard chat={} exc={}",
+            "senior.build_kb.c={c}.e={e}",
             chat_id,
             exc,
         )

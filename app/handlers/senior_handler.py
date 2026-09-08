@@ -50,8 +50,8 @@ async def senior_callback(
             tpl = load_json(CALLBACK_TEMPLATES)
         except Exception as exc:
             get_logger().exception(
-                "senior_handler.py: senior_callback"
-                + " load_json exc={}",
+                "senior_handler.py:.senior_callback"
+                + "load_json.exc={}",
                 exc,
             )
             return
@@ -62,8 +62,7 @@ async def senior_callback(
                 return
         except Exception as exc:
             get_logger().exception(
-                "senior_handler.py: senior_callback"
-                + " prefix check exc={}",
+                "senior.prefix_check.exc={}",
                 exc,
             )
             return
@@ -152,13 +151,13 @@ async def senior_callback(
             return
 
         # Toggle actions — only redis flag + answer, no panel edit/delete
-        if action in {
+        if action in (
             "magic",
             "mute",
             "secret",
             "vamp",
             "blood",
-        }:
+        ):
             from app.handlers.senior_kill import (
                 apply_toggle,
             )
@@ -262,8 +261,8 @@ async def senior_callback(
             return
     except Exception as exc:
         get_logger().exception(
-            "senior_handler.py: senior_callback outer"
-            + " chat exc={}",
+            "senior_handler.py:.senior_callback.outer"
+            + "chat.exc={}",
             exc,
         )
 
@@ -276,7 +275,7 @@ def senior_callback_pattern() -> str:
     except Exception as exc:
         get_logger().exception(
             "senior_handler.py:"
-            + " senior_callback_pattern exc={}",
+            + "senior_callback_pattern.exc={}",
             exc,
         )
         return r"^sr:"

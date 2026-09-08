@@ -68,7 +68,7 @@ class BanManager:
             return BanResult(blocked=False)
         shamsi = jdatetime.datetime.fromgregorian(
             datetime=expire,
-        ).strftime("%Y/%m/%d %H:%M")
+        ).strftime("%Y/%m/%d.%H:%M")
         log_game_event(
             "ban_temporary",
             user_id=user_id,

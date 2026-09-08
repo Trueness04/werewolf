@@ -51,7 +51,7 @@ def refresh_die_fire_and_ice(ctx: dict[str, Any]) -> None:
         # Only if at least one existed this game
         had = any(
             p.get("role")
-            in {"role_firefighter", "role_IceQueen"}
+            in ("role_firefighter", "role_IceQueen")
             for p in ctx["players"]
         )
         if had:

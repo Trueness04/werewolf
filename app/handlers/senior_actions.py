@@ -102,7 +102,7 @@ async def _do_extend(
             )
         except Exception as exc:
             get_logger().exception(
-                "senior_handler.py: _do_extend send"
+                "senior_handler.py:._do_extend.send"
                 "_text",
                 + " chat={} exc={}",
                 chat_id,
@@ -124,9 +124,8 @@ async def _do_extend(
             )
     except Exception as exc:
         get_logger().exception(
-            "senior_handler.py: _do_extend oute" +
-            "r chat={} user={} exc={}",
-            chat_id,
+            "senior.do_extend_outer"
+            " user={u} exc={e}",
             user_id,
             exc,
         )
@@ -266,9 +265,9 @@ async def _refresh_markup(
     """Frozen — panel is never edited/deleted. No-op with log."""
     try:
         get_logger().debug(
-            "senior_handler.py: _refresh_markup" +
-            " frozen",
-            + " no-op chat={} restore={}",
+            "senior_handler.py:._refresh_markup" +
+            "frozen",
+            + "no-op.chat={}.restore={}",
             chat_id,
             restore_body,
         )

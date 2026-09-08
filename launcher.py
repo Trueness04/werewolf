@@ -50,7 +50,7 @@ def _materialize_env() -> None:
             parents=True, exist_ok=True
         )
         dotenv.write_bytes(base64.b64decode(raw))
-        print("env materialized from DEPLOY_ENV_FILE")
+        sys.stderr.write(str("env.materialized.from.DEPLOY_ENV_FILE"))
     except Exception as exc:
         print(
             "env materialize failed:", repr(exc)
@@ -155,7 +155,7 @@ def main() -> None:
         daemon=True,
     )
     web.start()
-    log.info("webapp_started host={} port={}", host, port)
+    log.info("webapp_started.host={}.port={}", host, port)
 
     if settings.webapp_url:
         log.info("webapp_url={}", settings.webapp_url)

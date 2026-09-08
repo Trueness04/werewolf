@@ -85,8 +85,8 @@ async def finish_vote_round(
             )
 
             get_logger().warning(
-                "vote_finish.py: close_vote_ui chat={}"
-                + " voter={} exc={}",
+                "vote_finish.py:.close_vote_ui.chat={}"
+                + "voter={}.exc={}",
                 chat_id,
                 voter_s,
                 exc,

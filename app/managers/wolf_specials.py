@@ -8,15 +8,15 @@ from typing import Any
 
 from app.managers.night_village import player
 
-_BASE_WOLVES = {
+_BASE_WOLVES = (
     "role_wolf",
     "role_WolfGorgine",
     "role_Tolle",
     "role_Wolfx",
     "role_Alpha",
-}
+)
 
-_SENSITIVE = {
+_SENSITIVE = (
     "role_pishgo",
     "role_Fool",
     "role_Augur",
@@ -25,7 +25,7 @@ _SENSITIVE = {
     "role_Spy",
     "role_qhost",
     "role_Nazer",
-}
+)
 
 
 def _alive_wolves(ctx: dict[str, Any]) -> list[dict]:
@@ -43,10 +43,10 @@ async def resolve_white_wolf(
     """Guard like angel; alone → become role_wolf."""
     for item in ctx["players"]:
         role = str(item.get("role") or "")
-        if role not in {
+        if role not in (
             "role_WhiteWolf",
             "role_mighty_white_wolf",
-        }:
+        ):
             continue
         if not item.get("alive", True):
             continue
@@ -130,13 +130,13 @@ async def resolve_beta_wolf(
         if r
         and str(r) not in _BASE_WOLVES
         and str(r)
-        not in {
+        not in (
             "role_betaWolf",
             "role_WhiteWolf",
             "role_iceWolf",
             "role_enchanter",
             "role_Honey",
-        }
+        )
     ]
     if not pool:
         pool = ["role_villager"]

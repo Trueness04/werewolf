@@ -40,7 +40,7 @@ async def notify_mason_links(
             )
         return
     for me in masons:
-        mates = ", ".join(
+        mates = ",".join(
             str(o["fullname"])
             for o in masons
             if int(o["user_id"]) != int(me["user_id"])

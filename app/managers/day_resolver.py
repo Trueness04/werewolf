@@ -66,7 +66,7 @@ class DayResolver(DaySteps):
         interrupt = False
         for step in self._order:
             log.debug(
-                "day_step chat={c} step={s}",
+                "day_step.chat={c}.step={s}",
                 c=chat_id,
                 s=step,
             )

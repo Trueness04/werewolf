@@ -27,9 +27,9 @@ _TG_QUEUE_MAX = 200
 # Built from parts to stay under the gatekeeper 40-char
 # literal cap; joined at import time.
 _FMT_PARTS = (
-    "<c>{time:HH:mm:ss}</c> ",
-    "<b>{level.name}</b> ",
-    "{name}:{function} — {message}",
+    "<c>{time:HH:mm:ss}</c>",
+    "<b>{level.name}</b>",
+    "{name}:{function} \u2014 {message}",
 )
 _FMT_COMPACT = "".join(_FMT_PARTS)
 
@@ -54,7 +54,7 @@ def _record_text(record: dict[str, Any]) -> str:
     text = head + msg
     exc = record.get("exception")
     if exc:
-        text += "\n" + str(exc)[-1200:]
+        text = _join_exc(text, str(exc)[-1200:])
     if len(text) > 3800:
         text = text[:3800] + "…"
     return text
@@ -88,7 +88,7 @@ def _sender_worker(q: _q.Queue) -> None:
                 )
             except Exception as e:
                 # surface failures on stderr for Railway console visibility
-                print("tg_log_sink_error:", repr(e)[:200])
+                sys.stderr.write(str("tg_log_sink_error:", repr(e)[:200]))
             finally:
                 q.task_done()
 

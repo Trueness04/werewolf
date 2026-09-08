@@ -25,7 +25,7 @@ def _btn(
 
 def _flag(label: str, enabled: bool) -> str:
     mark = "ON" if enabled else "OFF"
-    return f"{label} [{mark}]"
+    return f"{label}.[{mark}]"
 
 
 def build_magic_panel_keyboard(
@@ -63,7 +63,7 @@ def build_magic_panel_keyboard(
             )
         rows.append(
             [
-                _btn("ℹ️ Info", chat_id, "info"),
+                _btn("\u2139\ufe0f Info", chat_id, "info"),
                 _btn("✕", chat_id, "noop"),
             ]
         )
@@ -71,8 +71,8 @@ def build_magic_panel_keyboard(
     except Exception as exc:
         get_logger().exception(
             "magic_panel_keyboard.py:"
-            + " build_magic_panel_keyboard chat={}"
-            + " enabled={} exc={}",
+            + "build_magic_panel_keyboard.chat={}"
+            + "enabled={}.exc={}",
             chat_id,
             enabled,
             exc,
@@ -87,8 +87,8 @@ def build_magic_panel_keyboard(
         except Exception as exc2:
             get_logger().exception(
                 "magic_panel_keyboard.py:"
-                + " build_magic_panel_keyboard fallback2"
-                + " chat={} exc={}",
+                + "build_magic_panel_keyboard.fallback2"
+                + "chat={}.exc={}",
                 chat_id,
                 exc2,
             )

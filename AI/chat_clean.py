@@ -37,7 +37,7 @@ def clean_chat_line(
     cfg = _patterns()
     limit = max_len if max_len is not None else cfg["max_len"]
     space: re.Pattern[str] = cfg["space"]
-    line = space.sub(" ", str(text or "")).strip()
+    line = space.sub("", str(text or "")).strip()
     if not line:
         return ""
     if cfg["cjk"].search(line):
@@ -50,7 +50,7 @@ def clean_chat_line(
     if latin:
         for word in latin:
             line = line.replace(word, "")
-        line = space.sub(" ", line).strip(" :،,-")
+        line = space.sub("", line).strip(" :،,-")
     persian = sum(
         1 for ch in line if "\u0600" <= ch <= "\u06FF"
     )

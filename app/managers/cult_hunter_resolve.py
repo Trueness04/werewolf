@@ -58,7 +58,7 @@ async def resolve_cult_hunter(
                     "CultHunterKillFrancGroup"
                 )
             continue
-        if role in {"role_ferqe", "role_Royce", "role_DarNeshan"}:
+        if role in ("role_ferqe", "role_Royce", "role_DarNeshan"):
             ctx["deaths"].add(tid)
             ctx["messages"].append("HunterKilledCultist")
             if role == "role_DarNeshan":

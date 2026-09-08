@@ -76,7 +76,7 @@ async def send_magic_panel(
             from app.managers.magic_inventory import inventory_counts
             balance = await get_user_coins(int(user_id))
             inv = await inventory_counts(int(user_id))
-            inv_txt = " · ".join(
+            inv_txt = " \u00b7 ".join(
                 f"{k}:{v}" for k, v in sorted(inv.items()) if v
             ) or "0"
         except Exception as exc:
@@ -151,7 +151,13 @@ async def send_magic_panel(
                 bundle="magic",
             )
 
-        text = f"<b>{title}</b>\n\n{body}"
+        text = texts.get(
+            "magic_panel_text",
+            "fa",
+            title,
+            body,
+            bundle="webapp",
+        )
         try:
             msg_id = await bridge.send_text(
                 user_id,

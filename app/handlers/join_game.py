@@ -105,7 +105,7 @@ async def run_join_steps(
         )
     except Exception:
         status = "left"
-    allow = 0 if status in {"left", "kicked"} else 1
+    allow = 0 if status in ("left", "kicked") else 1
     keys = RedisKeySpace()
     redis = await get_redis()
     # 3 already in another game

@@ -191,7 +191,7 @@ class GameStateManager:
             log_game_event(
                 "lobby_cleanup_err",
                 chat_id=chat_id,
-                detail=f"player_keys: {e}",
+                detail=f"player_keys:.{e}",
             )
         for method in (
             self._keys.game_hash,
@@ -215,7 +215,7 @@ class GameStateManager:
                 log_game_event(
                     "lobby_cleanup_err",
                     chat_id=chat_id,
-                    detail=f"{method.__name__}: {e}",
+                    detail=f"{method.__name__}:.{e}",
                 )
         for active in (
             self._keys.active_join_chats(),
@@ -229,7 +229,7 @@ class GameStateManager:
                 log_game_event(
                     "lobby_cleanup_err",
                     chat_id=chat_id,
-                    detail=f"active_set: {e}",
+                    detail=f"active_set:.{e}",
                 )
         log_game_event(
             "lobby_closed",

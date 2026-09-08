@@ -249,13 +249,13 @@ class DayActions:
             players = (
                 json.loads(players_raw) if players_raw else []
             )
-            vamp_team = {
+            vamp_team = (
                 "role_vampire",
                 "role_BeladMoon",
                 "role_chiang",
                 "role_Kent",
                 "role_Bloodthirsty",
-            }
+            )
             for item in players:
                 uid = int(item["user_id"])
                 if uid == user_id:

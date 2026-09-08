@@ -13,8 +13,8 @@ from app.managers.night_village import player
 from app.managers.text_managers import TextManager
 
 _rng = SystemRandom()
-_BOOK_ROLES = {"role_joker", "role_harley"}
-_ENEMY_KILL = {
+_BOOK_ROLES = ("role_joker", "role_harley")
+_ENEMY_KILL = (
     "role_wolf",
     "role_Alpha",
     "role_WhiteWolf",
@@ -23,7 +23,7 @@ _ENEMY_KILL = {
     "role_Archer",
     "role_vampire",
     "role_Bloodthirsty",
-}
+)
 
 
 async def seed_joker_books(

@@ -31,7 +31,7 @@ def _btn(
 
 def _flag(label: str, enabled: bool) -> str:
     mark = "ON" if enabled else "OFF"
-    return f"{label} [{mark}]"
+    return f"{label}.[{mark}]"
 
 
 def build_config_keyboard(
@@ -113,7 +113,7 @@ def build_config_keyboard(
         ],
         [
             _btn(
-                f"{max_l}: {max_players}",
+                f"{max_l}:.{max_players}",
                 chat_id,
                 "maxmenu",
                 "1",
@@ -121,7 +121,7 @@ def build_config_keyboard(
         ],
         [
             _btn(
-                f"{mode_l}: {mode_name}",
+                f"{mode_l}:.{mode_name}",
                 chat_id,
                 "flavor",
                 "1",
@@ -181,7 +181,7 @@ def build_max_player_keyboard(
         _btn(str(n), chat_id, "max", str(n))
         for n in opts[4:]
     ]
-    back = _btn("«", chat_id, "menu", "1")
+    back = _btn("\u00ab", chat_id, "menu", "1")
     return InlineKeyboardMarkup(
         [row1, row2, [back]]
     )

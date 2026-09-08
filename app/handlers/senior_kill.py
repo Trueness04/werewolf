@@ -29,7 +29,7 @@ def _toggle_field(action: str, panel: dict[str, bool]) -> tuple[str | None,
 
 def _is_locked_action(action: str) -> bool:
     """True for actions blocked once roles are locked."""
-    return action in frozenset({"vamp", "blood"})
+    return action in frozenset(("vamp", "blood"))
 
 
 async def _locked_answer(
@@ -50,9 +50,9 @@ async def _locked_answer(
         )
     except Exception as exc:
         get_logger().exception(
-            "senior_handler.py: senior_callback" +
-            " locked",
-            + " answer chat={} exc={}",
+            "senior_handler.py:.senior_callback" +
+            "locked",
+            + "answer.chat={}.exc={}",
             chat_id,
             exc,
         )
@@ -86,7 +86,7 @@ async def apply_toggle(
             "0" if cur else "1",
         )
         return True
-    if action not in frozenset({"mute", "magic", "secret"}):
+    if action not in frozenset(("mute", "magic", "secret")):
         return False
     from app.managers.session_senior import read_panel_flags
 
@@ -147,8 +147,7 @@ async def _do_kill(
             )
         except Exception as exc:
             get_logger().exception(
-                "senior_handler.py: _do_kill kill c" +
-                "hat={} user={} exc={}",
+                "senior.do_kill.c={c}.u={u}.e={e}",
                 chat_id,
                 user_id,
                 exc,
@@ -203,8 +202,8 @@ async def _do_kill(
             )
     except Exception as exc:
         get_logger().exception(
-            "senior_handler.py: _do_kill outer " +
-            "chat={} user={} value={} exc={}",
+            "senior_handler.py:._do_kill.outer" +
+            "chat={}.user={}.value={}.exc={}",
             chat_id,
             user_id,
             value,

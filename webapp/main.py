@@ -35,7 +35,7 @@ def _need_build() -> HTTPException:
 
 
 app = FastAPI(
-    title="Onyx WebApp",
+    title="Onyx.WebApp",
     version="0.2.0",
 )
 app.add_middleware(

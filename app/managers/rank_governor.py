@@ -58,7 +58,13 @@ def format_new_level(
             governor_name,
             bundle="rank",
         )
-        text = f"{template}\n{fallback}"
+        text = TextManager().get(
+            "rank_newlevel_fallback",
+            "fa",
+            template,
+            fallback,
+            bundle="webapp",
+        )
     return text
 
 
