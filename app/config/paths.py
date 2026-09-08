@@ -76,6 +76,11 @@ REQUIREMENTS: Path = ENV_DIR / "requirements.txt"
 
 LAUNCHER: Path = ROOT / "launcher.py"
 
+GK_INTEGRITY: Path = GK_DIR / "integrity.json"
+GK_GOLDEN_DIR: Path = Path.home() / ".onyx_gatekeeper"
+GK_GOLDEN_MANIFEST: Path = GK_GOLDEN_DIR / "manifest.json"
+GK_GOLDEN_KEY: Path = GK_GOLDEN_DIR / "gk.key"
+
 SUPPORTED_LANGS: tuple[str, ...] = (
     "fa",
     "en",

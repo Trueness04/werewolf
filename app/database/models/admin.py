@@ -79,7 +79,7 @@ class SponsorRow(Base):
     user_id: Mapped[int] = mapped_column(BigInteger)
     title: Mapped[str] = mapped_column(
         String(128),
-        default="اسپانسر",
+        default="",
     )
     amount_toman: Mapped[int] = mapped_column(
         Integer,

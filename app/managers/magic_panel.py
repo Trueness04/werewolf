@@ -139,9 +139,17 @@ async def send_magic_panel(
         body = texts.get("MagicPanelBody", lang, bundle="lobby")
         # Fallback if bundle keys missing
         if not title or title == "MagicPanelTitle":
-            title = "🔮 پنل جادو"
+            title = texts.get(
+                "magic_panel_title",
+                "fa",
+                bundle="magic",
+            )
         if not body or body == "MagicPanelBody":
-            body = "جادوها را از اینجا مدیریت کن"
+            body = texts.get(
+                "magic_panel_hint",
+                "fa",
+                bundle="magic",
+            )
 
         text = f"<b>{title}</b>\n\n{body}"
         try:

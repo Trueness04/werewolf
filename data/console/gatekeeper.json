@@ -1,5 +1,7 @@
 {
   "violation": "[gatekeeper:{rule}] {message}",
   "summary_fail": "Gatekeeper FAILED ({count} issue(s)).",
-  "summary_ok": "Gatekeeper OK."
+  "summary_ok": "Gatekeeper OK.",
+  "rebaseline_prompt": "Type the seal word to re-baseline gatekeeper files: ",
+  "rebaseline_refused": "Re-baseline refused: an interactive terminal is required."
 }

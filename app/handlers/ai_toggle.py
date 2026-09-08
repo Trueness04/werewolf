@@ -2,23 +2,25 @@
 
 from __future__ import annotations
 
+import json
+
 from telegram import Update
 from telegram.ext import ContextTypes
 
 from app.integrations.ai_gate import ai_callable
 from app.managers.sudo import is_sudo
+from app.managers.text_managers import TextManager
 
-AI_ON_TEXT = "سوییچ AI روشن شد ✅"
-AI_OFF_TEXT = "سوییچ AI خاموش شد ⛔"
-AI_STATE_ON_TEXT = "سوییچ AI روشن است ✅"
-AI_STATE_OFF_TEXT = "سوییچ AI خاموش است ⛔"
+_texts = TextManager()
 
-_ON_WORDS = frozenset(
-    {"on", "1", "yes", "روشن", "فعال"}
-)
-_OFF_WORDS = frozenset(
-    {"off", "0", "no", "خاموش", "غیرفعال"}
-)
+
+def _load_words(key: str) -> frozenset:
+    raw = _texts.get(key, "fa", bundle="ai")
+    try:
+        items = json.loads(raw)
+        return frozenset(str(x).lower() for x in items)
+    except Exception:
+        return frozenset()
 
 
 async def ai_command(
@@ -32,14 +34,16 @@ async def ai_command(
         return
     if not is_sudo(user.id):
         return
+    texts = TextManager()
+    lang = "fa"
     args = [
         str(item).strip().lower()
         for item in (context.args or [])
     ]
     set_to: bool | None = None
-    if args and args[0] in _ON_WORDS:
+    if args and args[0] in _load_words("ai_arg_on"):
         set_to = True
-    elif args and args[0] in _OFF_WORDS:
+    elif args and args[0] in _load_words("ai_arg_off"):
         set_to = False
     if set_to is None:
         _get = ai_callable(
@@ -48,10 +52,10 @@ async def ai_command(
             "ai_toggle:state",
         )
         state = bool(await _get())
-        text = (
-            AI_STATE_ON_TEXT
+        key = (
+            "ai_state_on"
             if state
-            else AI_STATE_OFF_TEXT
+            else "ai_state_off"
         )
     else:
         _set = ai_callable(
@@ -60,8 +64,8 @@ async def ai_command(
             "ai_toggle:set",
         )
         await _set(set_to)
-        text = AI_ON_TEXT if set_to else AI_OFF_TEXT
+        key = "ai_on" if set_to else "ai_off"
     await context.bot.send_message(
         chat_id=chat.id,
-        text=text,
+        text=texts.get(key, lang, bundle="ai"),
     )

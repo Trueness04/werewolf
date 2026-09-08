@@ -76,7 +76,8 @@ async def extend_join(
             text=tm.get(
                 "ExtendInvalidAmount",
                 lang,
-                "، ".join(
+                tm.get("ExtendSeparator", lang)
+                .join(
                     str(v) for v in (
                         30, 60, 90, 120, 160, 180, 300,
                     )

@@ -19,6 +19,7 @@ from app.config.paths import COMMANDS_JSON
 from app.config.settings import Settings
 from app.main_handlers import _register_handlers
 from app.managers.chat_bridge import ChatBridge
+from app.managers.gatekeeper import Gatekeeper
 from app.managers.json_loader import load_json
 from app.managers.logger_manager import (
     get_logger,
@@ -193,6 +194,7 @@ async def _telegram_error_handler(
 
 def run(settings: Settings) -> None:
     """Start telegram bot runtime (Conflict-resilient)."""
+    Gatekeeper().enforce()
     setup_loguru(settings.debug_mode)
     log = get_logger()
     # Python 3.12+ may have no default loop for PTB.

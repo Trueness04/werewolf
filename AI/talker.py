@@ -15,6 +15,7 @@ from app.cache.redis_keys import RedisKeySpace
 from app.config.paths import AI_AGENTS
 from app.managers.game_event import log_game_event
 from app.managers.json_loader import load_json
+from app.managers.text_managers import TextManager
 
 
 class AiTalker:
@@ -29,6 +30,7 @@ class AiTalker:
         self._llm = llm or LlmClient()
         self._book = PersonaBook(self._keys)
         self._ctx = GameContext(self._keys)
+        self._texts = TextManager()
         self._cfg = load_json(AI_AGENTS)
         self._rng = SystemRandom()
 
@@ -150,7 +152,14 @@ class AiTalker:
         team = str(
             (snap.get("role") or {}).get("team") or ""
         )
-        team_fa = str(labels.get(team) or "نامشخص")
+        team_fa = str(
+            labels.get(team)
+            or self._texts.get(
+                "ai_team_unknown",
+                "fa",
+                bundle="ai",
+            )
+        )
         extra = str(self._cfg.get("chat_system_extra", ""))
         system = f"{persona['system']}\n{extra}".strip()
         target = (
@@ -198,7 +207,13 @@ class AiTalker:
         if not lines:
             return ""
         who = target or (
-            self._rng.choice(names) if names else "رفیق"
+            self._rng.choice(names)
+            if names
+            else self._texts.get(
+                "ai_default_buddy",
+                "fa",
+                bundle="ai",
+            )
         )
         raw = str(self._rng.choice(lines))
         return clean_chat_line(

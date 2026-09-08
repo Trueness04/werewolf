@@ -6,6 +6,7 @@ from sqlalchemy import select
 
 from app.database.models.user import UserRow
 from app.database.session import session_scope
+from app.managers.text_managers import TextManager
 
 
 async def get_governor() -> UserRow | None:
@@ -28,7 +29,9 @@ async def governor_display_name() -> str:
     """Name for NewLevel announcements."""
     row = await get_governor()
     if row is None:
-        return "اونیکس"
+        return TextManager().get(
+            "rank_brand", "fa", bundle="rank"
+        )
     return str(row.fullname or row.user_id)
 
 
@@ -47,11 +50,15 @@ def format_new_level(
             governor_name,
         )
     except (IndexError, KeyError, ValueError):
-        text = (
-            f"{template}\n"
-            f"از درجه {old_rank} به {new_rank} — "
-            f"به دستور {governor_name} اونیکس 👑"
+        fallback = TextManager().get(
+            "rank_promote",
+            "fa",
+            old_rank,
+            new_rank,
+            governor_name,
+            bundle="rank",
         )
+        text = f"{template}\n{fallback}"
     return text
 
 

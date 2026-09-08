@@ -11,6 +11,9 @@ from telegram.ext import ContextTypes
 
 from app.managers.game_event import log_game_event
 from app.managers.sudo import is_sudo
+from app.managers.text_managers import TextManager
+
+_texts = TextManager()
 
 # Modules that are safe to live-reload (managers + handlers).
 # Order: dependencies first, dependents after.
@@ -95,13 +98,21 @@ async def hotfix_command(
         return
 
     await context.bot.send_message(
-        chat_id=chat.id, text="⏳ دریافت آخرین کد...",
+        chat_id=chat.id,
+        text=_texts.get(
+            "hotfix_pull", "fa", bundle="hotfix"
+        ),
     )
 
     try:
         pull_result = await _git_pull()
     except Exception as exc:
-        pull_result = f"خطای git: {exc}"
+        pull_result = _texts.get(
+            "hotfix_git_error",
+            "fa",
+            str(exc),
+            bundle="hotfix",
+        )
 
     reloaded = _reload_modules()
     count = len(reloaded)
@@ -113,9 +124,11 @@ async def hotfix_command(
         pull=pull_result[:200],
     )
 
-    text = (
-        f"✅ هات‌فیکس اعمال شد\n"
-        f"📦 {count} ماژول ریلود شد\n"
-        f"🔄 git: {pull_result[:300]}"
+    text = _texts.get(
+        "hotfix_done",
+        "fa",
+        count,
+        pull_result[:300],
+        bundle="hotfix",
     )
     await context.bot.send_message(chat_id=chat.id, text=text)

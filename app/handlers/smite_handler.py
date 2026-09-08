@@ -15,6 +15,7 @@ from app.managers.game_state_manager import (
     GroupInactive,
 )
 from app.managers.sudo import is_sudo
+from app.managers.text_managers import TextManager
 
 
 async def smite_command(
@@ -28,6 +29,12 @@ async def smite_command(
         return
     if not is_sudo(user.id):
         return
+    texts = TextManager()
+    lang = "fa"
+
+    def msg(key: str, /, *args: object) -> str:
+        return texts.get(key, lang, bundle="smite", *args)
+
     reply = update.effective_message.reply_to_message
     target = (
         reply.from_user.id if reply and reply.from_user else None
@@ -35,10 +42,7 @@ async def smite_command(
     if target is None:
         await context.bot.send_message(
             chat_id=chat.id,
-            text=(
-                "ریپلای کن روی بازیکنی که"
-                " باید فرار کنه 🏃"
-            ),
+            text=msg("smite_need_reply"),
         )
         return
     state_mgr = deps_state()
@@ -49,7 +53,7 @@ async def smite_command(
     if state is GameState.NO_GAME:
         await context.bot.send_message(
             chat_id=chat.id,
-            text="بازی‌ای در جریان نیست.",
+            text=msg("smite_no_game"),
         )
         return
     redis = await get_redis()
@@ -58,10 +62,7 @@ async def smite_command(
     if cur_state == "dead":
         await context.bot.send_message(
             chat_id=chat.id,
-            text=(
-                "این بازیکن از قبل مرده —"
-                " smite نمیشه."
-            ),
+            text=msg("smite_already_dead"),
         )
         return
     await redis.set(keys.player_state(target), "neutral")
@@ -88,10 +89,8 @@ async def smite_command(
     await context.bot.send_message(
         chat_id=chat.id,
         text=(
-            f"🏃 {name}"
-            " فراری"
-            " و متواری شد!\n"
-            + "در برد و باخت خنثی حساب میشه."
+            msg("smite_ran", name)
+            + msg("smite_neutral")
         ),
     )
 

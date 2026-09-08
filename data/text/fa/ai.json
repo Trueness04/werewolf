@@ -1,0 +1,10 @@
+{
+  "ai_on": "سوییچ AI روشن شد ✅",
+  "ai_off": "سوییچ AI خاموش شد ⛔",
+  "ai_state_on": "سوییچ AI روشن است ✅",
+  "ai_state_off": "سوییچ AI خاموش است ⛔",
+  "ai_arg_on": ["on", "1", "yes", "روشن", "فعال"],
+  "ai_arg_off": ["off", "0", "no", "خاموش", "غیرفعال"],
+  "ai_team_unknown": "نامشخص",
+  "ai_default_buddy": "رفیق"
+}

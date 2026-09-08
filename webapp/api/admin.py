@@ -346,7 +346,10 @@ async def grant_item(
     }
     if body.item_id not in catalog:
         # allow known magic ids even if catalog drifts
-        if not body.item_id.startswith("Majik") and not body.item_id.startswith("Maji"):
+        is_magic = body.item_id.startswith(
+            "Majik"
+        ) or body.item_id.startswith("Maji")
+        if not is_magic:
             raise HTTPException(404, "unknown item")
     actor = int(tg["id"])
     async with session_scope() as session:
