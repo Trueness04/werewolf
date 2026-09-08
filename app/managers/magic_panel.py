@@ -38,7 +38,8 @@ async def read_magic_panel_flags(
         return {"enabled": enabled, "MagicPanelEnabled": enabled}
     except Exception as exc:
         get_logger().exception(
-            "magic_panel.py: read_magic_panel_flags chat={} exc={}",
+            "magic_panel.py: read_magic_panel_flags"
+            + " chat={} exc={}",
             chat_id,
             exc,
         )
@@ -58,7 +59,8 @@ async def send_magic_panel(
     """Send magic panel once per player per game.
 
     Guard: if user_id already in sent set, return.
-    On success: sadd uid. On failure (bridge.send_text returns 0): do not sadd.
+    On success: sadd uid. On failure
+    (bridge.send_text returns 0): do not sadd.
     """
     try:
         keys = keys or RedisKeySpace()
@@ -67,7 +69,8 @@ async def send_magic_panel(
         redis = await get_redis()
         sent_key = _magic_sent_key(chat_id)
 
-                # Balance + magic inventory header (real data, webapp owns actions)
+                # Balance + magic inventory header
+                # (real data, webapp owns actions)
         try:
             from app.managers.lobby_coins import get_user_coins
             from app.managers.magic_inventory import inventory_counts
@@ -78,7 +81,8 @@ async def send_magic_panel(
             ) or "0"
         except Exception as exc:
             get_logger().exception(
-                "magic_panel.py: send_magic_panel balance chat={} user={} exc={}",
+                "magic_panel.py: send_magic_panel balance"
+                + " chat={} user={} exc={}",
                 chat_id,
                 user_id,
                 exc,
@@ -90,7 +94,8 @@ async def send_magic_panel(
             is_member = await redis.sismember(sent_key, str(user_id))
         except Exception as exc:
             get_logger().exception(
-                "magic_panel.py: send_magic_panel sismember chat={} user={} exc={}",
+                "magic_panel.py: send_magic_panel"
+                + " sismember chat={} user={} exc={}",
                 chat_id,
                 user_id,
                 exc,
@@ -123,7 +128,8 @@ async def send_magic_panel(
         if bridge is None:
             # No bridge available — cannot send; leave not-sadded for retry
             get_logger().warning(
-                "magic_panel.py: send_magic_panel no bridge chat={} user={}",
+                "magic_panel.py: send_magic_panel no"
+                + " bridge chat={} user={}",
                 chat_id,
                 user_id,
             )
@@ -139,10 +145,15 @@ async def send_magic_panel(
 
         text = f"<b>{title}</b>\n\n{body}"
         try:
-            msg_id = await bridge.send_text(user_id, text, reply_markup=markup)
+            msg_id = await bridge.send_text(
+                user_id,
+                text,
+                reply_markup=markup,
+            )
         except Exception as exc:
             get_logger().exception(
-                "magic_panel.py: send_magic_panel send_text chat={} user={} exc={}",
+                "magic_panel.py: send_magic_panel"
+                + " send_text chat={} user={} exc={}",
                 chat_id,
                 user_id,
                 exc,
@@ -157,14 +168,16 @@ async def send_magic_panel(
             await redis.sadd(sent_key, str(user_id))
         except Exception as exc:
             get_logger().exception(
-                "magic_panel.py: send_magic_panel sadd chat={} user={} exc={}",
+                "magic_panel.py: send_magic_panel sadd"
+                + " chat={} user={} exc={}",
                 chat_id,
                 user_id,
                 exc,
             )
     except Exception as exc:
         get_logger().exception(
-            "magic_panel.py: send_magic_panel chat={} user={} exc={}",
+            "magic_panel.py: send_magic_panel chat={}"
+            + " user={} exc={}",
             chat_id,
             user_id,
             exc,
@@ -185,7 +198,9 @@ async def ensure_magic_panel_at_start(
         return bool(flags.get("enabled", True))
     except Exception as exc:
         get_logger().exception(
-            "magic_panel.py: ensure_magic_panel_at_start chat={} exc={}",
+            "magic_panel.py:"
+            + " ensure_magic_panel_at_start chat={}"
+            + " exc={}",
             chat_id,
             exc,
         )

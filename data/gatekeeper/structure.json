@@ -42,14 +42,7 @@
     "AI",
     "data",
     "webapp",
-    "launcher.py",
-    "requirements.txt",
-    "nixpacks.toml",
-    "railway.json",
-    "skills-lock.json",
-    "_textwork",
-    ".agents",
-    "envboot.py"
+    "launcher.py"
   ],
   "files": [
     "webapp/main.py",
@@ -184,5 +177,11 @@
     "data/config/field_chances.json",
     "data/config/cult_rules.json",
     "data/config/village_chances.json"
+  ],
+  "app_only_files": [
+    "app"
+  ],
+  "data_no_python": [
+    "data"
   ]
 }

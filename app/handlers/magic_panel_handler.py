@@ -33,7 +33,9 @@ async def magic_panel_callback(
                 await answer_safe(query)
             except Exception as exc:
                 get_logger().exception(
-                    "magic_panel_handler.py: magic_panel_callback answer len<3 chat=? user={} exc={}",
+                    "magic_panel_handler.py:"
+                    + " magic_panel_callback answer len<3"
+                    + " chat=? user={} exc={}",
                     getattr(user, "id", "?"),
                     exc,
                 )
@@ -42,7 +44,9 @@ async def magic_panel_callback(
             chat_id = int(parts[1])
         except (ValueError, TypeError) as exc:
             get_logger().exception(
-                "magic_panel_handler.py: magic_panel_callback bad chat_id data={} exc={}",
+                "magic_panel_handler.py:"
+                + " magic_panel_callback bad chat_id"
+                + " data={} exc={}",
                 data,
                 exc,
             )
@@ -50,7 +54,9 @@ async def magic_panel_callback(
                 await answer_safe(query)
             except Exception as exc2:
                 get_logger().exception(
-                    "magic_panel_handler.py: magic_panel_callback answer bad_chat exc={}",
+                    "magic_panel_handler.py:"
+                    + " magic_panel_callback answer bad_chat"
+                    + " exc={}",
                     exc2,
                 )
             return
@@ -63,7 +69,9 @@ async def magic_panel_callback(
                 await answer_safe(query)
             except Exception as exc:
                 get_logger().exception(
-                    "magic_panel_handler.py: magic_panel_callback noop/info chat={} user={} exc={}",
+                    "magic_panel_handler.py:"
+                    + " magic_panel_callback noop/info chat={}"
+                    + " user={} exc={}",
                     chat_id,
                     user.id,
                     exc,
@@ -76,7 +84,9 @@ async def magic_panel_callback(
                 await answer_safe(query)
             except Exception as exc:
                 get_logger().exception(
-                    "magic_panel_handler.py: magic_panel_callback unknown action={} chat={} exc={}",
+                    "magic_panel_handler.py:"
+                    + " magic_panel_callback unknown action={}"
+                    + " chat={} exc={}",
                     action,
                     chat_id,
                     exc,
@@ -88,7 +98,9 @@ async def magic_panel_callback(
             sudo_set = get_settings().sudo_id_set()
         except Exception as exc:
             get_logger().exception(
-                "magic_panel_handler.py: magic_panel_callback sudo_id_set chat={} exc={}",
+                "magic_panel_handler.py:"
+                + " magic_panel_callback sudo_id_set"
+                + " chat={} exc={}",
                 chat_id,
                 exc,
             )
@@ -99,7 +111,9 @@ async def magic_panel_callback(
                 await answer_safe(query)
             except Exception as exc:
                 get_logger().exception(
-                    "magic_panel_handler.py: magic_panel_callback not sudo chat={} user={} exc={}",
+                    "magic_panel_handler.py:"
+                    + " magic_panel_callback not sudo chat={}"
+                    + " user={} exc={}",
                     chat_id,
                     user.id,
                     exc,
@@ -122,7 +136,9 @@ async def magic_panel_callback(
             await redis.hset(flags_key, field, new_val)
         except Exception as exc:
             get_logger().exception(
-                "magic_panel_handler.py: magic_panel_callback toggle hset chat={} user={} exc={}",
+                "magic_panel_handler.py:"
+                + " magic_panel_callback toggle hset"
+                + " chat={} user={} exc={}",
                 chat_id,
                 user.id,
                 exc,
@@ -131,7 +147,9 @@ async def magic_panel_callback(
                 await answer_safe(query)
             except Exception as exc2:
                 get_logger().exception(
-                    "magic_panel_handler.py: magic_panel_callback answer after hset fail exc={}",
+                    "magic_panel_handler.py:"
+                    + " magic_panel_callback answer after hset"
+                    + " fail exc={}",
                     exc2,
                 )
             return
@@ -141,14 +159,17 @@ async def magic_panel_callback(
             await answer_safe(query)
         except Exception as exc:
             get_logger().exception(
-                "magic_panel_handler.py: magic_panel_callback answer after toggle chat={} exc={}",
+                "magic_panel_handler.py:"
+                + " magic_panel_callback answer after"
+                + " toggle chat={} exc={}",
                 chat_id,
                 exc,
             )
 
     except Exception as exc:
         get_logger().exception(
-            "magic_panel_handler.py: magic_panel_callback unhandled exc={}",
+            "magic_panel_handler.py:"
+            + " magic_panel_callback unhandled exc={}",
             exc,
         )
         try:

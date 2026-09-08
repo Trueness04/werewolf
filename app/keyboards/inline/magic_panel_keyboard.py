@@ -70,7 +70,9 @@ def build_magic_panel_keyboard(
         return InlineKeyboardMarkup(rows)
     except Exception as exc:
         get_logger().exception(
-            "magic_panel_keyboard.py: build_magic_panel_keyboard chat={} enabled={} exc={}",
+            "magic_panel_keyboard.py:"
+            + " build_magic_panel_keyboard chat={}"
+            + " enabled={} exc={}",
             chat_id,
             enabled,
             exc,
@@ -84,7 +86,9 @@ def build_magic_panel_keyboard(
             )
         except Exception as exc2:
             get_logger().exception(
-                "magic_panel_keyboard.py: build_magic_panel_keyboard fallback2 chat={} exc={}",
+                "magic_panel_keyboard.py:"
+                + " build_magic_panel_keyboard fallback2"
+                + " chat={} exc={}",
                 chat_id,
                 exc2,
             )

@@ -88,8 +88,10 @@ async def smite_command(
     await context.bot.send_message(
         chat_id=chat.id,
         text=(
-            f"🏃 {name} فراری و متواری شد!\n"
-            "در برد و باخت خنثی حساب میشه."
+            f"🏃 {name}"
+            " فراری"
+            " و متواری شد!\n"
+            + "در برد و باخت خنثی حساب میشه."
         ),
     )
 

@@ -9,10 +9,15 @@ import telegram
 from telegram import InlineKeyboardMarkup
 from telegram.ext import ExtBot
 
+from app.managers.chat_bridge_members import (
+    ChatBridgeMembers,
+)
 from app.managers.logger_manager import get_logger
 
 
-class ChatBridge:
+class ChatBridge(
+    ChatBridgeMembers,
+):
     """Thin async wrapper around ExtBot calls."""
 
     _ai_base: int | None = None
@@ -305,56 +310,3 @@ class ChatBridge:
                 message_id,
                 exc,
             )
-
-    # -- delete / member helpers ----------------------------------------
-
-    async def delete(
-        self,
-        chat_id: int,
-        message_id: int,
-    ) -> None:
-        """Delete one message; ignore failures."""
-        try:
-            await self._bot.delete_message(
-                chat_id=chat_id,
-                message_id=message_id,
-            )
-        except Exception:
-            return
-
-    async def get_member_status(
-        self,
-        chat_id: int,
-        user_id: int,
-    ) -> str:
-        """Return chat member status string."""
-        member = await self._bot.get_chat_member(
-            chat_id=chat_id,
-            user_id=user_id,
-        )
-        return str(member.status)
-
-    async def get_chat_title(self, chat_id: int) -> str:
-        """Return chat title for PV confirmations."""
-        chat = await self._bot.get_chat(chat_id)
-        return str(chat.title or chat_id)
-
-    async def mute_member(
-        self,
-        chat_id: int,
-        user_id: int,
-    ) -> None:
-        """Mute member (can_send_messages=False)."""
-        from telegram import ChatPermissions
-
-        try:
-            await self._bot.restrict_chat_member(
-                chat_id=chat_id,
-                user_id=user_id,
-                permissions=ChatPermissions(
-                    can_send_messages=False,
-                ),
-            )
-        except Exception:
-            return
-

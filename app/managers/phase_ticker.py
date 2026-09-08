@@ -17,10 +17,13 @@ from app.managers.night_resolver import NightResolver
 from app.managers.phase_wiring import build_day_pipeline
 from app.managers.text_managers import TextManager
 from app.managers.win_judge import WinJudge
+from app.managers.phase_ticker_timeouts import (  # noqa: F401
+    _sheriff_timeout,
+    _stop_black_timeout,
+)
 
 _LOCK_TTL = 20
 _log = None
-
 
 def _L():
     global _log
@@ -297,67 +300,3 @@ async def tick_active_votes(bridge):
             )
             await vote.finish_vote(chat_id)
             L.info("vote DONE={}", chat_id)
-
-
-async def _sheriff_timeout(
-    bridge, keys, texts, lang,
-    chat_id, sheriff_id,
-):
-    redis = await get_redis()
-    raw = await redis.get(
-        keys.game_players(chat_id),
-    )
-    players = json.loads(raw) if raw else []
-    name = next(
-        (
-            r["fullname"]
-            for r in players
-            if int(r["user_id"]) == sheriff_id
-        ),
-        str(sheriff_id),
-    )
-    msg = texts.get(
-        "sheriff_shot_skip",
-        lang,
-        name,
-        bundle="vote",
-    )
-    await bridge.send_text(chat_id, msg)
-    lynch = LynchResolver(bridge)
-    night = NightManager(bridge)
-    lynch.set_night_starter(night.start_night)
-    await lynch.continue_after_shot_timeout(
-        chat_id,
-    )
-
-
-async def _stop_black_timeout(
-    bridge, keys, texts, lang,
-    chat_id, actor_id,
-):
-    redis = await get_redis()
-    raw = await redis.get(
-        keys.game_players(chat_id),
-    )
-    players = json.loads(raw) if raw else []
-    name = next(
-        (
-            r["fullname"]
-            for r in players
-            if int(r["user_id"]) == actor_id
-        ),
-        str(actor_id),
-    )
-    msg = texts.get(
-        "StopBlackSkip",
-        lang,
-        name,
-        bundle="vote",
-    )
-    await bridge.send_text(chat_id, msg)
-    lynch = LynchResolver(bridge)
-    night = NightManager(bridge)
-    lynch.set_night_starter(night.start_night)
-    await lynch.continue_after_black_timeout(
-        chat_id,
-    )

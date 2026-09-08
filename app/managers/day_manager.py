@@ -16,13 +16,9 @@ from app.database.session import session_scope
 from app.managers.chat_bridge import ChatBridge
 from app.managers.day_role_ui import send_day_role_ui
 from app.managers.game_event import log_game_event
-from app.managers.game_state_manager import (
-    GameStateManager,
-)
+from app.managers.game_state_manager import GameStateManager
 from app.managers.json_loader import load_json
-from app.managers.player_snapshot import (
-    load_enriched_players,
-)
+from app.managers.player_snapshot import load_enriched_players
 from app.managers.text_managers import TextManager
 from importlib import import_module
 

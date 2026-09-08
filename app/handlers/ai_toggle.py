@@ -5,10 +5,7 @@ from __future__ import annotations
 from telegram import Update
 from telegram.ext import ContextTypes
 
-from AI.registry import (
-    ai_runtime_enabled,
-    set_ai_runtime_enabled,
-)
+from app.integrations.ai_gate import ai_callable
 from app.managers.sudo import is_sudo
 
 AI_ON_TEXT = "سوییچ AI روشن شد ✅"
@@ -45,14 +42,24 @@ async def ai_command(
     elif args and args[0] in _OFF_WORDS:
         set_to = False
     if set_to is None:
-        state = await ai_runtime_enabled()
+        _get = ai_callable(
+            "AI.registry",
+            "ai_runtime_enabled",
+            "ai_toggle:state",
+        )
+        state = bool(await _get())
         text = (
             AI_STATE_ON_TEXT
             if state
             else AI_STATE_OFF_TEXT
         )
     else:
-        await set_ai_runtime_enabled(set_to)
+        _set = ai_callable(
+            "AI.registry",
+            "set_ai_runtime_enabled",
+            "ai_toggle:set",
+        )
+        await _set(set_to)
         text = AI_ON_TEXT if set_to else AI_OFF_TEXT
     await context.bot.send_message(
         chat_id=chat.id,

@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import asyncio
-import json
 from time import time
 from typing import Any
 
@@ -24,6 +23,9 @@ from app.managers.game_state_manager import (
 )
 from app.managers.json_loader import load_json
 from app.managers.night_dm import NightDmSender
+from app.managers.night_manager_store import (
+    NightManagerStore,
+)
 from app.managers.text_managers import TextManager
 from importlib import import_module
 
@@ -31,7 +33,9 @@ _Registry = import_module(
     "app.class.roles.registry"
 ).RoleRegistry
 
-class NightManager:
+class NightManager(
+    NightManagerStore,
+):
     """Start first night and deliver role DMs."""
 
     def __init__(
@@ -342,40 +346,3 @@ class NightManager:
         if not raw:
             return False
         return int(raw) <= int(time())
-
-    async def _load_players(
-        self,
-        chat_id: int,
-    ) -> list[dict[str, Any]]:
-        """Load players list from Redis."""
-        redis = await get_redis()
-        raw = await redis.get(
-            self._keys.game_players(chat_id)
-        )
-        roles_raw = await redis.get(
-            self._keys.game_roles(chat_id)
-        )
-        players = json.loads(raw) if raw else []
-        roles = json.loads(roles_raw) if roles_raw else {}
-        out: list[dict[str, Any]] = []
-        for item in players:
-            uid = str(item["user_id"])
-            role_id = roles.get(uid)
-            state = await redis.get(
-                self._keys.player_state(int(uid))
-            )
-            alive = state != "dead"
-            info = (
-                self._registry.definition(role_id)
-                if role_id
-                else {}
-            )
-            out.append(
-                {
-                    **item,
-                    "role": role_id,
-                    "team": info.get("team"),
-                    "alive": alive,
-                }
-            )
-        return out
