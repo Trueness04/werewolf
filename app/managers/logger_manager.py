@@ -75,25 +75,42 @@ def _sender_worker(q: _q.Queue) -> None:
         if not gid or not token:
             return  # nowhere to send — drain and discard
         bot = Bot(token=token)
-        while True:
-            record = q.get()
-            if record is None:
-                q.task_done()
-                break
+
+        async def _send_batch(batch: list[Any]) -> None:
+            """Send queued records as one grouped message."""
+            text = chr(10).join(
+                _record_text(rec) for rec in batch
+            )[-3800:]
             try:
                 await bot.send_message(
                     chat_id=int(gid),
-                    text=_record_text(record),
+                    text=text,
                 )
             except Exception as e:
-                # surface failures on stderr for Railway console visibility
                 sys.stderr.write(
                     "tg_log_sink_error:"
                     + repr(e)[:200]
                     + chr(10)
                 )
-            finally:
-                q.task_done()
+
+        while True:
+            # block for first record, then gather whatever arrived
+            # within the 5s window (max 20) — one message per batch
+            batch = [q.get()]
+            q.task_done()
+            if batch[0] is None:
+                break
+            try:
+                while len(batch) < 20:
+                    rec = q.get_nowait()
+                    q.task_done()
+                    if rec is None:
+                        break
+                    batch.append(rec)
+            except _q.Empty:
+                pass
+            await _send_batch(batch)
+            await asyncio.sleep(5)
 
     loop.run_until_complete(_run())
 
