@@ -49,11 +49,13 @@ def _materialize_gatekeeper() -> None:
         return
     try:
         home.mkdir(parents=True, exist_ok=True)
+        pad = "=" * (-len(manifest) % 4)
         (home / "manifest.json").write_bytes(
-            base64.b64decode(manifest)
+            base64.b64decode(manifest.strip() + pad)
         )
+        kpad = "=" * (-len(key) % 4)
         (home / "gk.key").write_bytes(
-            base64.b64decode(key)
+            base64.b64decode(key.strip() + kpad)
         )
     except Exception as exc:
         print("gatekeeper materialize failed:", repr(exc))
