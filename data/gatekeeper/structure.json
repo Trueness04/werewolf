@@ -42,7 +42,9 @@
     "AI",
     "data",
     "webapp",
-    "launcher.py"
+    "launcher.py",
+    "nixpacks.toml",
+    "requirements.txt"
   ],
   "files": [
     "webapp/main.py",
