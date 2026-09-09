@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import json
+
 from sqlalchemy import select
 
 from app.cache.redis_client import get_redis
@@ -58,7 +60,9 @@ class RoleAssignMixin:
                     row.state = "alive"
                 if not player.get("name"):
                     player["name"] = str(
-                        row.fullname or uid
+                        row.fullname
+                        if row is not None
+                        else uid
                     )
                 player["name"] = str(
                     player.get("name")
