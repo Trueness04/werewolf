@@ -345,6 +345,6 @@ class LobbyManager:
             "lobby_summary",
             "fa",
             header,
-            ".".join(lines),
+            "\n".join(lines),
             bundle="webapp",
         )

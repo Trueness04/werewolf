@@ -13,3 +13,4 @@ data/logs/*
 !data/logs/.gitkeep
 *.ps1
 _textwork/snapshots/
+_textwork/
