@@ -197,7 +197,7 @@ class TimerManager(
         chat_id: int,
         lang: str,
     ) -> None:
-        """Edit Player_ListMessage_ID content."""
+        """Edit Player_ListMessage_ID content (only on change)."""
         redis = await get_redis()
         key = self._keys.game_hash(chat_id)
         field = self._keys.field("player_list_msg")
@@ -206,6 +206,11 @@ class TimerManager(
             return
         players = await self._lobby.list_players(chat_id)
         text = self._lobby.player_list_text(lang, players)
+        seen_field = self._keys.field(
+            "player_list_seen"
+        )
+        if await redis.hget(key, seen_field) == text:
+            return
         try:
             await self._bridge.edit_text(
                 chat_id,
@@ -214,6 +219,7 @@ class TimerManager(
             )
         except Exception:
             return
+        await redis.hset(key, seen_field, text)
 
     async def _warnings(
         self,

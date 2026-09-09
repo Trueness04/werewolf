@@ -152,7 +152,8 @@
     "secret_vote": "SecretVote",
     "vampire_role_on": "VampireRoleOn",
     "bloodthirsty_role_on": "BloodthirstyRoleOn",
-    "senior_panel_sent": "SeniorPanelSent"
+    "senior_panel_sent": "SeniorPanelSent",
+    "player_list_seen": "Player_ListSeen_Text"
   },
   "user_custom_emoji": "user:{user_id}:custom_emoji"
 }
