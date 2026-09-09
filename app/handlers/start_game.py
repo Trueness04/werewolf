@@ -49,6 +49,25 @@ async def start_game_entry(
     await handle_start_game(update, context, mode)
 
 
+async def _remind_join(
+    update: Update,
+    context: ContextTypes.DEFAULT_TYPE,
+    lang: str,
+    challenge: bool,
+) -> None:
+    """Resend join button for existing lobby."""
+    chat = update.effective_chat
+    if chat is None:
+        return
+    tm = deps.texts()
+    kb = build_join_keyboard(tm, lang, deps.join_url(chat.id),
+                             challenge=challenge)
+    key = ("StartLastChallenge" if challenge else "startLastGame")
+    mid = await context.bot.send_message(chat.id, tm.get(key, lang),
+                                         reply_markup=kb)
+    await _track_delete(chat.id, mid.message_id)
+
+
 async def handle_start_game(
     update: Update,
     context: ContextTypes.DEFAULT_TYPE,
@@ -214,13 +233,10 @@ async def _start_new(
         chat.id,
         lang,
     )
-    url = deps.join_url(chat.id)
-    keyboard = build_join_keyboard(tm, lang, url)
     from telegram import InlineKeyboardMarkup
 
-    keyboard = InlineKeyboardMarkup(
-        list(keyboard.inline_keyboard)
-    )
+    keyboard = build_join_keyboard(
+        tm, lang, deps.join_url(chat.id))
     mention_tpl = load_json(URL_TEMPLATES)[
         "user_mention_html"
     ]
