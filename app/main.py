@@ -114,6 +114,10 @@ async def _tick_loop(
             await tick_active_nights(bridge)
             await tick_active_days(bridge)
             await tick_active_votes(bridge)
+            log.info(
+                "phase_tick.ok.ai={v}",
+                v=(ai_bridge is bridge),
+            )
         except Exception as exc:
             log.exception(
                 "phase_tick_failed.e={e}",
