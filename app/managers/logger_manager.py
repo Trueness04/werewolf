@@ -141,7 +141,20 @@ def _add_telegram_sink(cfg: LoggingConfig) -> None:
         except Exception:
             pass  # sink must never break logging
 
-    logger.add(_sink, level=_TG_LEVEL)
+    logger.add(
+        _sink,
+        level=_TG_LEVEL,
+        filter=_tg_noise_filter,
+    )
+
+
+def _tg_noise_filter(record: dict[str, Any]) -> bool:
+    """Drop 2s tick spam from the Telegram mirror."""
+    name = str(record.get("name") or "")
+    msg = str(record.get("message") or "")
+    if name.endswith("app.main") and "tick" in msg:
+        return False
+    return True
 
 
 def setup_loguru(debug_mode: bool = False) -> None:
