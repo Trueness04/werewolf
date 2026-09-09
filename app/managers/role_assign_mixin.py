@@ -92,6 +92,11 @@ class RoleAssignMixin:
             self._keys.game_players(chat_id),
             json.dumps(players, ensure_ascii=False),
         )
+        await redis.hset(
+            self._keys.game_hash(chat_id),
+            self._keys.field("roles_distributed"),
+            "1",
+        )
         from app.managers.joker_books import (
             seed_joker_books,
         )

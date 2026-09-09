@@ -153,7 +153,8 @@
     "vampire_role_on": "VampireRoleOn",
     "bloodthirsty_role_on": "BloodthirstyRoleOn",
     "senior_panel_sent": "SeniorPanelSent",
-    "player_list_seen": "Player_ListSeen_Text"
+    "player_list_seen": "Player_ListSeen_Text",
+    "roles_distributed": "Roles_Distributed"
   },
   "user_custom_emoji": "user:{user_id}:custom_emoji"
 }

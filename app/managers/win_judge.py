@@ -60,11 +60,11 @@ class WinJudge:
             return None
         alive = await self._census.alive_players(chat_id)
         counts = self._census.counts(alive)
-        roles_set = await redis.hget(
+        distributed = await redis.hget(
             self._keys.game_hash(chat_id),
-            self._keys.field("setup_roles"),
+            self._keys.field("roles_distributed"),
         )
-        if not roles_set and not alive:
+        if not distributed and not alive:
             return None
         dinamit = int(
             await redis.hget(

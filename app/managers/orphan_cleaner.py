@@ -48,7 +48,17 @@ async def clean_orphaned_keys() -> dict[str, int]:
             continue
 
         # If this chat is not active, the key is orphaned
+        # UNLESS roles were never distributed for a live
+        # lobby (mid-start grace) — deleting those wipes
+        # the lobby mid-distribution (Amin 0909 bug).
         if chat_id not in active_chats:
+            data = await redis.hgetall(key)
+            distributed = data.get("Roles_Distributed")
+            started = data.get(
+                keys.field("start_new_game")
+            )
+            if not distributed and not started:
+                continue
             await redis.delete(key)
             stats["games"] += 1
 

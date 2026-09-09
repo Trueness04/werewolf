@@ -112,7 +112,7 @@ class NightDmSender:
             lang,
             bundle="roles",
         )
-        body = texts.get(
+        body = self._texts.get(
             "night_dm_body",
             "fa",
             name,
