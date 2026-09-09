@@ -341,10 +341,15 @@ class LobbyManager:
         header = self._texts.get("player", lang, count)
         if not lines:
             return header
+        sep = self._texts.get(
+            "name_separator",
+            "fa",
+            bundle="webapp",
+        )
         return self._texts.get(
             "lobby_summary",
             "fa",
             header,
-            "\n".join(lines),
+            sep.join(lines),
             bundle="webapp",
         )
