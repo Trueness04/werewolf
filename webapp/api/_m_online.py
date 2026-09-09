@@ -3,6 +3,8 @@
 # Split of meta.py (no logic change).
 from __future__ import annotations
 
+from webapp.api._m_core import *  # noqa: F401,F403
+
 @router.get("/online")
 async def online_status(
     tg: dict = Depends(current_user),

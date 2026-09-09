@@ -3,6 +3,8 @@
 # Split of meta.py (no logic change).
 from __future__ import annotations
 
+from webapp.api._m_core import *  # noqa: F401,F403
+
 @router.get("/challenges")
 async def list_challenges() -> dict:
     async with session_scope() as session:

@@ -3,6 +3,8 @@
 # Split of meta.py (no logic change).
 from __future__ import annotations
 
+from webapp.api._m_core import *  # noqa: F401,F403
+
 @router.get("/shop")
 async def shop_catalog() -> dict:
     data = load_shop()
