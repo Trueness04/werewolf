@@ -8,7 +8,7 @@
   "mode_info_footer": "{text}\\n{footer}\\n/{command}",
   "players_list_body": "{header}\\n{body}",
   "magic_panel_text": "<b>{title}</b>\\n\\n{body}",
-  "night_dm_body": "{name}\\n{desc}",
+  "night_dm_body": "{0}\n{1}",
   "roster_table_head": "|.|.|.|.|.|\\n|:-:|:----|:-:|:-:|:----|\\n",
   "rank_newlevel_fallback": "{template}\\n{fallback}",
   "ai_system_join": "{system}\\n{extra}",

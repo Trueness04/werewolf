@@ -184,13 +184,13 @@ async def send_win_list(
         neutral = bool(item.get("neutral", False))
         if neutral:
             status = (
-                "run"
+                chr(0x1F3C3)
                 if item.get("fugitive")
-                else "zzz"
+                else chr(0x1F634)
             )
         else:
             status = (
-                "alive.face" if alive else "dead.face"
+                chr(0x1F642) if alive else chr(0x1FAA6)
             )
         rows.append(
             (

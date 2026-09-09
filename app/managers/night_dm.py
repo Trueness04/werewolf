@@ -128,16 +128,16 @@ class NightDmSender:
                 and int(p["user_id"]) != uid
                 and p.get("alive", True)
             ]
-            body = (
-                "log"
-                + self._texts.get(
-                    str(team_key),
-                    lang,
-                    ",".join(mates),
-                    bundle="roles",
-                )
+            team_line = self._texts.get(
+                str(team_key),
+                lang,
+                ",".join(mates),
+                bundle="roles",
             )
-        await self._bridge.send_text(uid, body)
+            body = body + chr(10) + team_line
+        sent = await self._bridge.send_rich(uid, body)
+        if not sent:
+            await self._bridge.send_text(uid, body)
         log_game_event(
             "role_dm_sent",
             chat_id=chat_id,
