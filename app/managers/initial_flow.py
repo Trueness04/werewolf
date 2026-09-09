@@ -79,10 +79,6 @@ class InitialFlow:
             self._keys.field("game_mode"),
         )
         info = _get_mode(str(mode or "Normal"))
-        await redis.srem(
-            self._keys.active_join_chats(),
-            str(chat_id),
-        )
         if not info.skip_role_assign:
             try:
                 await self._roles.assign_roles(chat_id)
@@ -106,6 +102,10 @@ class InitialFlow:
             bundle="night",
         )
         await self._bridge.send_text(chat_id, done)
+        await redis.srem(
+            self._keys.active_join_chats(),
+            str(chat_id),
+        )
         log_game_event(
             "initial_flow_done",
             chat_id=chat_id,
