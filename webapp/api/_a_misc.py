@@ -3,6 +3,10 @@
 # Split of admin.py (no logic change).
 from __future__ import annotations
 
+from fastapi import APIRouter  # noqa: F401
+
+from webapp.api._a_core import *  # noqa: F401,F403
+
 @router.get("/sponsors")
 async def list_sponsors(
     tg: dict = Depends(require_sudo),
