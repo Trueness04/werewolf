@@ -37,6 +37,12 @@ async def resolve_cupid(ctx: dict[str, Any]) -> None:
         ctx["flags_out"]["lover_pair"] = pair
         ctx["lover_pair"] = pair
         ctx["messages"].append("CupeDone")
+        ctx.setdefault(
+            "dm_messages", []
+        ).append((a, "CupidChosen", b))
+        ctx["dm_messages"].append(
+            (b, "CupidChosen2", a)
+        )
         await set_lover_pair(int(ctx["chat_id"]), a, b)
 
 
