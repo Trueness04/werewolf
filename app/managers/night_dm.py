@@ -228,6 +228,25 @@ class NightDmSender:
         )
         return bool(mast or silver)
 
+    async def send_action_prompt(
+        self,
+        chat_id: int,
+        uid: int,
+        role: Any,
+        lang: str,
+        all_players: list[dict[str, Any]],
+        prompt: str = "",
+    ) -> None:
+        """Re-send action prompt with override text."""
+        await self._send_action(
+            chat_id,
+            uid,
+            role,
+            lang,
+            all_players,
+            prompt_override=prompt,
+        )
+
     async def _send_action(
         self,
         chat_id: int,
@@ -235,12 +254,15 @@ class NightDmSender:
         role: Any,
         lang: str,
         all_players: list[dict[str, Any]],
+        prompt_override: str = "",
     ) -> None:
         """Send night prompt + keyboard by target_type."""
         mk = role.message_keys
         prompt_key = mk.get("night_prompt")
         prompt = ""
-        if prompt_key:
+        if prompt_override:
+            prompt = prompt_override
+        elif prompt_key:
             prompt = self._texts.get(
                 str(prompt_key),
                 lang,
@@ -322,8 +344,29 @@ class NightDmSender:
                 str(mk.get("button_no")),
             )
         if prompt or markup:
+            md = prompt or role.role_id
+            if role.role_id == "role_elahe":
+                names = chr(10).join(
+                    ". ".join((str(i + 1), nm))
+                    for i, (_, nm) in enumerate(
+                        targets
+                    )
+                )
+                md = md + chr(10) + names
+                sent = await (
+                    self._bridge.send_rich(
+                        uid, md
+                    )
+                )
+                if sent:
+                    await self._bridge.send_text(
+                        uid,
+                        chr(8203),
+                        reply_markup=markup,
+                    )
+                    return
             await self._bridge.send_text(
                 uid,
-                prompt or role.role_id,
+                md,
                 reply_markup=markup,
             )

@@ -184,6 +184,35 @@ async def _night_apply(
         role=str(role_id),
         choice=value,
     )
+    if role_id == "role_elahe" and str(
+        value
+    ).endswith(":1"):
+        from app.managers.night_dm import (
+            NightDmSender,
+        )
+
+        from app.managers.player_snapshot import (
+            load_enriched_players,
+        )
+
+        sender = NightDmSender(
+            deps.bridge(context), keys, tm,
+        )
+        players = await load_enriched_players(
+            keys, chat_id
+        )
+        role2 = _Registry().create(role_id)
+        await sender.send_action_prompt(
+            chat_id,
+            actor,
+            role2,
+            "fa",
+            players,
+            prompt=tm.get(
+                "AskCupid2", lang, bundle="roles",
+            ),
+        )
+        return
     await maybe_early_end_night(chat_id, keys)
 
 
