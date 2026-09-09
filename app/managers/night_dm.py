@@ -21,6 +21,14 @@ _Registry = import_module(
 ).RoleRegistry
 
 
+def numbered_names(targets: list) -> str:
+    """Numbered name list for rich DMs."""
+    return chr(10).join(
+        str(i + 1) + chr(46) + chr(32) + nm
+        for i, (_, nm) in enumerate(targets)
+    )
+
+
 class NightDmSender:
     """Send role intro and night action prompts."""
 
@@ -36,8 +44,7 @@ class NightDmSender:
         self._registry = _Registry()
 
     async def send_role_dm(
-        self,
-        chat_id: int,
+        self, chat_id: int,
         player: dict[str, Any],
         lang: str,
         all_players: list[dict[str, Any]],
@@ -51,7 +58,7 @@ class NightDmSender:
         log.info(
             "role_dm_check.uid={}.sent={}",
             uid, already,
-        )
+        )  # fmt: skip
         if already:
             return
         role_id = str(player.get("role") or "")
@@ -60,22 +67,16 @@ class NightDmSender:
         role = self._registry.create(role_id)
         intro_key = self._keys.role_intro_sent(chat_id)
         already_intro = await redis.sismember(
-            intro_key,
-            str(uid),
+            intro_key, str(uid),
         )
         if not already_intro:
             await self._send_intro(
-                chat_id,
-                uid,
-                role,
-                lang,
+                chat_id, uid, role, lang,
                 all_players,
             )
             await redis.sadd(intro_key, str(uid))
         await self._maybe_send_magic(
-            chat_id,
-            uid,
-            lang,
+            chat_id, uid, lang,
         )
         if role.night1_active:
             if not await self._skip_action(
@@ -84,40 +85,29 @@ class NightDmSender:
                 role,
             ):
                 await self._send_action(
-                    chat_id,
-                    uid,
-                    role,
-                    lang,
-                    all_players,
+                    chat_id, uid, role,
+                    lang, all_players,
                 )
         await redis.sadd(sent_key, str(uid))
 
     async def _send_intro(
-        self,
-        chat_id: int,
-        uid: int,
-        role: Any,
-        lang: str,
+        self, chat_id: int, uid: int,
+        role: Any, lang: str,
         all_players: list[dict[str, Any]],
     ) -> None:
         """Build and send one-time role intro body."""
         mk = role.message_keys
         name = self._texts.get(
-            str(mk["name"]),
-            lang,
+            str(mk["name"]), lang,
             bundle="roles",
         )
         desc = self._texts.get(
-            str(mk["description"]),
-            lang,
+            str(mk["description"]), lang,
             bundle="roles",
         )
         body = self._texts.get(
-            "night_dm_body",
-            "fa",
-            name,
-            desc,
-            bundle="webapp",
+            "night_dm_body", "fa", name,
+            desc, bundle="webapp",
         )
         team_key = mk.get("team_info")
         if team_key:
@@ -127,10 +117,9 @@ class NightDmSender:
                 if p.get("team") == role.team
                 and int(p["user_id"]) != uid
                 and p.get("alive", True)
-            ]
+            ]  # fmt: skip
             team_line = self._texts.get(
-                str(team_key),
-                lang,
+                str(team_key), lang,
                 ",".join(mates),
                 bundle="roles",
             )
@@ -146,9 +135,7 @@ class NightDmSender:
         )
 
     async def _maybe_send_magic(
-        self,
-        chat_id: int,
-        uid: int,
+        self, chat_id: int, uid: int,
         lang: str,
     ) -> None:
         """Send magic panel if inventory > 0 and allowed."""
@@ -229,11 +216,8 @@ class NightDmSender:
         return bool(mast or silver)
 
     async def send_action_prompt(
-        self,
-        chat_id: int,
-        uid: int,
-        role: Any,
-        lang: str,
+        self, chat_id: int, uid: int,
+        role: Any, lang: str,
         all_players: list[dict[str, Any]],
         prompt: str = "",
     ) -> None:
@@ -248,11 +232,8 @@ class NightDmSender:
         )
 
     async def _send_action(
-        self,
-        chat_id: int,
-        uid: int,
-        role: Any,
-        lang: str,
+        self, chat_id: int, uid: int,
+        role: Any, lang: str,
         all_players: list[dict[str, Any]],
         prompt_override: str = "",
     ) -> None:
@@ -346,13 +327,9 @@ class NightDmSender:
         if prompt or markup:
             md = prompt or role.role_id
             if role.role_id == "role_elahe":
-                names = chr(10).join(
-                    ". ".join((str(i + 1), nm))
-                    for i, (_, nm) in enumerate(
-                        targets
-                    )
+                md = md + chr(10) + (
+                    numbered_names(targets)
                 )
-                md = md + chr(10) + names
                 sent = await (
                     self._bridge.send_rich(
                         uid, md
