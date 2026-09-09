@@ -12,7 +12,10 @@ from app.managers.text_managers import TextManager
 _texts = TextManager()
 SEP_NL = chr(10)
 NL = SEP_NL
-ROW_FMT = chr(124).join((" {0} ", " {1} ", " {2} ", " {3} ", " {4} "))
+ROW_FMT = chr(124).join(
+    chr(32) + "{" + str(i) + "}" + chr(32)
+    for i in range(5)
+)
 
 from app.cache.redis_client import get_redis
 from app.cache.redis_keys import RedisKeySpace
