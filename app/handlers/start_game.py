@@ -60,7 +60,7 @@ async def _remind_join(
     if chat is None:
         return
     tm = deps.texts()
-    kb = build_join_keyboard(tm, lang, deps.join_url(chat.id),
+    kb = build_join_keyboard(tm, lang, await deps.join_url(chat.id),
                              challenge=challenge)
     key = ("StartLastChallenge" if challenge else "startLastGame")
     mid = await context.bot.send_message(chat.id, tm.get(key, lang),
@@ -236,7 +236,7 @@ async def _start_new(
     from telegram import InlineKeyboardMarkup
 
     keyboard = build_join_keyboard(
-        tm, lang, deps.join_url(chat.id))
+        tm, lang, await deps.join_url(chat.id))
     mention_tpl = load_json(URL_TEMPLATES)[
         "user_mention_html"
     ]

@@ -1,7 +1,7 @@
 {
   "database": "postgresql+asyncpg://{user}:{password}@{host}:{port}/{name}",
   "redis": "redis://default:{password}@{host}:{port}/0",
-  "join_deeplink": "https://t.me/{bot}?start={prefix}{chat_id}",
+  "join_deeplink": "https://t.me/{bot}?start={prefix}{chat_id}_{game_id}",
   "user_mention_html": "<a href=\"tg://user?id={user_id}\">{name}</a>",
   "default_start_gif": "https://media.giphy.com/media/hsubjoiDroLg4AYyUO/giphy.gif",
   "webapp": "{webapp_url}",

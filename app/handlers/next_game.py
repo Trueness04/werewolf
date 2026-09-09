@@ -56,7 +56,7 @@ async def next_game_command(
         kb = build_join_keyboard(
             tm,
             lang,
-            deps.join_url(chat.id),
+            await deps.join_url(chat.id),
         )
         await context.bot.send_message(
             chat_id=chat.id,
@@ -148,7 +148,7 @@ async def next_join_callback(
         kb = build_join_keyboard(
             tm,
             lang,
-            deps.join_url(chat.id),
+            await deps.join_url(chat.id),
         )
         await context.bot.send_message(
             chat_id=chat.id,

@@ -7,6 +7,7 @@ from importlib import import_module
 from telegram import Update
 from telegram.ext import ContextTypes
 
+from app.cache.redis_client import get_redis
 from app.cache.redis_keys import RedisKeySpace
 from app.config.paths import COMMANDS_JSON, URL_TEMPLATES
 from app.config.settings import get_settings
@@ -54,16 +55,24 @@ def bridge(context: ContextTypes.DEFAULT_TYPE) -> ChatBridge:
     return ChatBridge(context.bot)
 
 
-def join_url(chat_id: int) -> str:
-    """Build join deeplink for a chat."""
+async def join_url(chat_id: int) -> str:
+    """Build join deeplink bound to the current game."""
     cfg = get_settings()
     urls = load_json(URL_TEMPLATES)
     cmds = load_json(COMMANDS_JSON)
     prefix = str(cmds["start_payload_prefix"])
+    redis = await get_redis()
+    keys = RedisKeySpace()
+    gid = await redis.hget(
+        keys.game_hash(chat_id),
+        keys.field("game_id"),
+    )
+    game_id = str(gid or "0")
     return str(urls["join_deeplink"]).format(
         bot=cfg.bot_username,
         prefix=prefix,
         chat_id=chat_id,
+        game_id=game_id,
     )
 
 

@@ -104,10 +104,16 @@ class TimerFinishMixin:
         urls = lj(URL_TEMPLATES)
         cmds = lj(COMMANDS_JSON)
         prefix = str(cmds["start_payload_prefix"])
+        redis = await get_redis()
+        raw = await redis.hget(
+            self._keys.game_hash(chat_id),
+            self._keys.field("game_id"),
+        )
         return str(urls["join_deeplink"]).format(
             bot=self._settings.bot_username,
             prefix=prefix,
             chat_id=chat_id,
+            game_id=str(raw or "0"),
         )
 
     async def _track_delete(

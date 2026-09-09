@@ -53,7 +53,7 @@ async def remind_join(
     from app.handlers import deps
 
     tm = deps.texts()
-    url = deps.join_url(chat.id)
+    url = await deps.join_url(chat.id)
     keyboard = build_join_keyboard(
         tm,
         lang,

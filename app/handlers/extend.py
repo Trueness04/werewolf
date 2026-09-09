@@ -99,7 +99,7 @@ async def extend_join(
     )
     if left <= 0:
         return
-    url = deps.join_url(chat.id)
+    url = await deps.join_url(chat.id)
     keyboard = build_join_keyboard(tm, lang, url)
     await context.bot.send_message(
         chat_id=chat.id,

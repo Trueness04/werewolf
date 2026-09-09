@@ -64,17 +64,24 @@ async def start_payload_join(
         await _pv_send(context, user.id, tm.get("GameStartOnGroup", lang))
         return
     raw_chat = payload[len(prefix) :]
+    parts = raw_chat.split("_")
+    if len(parts) not in (1, 2):
+        return
     try:
-        chat_id = int(raw_chat)
+        chat_id = int(parts[0])
     except ValueError:
         return
-    await run_join_steps(update, context, chat_id)
+    game_id = int(parts[1]) if len(parts) == 2 else None
+    await run_join_steps(
+        update, context, chat_id, game_id
+    )
 
 
 async def run_join_steps(
     update: Update,
     context: ContextTypes.DEFAULT_TYPE,
     chat_id: int,
+    game_id: int | None = None,
 ) -> None:
     """Execute the 12 validation steps in order."""
     user = update.effective_user
@@ -108,6 +115,19 @@ async def run_join_steps(
     allow = 0 if status in ("left", "kicked") else 1
     keys = RedisKeySpace()
     redis = await get_redis()
+    # 2b stale game guard
+    if game_id is not None:
+        live = await redis.hget(
+            keys.game_hash(chat_id),
+            keys.field("game_id"),
+        )
+        if not live or int(live) != game_id:
+            log_game_event(
+                "join_fail_stale",
+                chat_id=chat_id,
+                user_id=user.id,
+            )
+            return
     # 3 already in another game
     other = await redis.get(keys.join_user(user.id))
     if other and int(other) != chat_id:
@@ -238,6 +258,6 @@ async def join_command(
         await state_manager.get_group_state(chat.id)
     except GroupInactive:
         return
-    url = deps.join_url(chat.id)
+    url = await deps.join_url(chat.id)
     await _pv_send(context, user.id, url)
     _ = tm

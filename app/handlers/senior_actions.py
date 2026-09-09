@@ -88,7 +88,7 @@ async def _do_extend(
                 exc,
             )
         try:
-            url = deps.join_url(chat_id)
+            url = await deps.join_url(chat_id)
             keyboard = build_join_keyboard(tm, lang, url)
             await bridge.send_text(
                 chat_id,
