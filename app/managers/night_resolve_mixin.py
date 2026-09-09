@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import json
+
 from sqlalchemy import select
 
 from app.cache.redis_client import get_redis
@@ -88,9 +90,9 @@ class NightResolveMixin:
                         chat_id,
                         uid,
                         str(prow.get("role") or ""),
-                        self._bridge,
-                        self._texts,
-                        self._keys,
+                        bridge=self._bridge,
+                        texts=self._texts,
+                        keys=self._keys,
                         lang=self._settings.default_lang,
                     )
         await redis.set(

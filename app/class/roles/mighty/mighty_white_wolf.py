@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from app.class.roles.white_wolf import WhiteWolfRole
+from ..white_wolf import WhiteWolfRole
 
 
 class MightyWhiteWolfRole(WhiteWolfRole):

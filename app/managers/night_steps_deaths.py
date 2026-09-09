@@ -34,7 +34,7 @@ class NightStepsDeaths:
             apply_cult_deaths,
         )
 
-        await apply_cult_deaths(ctx)
+        apply_cult_deaths(ctx)
         from app.managers.special_resolve import (
             convert_hamzad,
         )
@@ -42,8 +42,8 @@ class NightStepsDeaths:
             follow_lover_deaths,
         )
 
-        await convert_hamzad(ctx)
-        await follow_lover_deaths(ctx)
+        convert_hamzad(ctx)
+        follow_lover_deaths(ctx)
         from app.managers.fire_extra import (
             refresh_die_fire_and_ice,
         )
@@ -51,13 +51,13 @@ class NightStepsDeaths:
             notify_hilda_sk_dead,
         )
 
-        await refresh_die_fire_and_ice(ctx)
-        await notify_hilda_sk_dead(ctx)
+        refresh_die_fire_and_ice(ctx)
+        notify_hilda_sk_dead(ctx)
         from app.managers.special_teams import (
             follow_black_knight_death,
         )
 
-        await follow_black_knight_death(ctx)
+        follow_black_knight_death(ctx)
         for p in ctx["players"]:
             if p.get("role") != "role_Bloodthirsty":
                 continue
@@ -77,7 +77,7 @@ class NightStepsDeaths:
             burn_mark_if_target_dead,
         )
 
-        await burn_mark_if_target_dead(ctx)
+        burn_mark_if_target_dead(ctx)
         if ctx.get("blood_moon_active"):
             ctx["flags_out"]["blood_moon_active"] = ""
             ctx["flags_out"]["blood_moon_night"] = ""

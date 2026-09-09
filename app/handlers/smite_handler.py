@@ -67,7 +67,7 @@ async def smite_command(
         return
     await redis.set(keys.player_state(target), "neutral")
     players_raw = await redis.get(
-        keys.game_players(chat_id),
+        keys.game_players(chat.id),
     )
     players = json.loads(players_raw) if players_raw else []
     name = str(target)
@@ -78,7 +78,7 @@ async def smite_command(
             row["neutral"] = True
             break
     await redis.set(
-        keys.game_players(chat_id),
+        keys.game_players(chat.id),
         json.dumps(players, ensure_ascii=False),
     )
     log_game_event(

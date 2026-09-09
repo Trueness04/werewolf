@@ -24,7 +24,6 @@ async def read_magic_panel_flags(
     """Clone of read_panel_flags for MagicPanelEnabled."""
     try:
         keys = keys or RedisKeySpace()
-        webapp_url = webapp_url or get_settings().webapp_url
         redis = await get_redis()
         flags = keys.game_flags(chat_id)
 

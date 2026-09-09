@@ -53,7 +53,7 @@ def _record_text(record: dict[str, Any]) -> str:
     text = head + msg
     exc = record.get("exception")
     if exc:
-        text = _join_exc(text, str(exc)[-1200:])
+        text = text + chr(10) + str(exc)[-1200:]
     if len(text) > 3800:
         text = text[:3800] + "..."
     return text

@@ -8,6 +8,8 @@ from time import time
 from typing import Any
 
 from app.cache.redis_client import get_redis
+from app.config.paths import GAME_PHASES
+from app.managers.json_loader import load_json
 from app.cache.redis_keys import RedisKeySpace
 from app.config.settings import Settings
 from app.managers.chat_bridge import ChatBridge
@@ -43,8 +45,9 @@ class VoteBallots:
         # Vote only counts while phase == vote;
         # stale keyboards from older days
         # must never register ballots.
-        phase = await self._state.get_phase(
-            chat_id
+        phase = await redis.hget(
+            self._keys.game_hash(chat_id),
+            self._keys.field("game_state"),
         )
         phases = load_json(GAME_PHASES)
         vote_phase = str(

@@ -6,6 +6,8 @@ import json
 
 from app.cache.redis_client import get_redis
 from app.cache.redis_keys import RedisKeySpace
+from telegram import Update
+from telegram.ext import ContextTypes
 
 
 async def track_delete(
@@ -54,6 +56,9 @@ async def remind_join(
 
     tm = deps.texts()
     url = await deps.join_url(chat.id)
+    from app.keyboards.inline.lobby_keyboard import (
+        build_join_keyboard,
+    )
     keyboard = build_join_keyboard(
         tm,
         lang,

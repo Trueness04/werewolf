@@ -8,6 +8,7 @@ from app.cache.redis_keys import RedisKeySpace
 from app.managers.chat_bridge import ChatBridge
 from app.managers.night_village import player
 from app.managers.text_managers import TextManager
+from app.managers.logger_manager import get_logger
 from importlib import import_module
 
 _Registry = import_module("app.class.roles.registry").RoleRegistry

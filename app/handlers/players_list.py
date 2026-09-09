@@ -35,7 +35,7 @@ async def players_list(
     body = lobby.player_list_text(lang, players)
     await context.bot.send_message(
         chat_id=chat.id,
-        text=texts.get(
+        text=tm.get(
             "players_list_body",
             lang,
             header,

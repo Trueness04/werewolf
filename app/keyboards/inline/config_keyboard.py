@@ -150,7 +150,7 @@ def build_flavor_keyboard(
         )
         if label == str(meta["display_key"]):
             label = pack_id
-        "v."
+        mark = chr(10003) + chr(32) if pack_id == current else ""
         row.append(
             _btn(
                 f"{mark}{label}",
