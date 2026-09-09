@@ -20,6 +20,7 @@ from app.managers.lobby_extend import (
     format_hms,
     is_allowed_extend,
 )
+from app.managers.logger_manager import get_logger
 
 
 async def extend_join(
@@ -44,7 +45,8 @@ async def extend_join(
         group = await state_manager.ensure_group_active(
             chat.id,
         )
-    except GroupInactive:
+    except GroupInactive as exc:
+        get_logger().warning("silent_swallow.line=47.exc={}", exc)
         return
     if group is None:
         return
@@ -126,5 +128,6 @@ def _parse_delta(text: str, default: int) -> int:
         return default
     try:
         return int(parts[1])
-    except ValueError:
+    except ValueError as exc:
+        get_logger().warning("silent_swallow.line=129.exc={}", exc)
         return default

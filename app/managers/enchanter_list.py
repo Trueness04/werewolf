@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from app.managers.logger_manager import get_logger
 
 
 def parse_list(raw: str | None) -> list[str]:
@@ -11,7 +12,8 @@ def parse_list(raw: str | None) -> list[str]:
         return []
     try:
         data = json.loads(raw)
-    except json.JSONDecodeError:
+    except json.JSONDecodeError as exc:
+        get_logger().warning("silent_swallow.line=14.exc={}", exc)
         return []
     return [str(x) for x in data]
 

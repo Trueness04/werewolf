@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from typing import Any
+from app.managers.logger_manager import get_logger
 
 
 def get_role_user_id(
@@ -17,7 +18,8 @@ def get_role_user_id(
             continue
         try:
             return int(item["user_id"])
-        except (KeyError, TypeError, ValueError):
+        except (KeyError, TypeError, ValueError) as exc:
+            get_logger().warning("silent_swallow.line=20.exc={}", exc)
             return None
     return None
 

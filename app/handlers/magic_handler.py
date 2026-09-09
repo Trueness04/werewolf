@@ -13,6 +13,7 @@ from app.handlers.callback_safe import answer_safe
 from app.managers.json_loader import load_json
 from app.managers.magic_effects import activate_magic
 from app.managers.magic_inventory import EFFECT_TYPES
+from app.managers.logger_manager import get_logger
 
 
 async def magic_callback(
@@ -37,7 +38,8 @@ async def magic_callback(
         return
     try:
         chat_id = int(parts[1])
-    except ValueError:
+    except ValueError as exc:
+        get_logger().warning("silent_swallow.line=40.exc={}", exc)
         return
     effect = parts[2]
     if effect not in EFFECT_TYPES:
@@ -66,14 +68,16 @@ async def magic_callback(
         text = tm.get(key, lang)
         try:
             await query.edit_message_text(text)
-        except Exception:
+        except Exception as exc:
+            get_logger().warning("silent_swallow.line=69.exc={}", exc)
             await bridge.send_text(user.id, text)
         return
     try:
         await query.edit_message_reply_markup(
             reply_markup=None
         )
-    except Exception:
+    except Exception as exc:
+        get_logger().warning("silent_swallow.line=76.exc={}", exc)
         pass
 
 

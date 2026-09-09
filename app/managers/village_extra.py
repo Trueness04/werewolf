@@ -7,6 +7,7 @@ from typing import Any
 
 from app.managers.night_village import player
 from app.managers.village_links import set_lover_pair
+from app.managers.logger_manager import get_logger
 
 
 async def resolve_cupid(ctx: dict[str, Any]) -> None:
@@ -27,7 +28,8 @@ async def resolve_cupid(ctx: dict[str, Any]) -> None:
                 # Expect exactly two picks (a:b);
                 # ignore single/incomplete picks
                 continue
-        except ValueError:
+        except ValueError as exc:
+            get_logger().warning("silent_swallow.line=30.exc={}", exc)
             continue
         if a == b:
             continue

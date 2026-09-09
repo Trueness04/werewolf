@@ -9,6 +9,7 @@ from typing import Any
 from app.config.paths import ROOT
 from app.managers.json_loader import load_json
 from app.managers.night_village import player
+from app.managers.logger_manager import get_logger
 
 _CHANCES = ROOT / "data" / "config" / "field_chances.json"
 _TEAMS = (
@@ -131,7 +132,8 @@ async def resolve_lucifer_team(
             continue
         try:
             tid = int(raw)
-        except ValueError:
+        except ValueError as exc:
+            get_logger().warning("silent_swallow.line=134.exc={}", exc)
             continue
         _apply_lucifer_deceive(ctx, item, tid)
 

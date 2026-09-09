@@ -9,6 +9,7 @@ from typing import Any
 from app.config.paths import ROOT
 from app.managers.json_loader import load_json
 from app.managers.night_village import player
+from app.managers.logger_manager import get_logger
 
 _CHANCES = ROOT / "data" / "config" / "field_chances.json"
 
@@ -134,7 +135,8 @@ async def resolve_wolf_team(ctx: dict[str, Any]) -> None:
             continue
         try:
             tid = int(raw)
-        except ValueError:
+        except ValueError as exc:
+            get_logger().warning("silent_swallow.line=137.exc={}", exc)
             continue
         target = player(ctx, tid)
         if target is None:

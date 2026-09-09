@@ -10,6 +10,7 @@ from typing import Any
 
 from app.config.paths import TEXT_DIR
 from app.config.settings import get_settings
+from app.managers.logger_manager import get_logger
 
 _Entry = str | list[str]
 # Sprint 6: phase bundle → optional mode catalog → general → main.
@@ -137,7 +138,8 @@ class TextManager:
         if args:
             try:
                 return text.format(*args)
-            except (IndexError, KeyError, ValueError):
+            except (IndexError, KeyError, ValueError) as exc:
+                get_logger().warning("silent_swallow.line=140.exc={}", exc)
                 return text
         if "{" in text:
             return re.sub(r"\{\d+\}", "", text).rstrip()

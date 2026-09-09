@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from telegram import CallbackQuery
+from app.managers.logger_manager import get_logger
 
 
 async def answer_safe(
@@ -17,5 +18,6 @@ async def answer_safe(
             await query.answer(text=text)
         else:
             await query.answer()
-    except Exception:
+    except Exception as exc:
+        get_logger().warning("silent_swallow.line=20.exc={}", exc)
         return

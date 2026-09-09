@@ -13,6 +13,7 @@ from app.managers.game_state_manager import (
     GameState,
     GroupInactive,
 )
+from app.managers.logger_manager import get_logger
 
 
 async def kill_game(
@@ -39,7 +40,8 @@ async def kill_game(
         state = await state_manager.get_group_state(
             chat.id,
         )
-    except GroupInactive:
+    except GroupInactive as exc:
+        get_logger().warning("silent_swallow.line=42.exc={}", exc)
         return
     if state == GameState.NO_GAME:
         await context.bot.send_message(

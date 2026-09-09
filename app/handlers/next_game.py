@@ -21,6 +21,7 @@ from app.managers.game_state_manager import (
 )
 from app.managers.json_loader import load_json
 from app.managers.next_game_manager import NextGameManager
+from app.managers.logger_manager import get_logger
 
 
 async def next_game_command(
@@ -40,7 +41,8 @@ async def next_game_command(
         state = await deps.state_mgr().get_group_state(
             chat.id,
         )
-    except GroupInactive:
+    except GroupInactive as exc:
+        get_logger().warning("silent_swallow.line=43.exc={}", exc)
         return
     if state == GameState.NO_GAME:
         await context.bot.send_message(
@@ -132,7 +134,8 @@ async def next_join_callback(
         state = await deps.state_mgr().get_group_state(
             chat.id,
         )
-    except GroupInactive:
+    except GroupInactive as exc:
+        get_logger().warning("silent_swallow.line=135.exc={}", exc)
         return
     if state == GameState.NO_GAME:
         await context.bot.send_message(
@@ -198,7 +201,8 @@ async def cancel_next_callback(
     try:
         chat_id = int(parts[1])
         uid = int(parts[2])
-    except ValueError:
+    except ValueError as exc:
+        get_logger().warning("silent_swallow.line=201.exc={}", exc)
         return
     if uid != user.id:
         return

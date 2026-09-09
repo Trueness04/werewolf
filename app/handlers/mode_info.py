@@ -10,6 +10,7 @@ from app.cache.redis_keys import RedisKeySpace
 from app.handlers import deps
 from app.managers.game_state_manager import GroupInactive
 from importlib import import_module
+from app.managers.logger_manager import get_logger
 
 _get_mode = import_module("app.class.game_mode").get_mode
 
@@ -26,7 +27,8 @@ async def mode_info(
     tm = deps.texts()
     try:
         await deps.state_mgr().get_group_state(chat.id)
-    except GroupInactive:
+    except GroupInactive as exc:
+        get_logger().warning("silent_swallow.line=29.exc={}", exc)
         return
     redis = await get_redis()
     keys = RedisKeySpace()
@@ -42,7 +44,8 @@ async def mode_info(
         return
     try:
         info = _get_mode(str(mode))
-    except KeyError:
+    except KeyError as exc:
+        get_logger().warning("silent_swallow.line=45.exc={}", exc)
         await context.bot.send_message(
             chat_id=chat.id,
             text=str(mode),

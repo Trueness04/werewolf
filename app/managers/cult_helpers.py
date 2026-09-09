@@ -8,6 +8,7 @@ from typing import Any
 from app.config.paths import CONFIG_DATA
 from app.managers.json_loader import load_json
 from app.managers.night_village import player
+from app.managers.logger_manager import get_logger
 
 _RULES = CONFIG_DATA / "cult_rules.json"
 
@@ -68,7 +69,8 @@ def pick_cult_target(
                 continue
             try:
                 votes.append(int(raw))
-            except ValueError:
+            except ValueError as exc:
+                get_logger().warning("silent_swallow.line=71.exc={}", exc)
                 continue
         if not votes:
             return None, None

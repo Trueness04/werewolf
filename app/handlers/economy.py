@@ -12,6 +12,7 @@ from app.managers.lobby_coins import (
     deduct_coins,
     get_user_coins,
 )
+from app.managers.logger_manager import get_logger
 
 
 _DISABLED = (
@@ -72,7 +73,8 @@ async def sendcoin_command(
     args = context.args or []
     try:
         amount = int(args[0]) if args else 0
-    except ValueError:
+    except ValueError as exc:
+        get_logger().warning("silent_swallow.line=75.exc={}", exc)
         amount = 0
     if amount < 4:
         await context.bot.send_message(

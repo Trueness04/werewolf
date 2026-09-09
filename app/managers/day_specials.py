@@ -9,6 +9,7 @@ from app.cache.redis_client import get_redis
 from app.cache.redis_keys import RedisKeySpace
 from app.managers.chat_bridge import ChatBridge
 from app.managers.text_managers import TextManager
+from app.managers.logger_manager import get_logger
 
 
 async def step_diane(
@@ -229,7 +230,8 @@ async def step_detective(
                 lang,
                 bundle="roles",
             )
-        except Exception:
+        except Exception as exc:
+            get_logger().warning("silent_swallow.line=232.exc={}", exc)
             pass
         await bridge.send_text(
             int(uid_s),

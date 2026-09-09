@@ -22,6 +22,7 @@ from app.cache.redis_keys import RedisKeySpace
 from app.managers.chat_bridge import ChatBridge
 from app.managers.text_managers import TextManager
 from importlib import import_module
+from app.managers.logger_manager import get_logger
 
 RoleRegistry = import_module(
     "app.class.roles.registry"
@@ -91,30 +92,28 @@ def _role_label(
     """Localized role display name (emoji built in) for roster."""
     _ = ROLE_CUSTOM_EMOJI.get(role_id, "")
     try:
-        key = str(
-            registry.definition(role_id)
-            .get("message_keys", {})
-            .get("name", "")
-        )
-    except KeyError:
+        key = str(registry.definition(
+            role_id
+        ).get("message_keys", {}).get(
+            "name", ""
+        ))
+    except KeyError as exc:
+        get_logger().warning("silent_swallow.line=99.exc={}", exc)
         return role_id
     label = (
         texts.get(key, lang, bundle="roles")
-        if key
-        else ""
+        if key else ""
     )
-    if not label or label == key:
-        return role_id
-    return label
+    return role_id if (
+        not label or label == key
+    ) else label
 
 def _roster_markdown(
     head: str,
-    rows: list[tuple[str, str, str, str, str]],
+    rows: list,
 ) -> str:
-    """Rich-Markdown LTR table; blank titles (Amin 0904).
-
-    Row: (custom, name_with_medal, win, status, role)
-    """
+    """Rich-Markdown LTR table; blank titles.
+    Row: (custom, name, win, status, role)."""
     if not rows:
         return head
     table = NL.join(
@@ -183,14 +182,13 @@ async def send_win_list(
         alive = bool(item.get("alive", True))
         neutral = bool(item.get("neutral", False))
         if neutral:
-            status = (
-                chr(0x1F3C3)
-                if item.get("fugitive")
-                else chr(0x1F634)
-            )
+            status = chr(0x1F3C3) if (
+                item.get("fugitive")
+            ) else chr(0x1F634)
         else:
             status = (
-                chr(0x1F642) if alive else chr(0x1FAA6)
+                chr(0x1F642) if alive
+                else chr(0x1FAA6)
             )
         rows.append(
             (
@@ -320,7 +318,8 @@ async def announce_roster(
                 f"roster.build.failed.c={chat_id}"
                 "",
             )
-        except Exception:
+        except Exception as exc:
+            get_logger().warning("silent_swallow.line=323.exc={}", exc)
             pass
         rich_md = None
     if rich_md and await bridge.send_rich(

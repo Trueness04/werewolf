@@ -27,7 +27,8 @@ def ai_available() -> bool:
         return False
     try:
         return find_spec("AI") is not None
-    except (ImportError, ValueError):
+    except (ImportError, ValueError) as exc:
+        get_logger().warning("silent_swallow.line=30.exc={}", exc)
         return False
 
 

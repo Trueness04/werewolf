@@ -9,6 +9,7 @@ from app.cache.redis_client import get_redis
 from app.cache.redis_keys import RedisKeySpace
 from app.managers.chat_bridge import ChatBridge
 from app.managers.text_managers import TextManager
+from app.managers.logger_manager import get_logger
 
 
 async def notify_mason_links(
@@ -110,7 +111,8 @@ def parse_lover_pair(raw: str | None) -> tuple[int, int] | None:
     left, right = raw.split(":", 1)
     try:
         return int(left), int(right)
-    except ValueError:
+    except ValueError as exc:
+        get_logger().warning("silent_swallow.line=113.exc={}", exc)
         return None
 
 

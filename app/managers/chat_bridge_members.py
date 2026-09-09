@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+from app.managers.logger_manager import get_logger
 
 
 class ChatBridgeMembers:
@@ -15,7 +16,8 @@ class ChatBridgeMembers:
                 chat_id=chat_id,
                 message_id=message_id,
             )
-        except Exception:
+        except Exception as exc:
+            get_logger().warning("silent_swallow.line=18.exc={}", exc)
             return
 
     async def get_member_status(
@@ -47,5 +49,6 @@ class ChatBridgeMembers:
                     can_send_messages=False,
                 ),
             )
-        except Exception:
+        except Exception as exc:
+            get_logger().warning("silent_swallow.line=50.exc={}", exc)
             return

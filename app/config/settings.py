@@ -17,6 +17,7 @@ from app.config.paths import (
     URL_TEMPLATES,
 )
 from app.managers.error_manager import ErrorManager
+from app.managers.logger_manager import get_logger
 
 
 class Settings(BaseSettings):
@@ -139,7 +140,8 @@ class Settings(BaseSettings):
                 continue
             try:
                 out.add(int(part))
-            except ValueError:
+            except ValueError as exc:
+                get_logger().warning("silent_swallow.line=142.exc={}", exc)
                 continue
         return out
 

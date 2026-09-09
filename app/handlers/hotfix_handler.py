@@ -12,6 +12,7 @@ from telegram.ext import ContextTypes
 from app.managers.game_event import log_game_event
 from app.managers.sudo import is_sudo
 from app.managers.text_managers import TextManager
+from app.managers.logger_manager import get_logger
 
 _texts = TextManager()
 
@@ -80,7 +81,8 @@ def _reload_modules() -> list[str]:
         try:
             importlib.reload(mod)
             reloaded.append(mod_name)
-        except Exception:
+        except Exception as exc:
+            get_logger().warning("silent_swallow.line=83.exc={}", exc)
             pass
     return reloaded
 
@@ -107,6 +109,7 @@ async def hotfix_command(
     try:
         pull_result = await _git_pull()
     except Exception as exc:
+        get_logger().warning("silent_swallow.line=109.exc={}", exc)
         pull_result = _texts.get(
             "hotfix_git_error",
             "fa",

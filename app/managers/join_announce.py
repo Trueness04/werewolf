@@ -11,6 +11,7 @@ from app.config.settings import Settings
 from app.managers.chat_bridge import ChatBridge
 from app.managers.lobby_manager import LobbyManager
 from app.managers.text_managers import TextManager
+from app.managers.logger_manager import get_logger
 
 _get_mode = import_module("app.class.game_mode").get_mode
 TrackFn = Callable[[int, int], Awaitable[None]]
@@ -40,7 +41,8 @@ async def announce_player_joins(
     if mode:
         try:
             min_n = int(_get_mode(str(mode)).min_players)
-        except Exception:
+        except Exception as exc:
+            get_logger().warning("silent_swallow.line=43.exc={}", exc)
             min_n = 5
     max_n = int(settings.max_players)
     for name in names:

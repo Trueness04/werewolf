@@ -10,6 +10,7 @@ from telegram.ext import ContextTypes
 from app.integrations.ai_gate import ai_callable
 from app.managers.sudo import is_sudo
 from app.managers.text_managers import TextManager
+from app.managers.logger_manager import get_logger
 
 _texts = TextManager()
 
@@ -19,7 +20,8 @@ def _load_words(key: str) -> frozenset:
     try:
         items = json.loads(raw)
         return frozenset(str(x).lower() for x in items)
-    except Exception:
+    except Exception as exc:
+        get_logger().warning("silent_swallow.line=22.exc={}", exc)
         return frozenset()
 
 

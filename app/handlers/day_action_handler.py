@@ -18,6 +18,7 @@ from app.handlers.callback_ack import ack_selection
 from app.managers.day_actions import DayActions
 from app.managers.game_event import log_game_event
 from app.managers.json_loader import load_json
+from app.managers.logger_manager import get_logger
 
 
 async def day_callback(
@@ -43,7 +44,8 @@ async def day_callback(
     try:
         chat_id = int(parts[1])
         actor = int(parts[2])
-    except ValueError:
+    except ValueError as exc:
+        get_logger().warning("silent_swallow.line=46.exc={}", exc)
         return
     if actor != user.id:
         return
@@ -107,7 +109,8 @@ async def day_callback(
     else:
         try:
             target_id = int(choice)
-        except ValueError:
+        except ValueError as exc:
+            get_logger().warning("silent_swallow.line=110.exc={}", exc)
             return
         value = str(target_id)
         label = await _name(

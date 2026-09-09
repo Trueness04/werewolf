@@ -15,6 +15,7 @@ from app.database.models.group import GroupRow
 from app.database.session import session_scope
 from app.managers.game_event import log_game_event
 from app.managers.json_loader import load_json
+from app.managers.logger_manager import get_logger
 
 
 class GroupInactive(Exception):
@@ -127,7 +128,8 @@ class GameStateManager:
         timer_raw = data.get(fields.field("timer"), "0")
         try:
             timer = int(timer_raw)
-        except ValueError:
+        except ValueError as exc:
+            get_logger().warning("silent_swallow.line=130.exc={}", exc)
             timer = 0
         phases = _phases()
         redis_phases = phases["redis_phases"]

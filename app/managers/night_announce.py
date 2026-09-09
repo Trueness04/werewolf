@@ -48,7 +48,8 @@ async def announce_night_results(
         if len(entry) > 2:
             try:
                 tid = int(entry[2])
-            except (TypeError, ValueError):
+            except (TypeError, ValueError) as exc:
+                get_logger().warning("silent_swallow.line=51.exc={}", exc)
                 tid = None
             if tid is not None:
                 prow = player(ctx, tid)

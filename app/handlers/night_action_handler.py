@@ -17,6 +17,7 @@ from app.handlers.callback_safe import answer_safe
 from app.managers.game_event import log_game_event
 from app.managers.json_loader import load_json
 from app.managers.night_early import maybe_early_end_night
+from app.managers.logger_manager import get_logger
 
 _Registry = import_module(
     "app.class.roles.registry"
@@ -111,7 +112,8 @@ async def _night_apply(
     elif role.target_type == "single_target":
         try:
             target_id = int(choice)
-        except ValueError:
+        except ValueError as exc:
+            get_logger().warning("silent_swallow.line=114.exc={}", exc)
             return
 
         # Special case: Cupid gets two targets

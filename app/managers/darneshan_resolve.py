@@ -12,6 +12,7 @@ from app.managers.chat_bridge import ChatBridge
 from app.managers.convert_player import convert_player
 from app.managers.cult_helpers import cult_rules
 from app.managers.json_loader import load_json
+from app.managers.logger_manager import get_logger
 from app.managers.night_village import player
 from app.managers.text_managers import TextManager
 from app.managers.darneshan_pick import (  # noqa: F401
@@ -49,7 +50,8 @@ async def resolve_dar_neshan_mark(
             continue
         try:
             tid = int(raw)
-        except ValueError:
+        except ValueError as exc:
+            get_logger().warning("silent_swallow.line=52.exc={}", exc)
             continue
         target = player(ctx, tid)
         if target is None or not target.get("alive", True):
@@ -93,7 +95,8 @@ def burn_mark_if_target_dead(ctx: dict[str, Any]) -> None:
         return
     try:
         tid = int(mark)
-    except (TypeError, ValueError):
+    except (TypeError, ValueError) as exc:
+        get_logger().warning("silent_swallow.line=96.exc={}", exc)
         return
     if tid not in ctx["deaths"]:
         return
@@ -105,7 +108,8 @@ def burn_mark_if_target_dead(ctx: dict[str, Any]) -> None:
     if marker:
         try:
             mid = int(marker)
-        except (TypeError, ValueError):
+        except (TypeError, ValueError) as exc:
+            get_logger().warning("silent_swallow.line=108.exc={}", exc)
             return
         ctx.setdefault("dm_messages", []).append(
             (mid, "DarNeshanMarkTargetDead", tid)

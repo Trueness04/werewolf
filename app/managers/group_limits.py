@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from app.config.settings import Settings
+from app.managers.logger_manager import get_logger
 
 _ABS_MIN = 6
 _ABS_MAX = 60
@@ -16,7 +17,8 @@ def max_players_of(
     raw = getattr(group, "max_players", None)
     try:
         value = int(raw or 0)
-    except (TypeError, ValueError):
+    except (TypeError, ValueError) as exc:
+        get_logger().warning("silent_swallow.line=19.exc={}", exc)
         value = 0
     if value <= 0:
         value = int(settings.max_players)

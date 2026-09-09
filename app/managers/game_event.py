@@ -49,7 +49,8 @@ async def log_to_group(
         return
     try:
         await bridge.send_text(int(gid), text)
-    except Exception:
+    except Exception as exc:
+        get_logger().warning("silent_swallow.line=52.exc={}", exc)
         pass
 
 

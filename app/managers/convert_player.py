@@ -12,6 +12,7 @@ from app.cache.redis_keys import RedisKeySpace
 from app.database.models.player import PlayerRow
 from app.database.session import session_scope
 from importlib import import_module
+from app.managers.logger_manager import get_logger
 
 _Registry = import_module(
     "app.class.roles.registry"
@@ -31,7 +32,8 @@ async def convert_player(
     registry = _Registry()
     try:
         info = registry.definition(new_role)
-    except KeyError:
+    except KeyError as exc:
+        get_logger().warning("silent_swallow.line=34.exc={}", exc)
         return False
     team = str(info.get("team") or "villager")
     roles_raw = await redis.get(keys.game_roles(chat_id))

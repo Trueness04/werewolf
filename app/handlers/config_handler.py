@@ -22,6 +22,7 @@ from app.managers.json_loader import load_json
 from app.managers.group_limits import max_players_of
 from sqlalchemy import select
 from app.database.models.group import GroupRow
+from app.managers.logger_manager import get_logger
 
 
 async def config_command(
@@ -47,7 +48,8 @@ async def config_command(
         group = await deps.state_mgr().ensure_group_active(
             chat.id,
         )
-    except GroupInactive:
+    except GroupInactive as exc:
+        get_logger().warning("silent_swallow.line=50.exc={}", exc)
         return
     if group is None:
         return
@@ -100,7 +102,8 @@ async def config_callback(
         chat_id = int(parts[1])
         action = parts[2]
         value = parts[3]
-    except ValueError:
+    except ValueError as exc:
+        get_logger().warning("silent_swallow.line=103.exc={}", exc)
         return
     member = await context.bot.get_chat_member(
         chat_id,

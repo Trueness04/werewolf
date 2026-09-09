@@ -107,7 +107,8 @@ def _sender_worker(q: _q.Queue) -> None:
                     if rec is None:
                         break
                     batch.append(rec)
-            except _q.Empty:
+            except _q.Empty as exc:
+                logger.warning("silent_swallow.line=110.exc={}", exc)
                 pass
             await _send_batch(batch)
             await asyncio.sleep(5)
@@ -138,7 +139,8 @@ def _add_telegram_sink(cfg: LoggingConfig) -> None:
             if q is None or q.full():
                 return  # drop instead of blocking the app
             q.put_nowait(message.record)
-        except Exception:
+        except Exception as exc:
+            logger.warning("silent_swallow.line=141.exc={}", exc)
             pass  # sink must never break logging
 
     logger.add(

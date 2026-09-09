@@ -7,6 +7,7 @@ from sqlalchemy import select
 from app.database.models.user import UserRow
 from app.database.session import session_scope
 from app.managers.text_managers import TextManager
+from app.managers.logger_manager import get_logger
 
 
 async def get_governor() -> UserRow | None:
@@ -49,7 +50,8 @@ def format_new_level(
             new_rank,
             governor_name,
         )
-    except (IndexError, KeyError, ValueError):
+    except (IndexError, KeyError, ValueError) as exc:
+        get_logger().warning("silent_swallow.line=52.exc={}", exc)
         fallback = TextManager().get(
             "rank_promote",
             "fa",

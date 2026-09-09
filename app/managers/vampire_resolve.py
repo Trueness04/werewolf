@@ -13,6 +13,7 @@ from app.managers.night_attack import (
     common_defense,
 )
 from app.managers.night_village import player
+from app.managers.logger_manager import get_logger
 
 _CHANCES = ROOT / "data" / "config" / "field_chances.json"
 
@@ -149,7 +150,8 @@ async def resolve_vampire(ctx: dict[str, Any]) -> None:
             continue
         try:
             tid = int(raw)
-        except ValueError:
+        except ValueError as exc:
+            get_logger().warning("silent_swallow.line=152.exc={}", exc)
             continue
         if player(ctx, tid) is None:
             continue
@@ -257,7 +259,8 @@ def _vamp_branch(ctx: dict[str, Any], tid: int) -> str:
     if convert_on:
         try:
             chance = int(ctx.get("vampire_convert") or 40)
-        except (TypeError, ValueError):
+        except (TypeError, ValueError) as exc:
+            get_logger().warning("silent_swallow.line=260.exc={}", exc)
             chance = 40
         if rng.randrange(100) < chance:
             return "bitten"

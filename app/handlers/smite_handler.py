@@ -16,6 +16,7 @@ from app.managers.game_state_manager import (
 )
 from app.managers.sudo import is_sudo
 from app.managers.text_managers import TextManager
+from app.managers.logger_manager import get_logger
 
 
 async def smite_command(
@@ -48,7 +49,8 @@ async def smite_command(
     state_mgr = deps_state()
     try:
         state = await state_mgr.get_group_state(chat.id)
-    except GroupInactive:
+    except GroupInactive as exc:
+        get_logger().warning("silent_swallow.line=51.exc={}", exc)
         return
     if state is GameState.NO_GAME:
         await context.bot.send_message(

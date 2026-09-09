@@ -7,6 +7,7 @@ from telegram.ext import ContextTypes
 
 from app.handlers import deps
 from app.managers.game_state_manager import GroupInactive
+from app.managers.logger_manager import get_logger
 
 
 async def players_list(
@@ -22,7 +23,8 @@ async def players_list(
     state_manager = deps.state_mgr()
     try:
         await state_manager.ensure_group_active(chat.id)
-    except GroupInactive:
+    except GroupInactive as exc:
+        get_logger().warning("silent_swallow.line=25.exc={}", exc)
         return
     group = await state_manager.ensure_group_active(
         chat.id,

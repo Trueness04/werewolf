@@ -12,6 +12,7 @@ from app.managers.game_state_manager import (
     GroupInactive,
 )
 from app.managers.lobby_extend import bump_if_late_join
+from app.managers.logger_manager import get_logger
 
 
 async def flee_join(
@@ -33,7 +34,8 @@ async def flee_join(
         group = await state_manager.ensure_group_active(
             chat.id,
         )
-    except GroupInactive:
+    except GroupInactive as exc:
+        get_logger().warning("silent_swallow.line=36.exc={}", exc)
         return
     if group is None:
         return

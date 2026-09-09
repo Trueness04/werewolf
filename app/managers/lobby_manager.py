@@ -19,6 +19,7 @@ from app.database.session import session_scope
 from app.managers.game_event import log_game_event
 from app.managers.json_loader import load_json
 from app.managers.text_managers import TextManager
+from app.managers.logger_manager import get_logger
 
 class LobbyManager:
     """Create lobbies and register players."""
@@ -311,7 +312,8 @@ class LobbyManager:
         raw = await redis.hget(key, field)
         try:
             return int(raw or "0")
-        except ValueError:
+        except ValueError as exc:
+            get_logger().warning("silent_swallow.line=314.exc={}", exc)
             return 0
 
     def player_list_text(

@@ -9,6 +9,7 @@ from app.managers.convert_player import convert_player
 from app.managers.game_event import log_game_event
 from app.managers.text_managers import TextManager
 from app.config.settings import get_settings
+from app.managers.logger_manager import get_logger
 
 # Sprint-2 maps PHP names → our Redis fields.
 _QUEUE = (
@@ -45,7 +46,8 @@ class BittanCheck:
                 continue
             try:
                 uid = int(raw)
-            except ValueError:
+            except ValueError as exc:
+                get_logger().warning("silent_swallow.line=48.exc={}", exc)
                 await redis.hdel(
                     flags,
                     self._keys.field(field),

@@ -15,6 +15,7 @@ from app.handlers import deps
 from app.handlers.callback_ack import ack_selection
 from app.managers.json_loader import load_json
 from app.managers.vote_manager import VoteManager
+from app.managers.logger_manager import get_logger
 
 
 async def dodge_day_callback(
@@ -42,7 +43,8 @@ async def dodge_day_callback(
         lucifer = int(parts[2])
         victim = int(parts[3])
         target = int(parts[4])
-    except ValueError:
+    except ValueError as exc:
+        get_logger().warning("silent_swallow.line=45.exc={}", exc)
         return
     if lucifer != user.id:
         return
@@ -99,7 +101,8 @@ async def dodge_vote_callback(
         lucifer = int(parts[2])
         victim = int(parts[3])
         target = int(parts[4])
-    except ValueError:
+    except ValueError as exc:
+        get_logger().warning("silent_swallow.line=102.exc={}", exc)
         return
     if lucifer != user.id:
         return

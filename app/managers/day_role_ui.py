@@ -15,6 +15,7 @@ from app.managers.special_teams import (
     alive_targets_hide_bride,
 )
 from app.managers.text_managers import TextManager
+from app.managers.logger_manager import get_logger
 
 _PROMPT_MAP = {
     "role_Solh": ("solh_L", "solh_btnY", "solh_btnN"),
@@ -162,5 +163,6 @@ async def _gunner_bullets(
     )
     try:
         return int(raw or "2")
-    except ValueError:
+    except ValueError as exc:
+        get_logger().warning("silent_swallow.line=165.exc={}", exc)
         return 2

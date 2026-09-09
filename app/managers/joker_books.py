@@ -11,6 +11,7 @@ from app.cache.redis_keys import RedisKeySpace
 from app.managers.chat_bridge import ChatBridge
 from app.managers.night_village import player
 from app.managers.text_managers import TextManager
+from app.managers.logger_manager import get_logger
 
 _rng = SystemRandom()
 _BOOK_ROLES = ("role_joker", "role_harley")
@@ -127,7 +128,8 @@ async def resolve_joker_search(
         holders = {
             int(x) for x in json.loads(raw or "[]")
         }
-    except (TypeError, json.JSONDecodeError, ValueError):
+    except (TypeError, json.JSONDecodeError, ValueError) as exc:
+        get_logger().warning("silent_swallow.line=130.exc={}", exc)
         holders = set()
     found = int(
         await redis.hget(
@@ -146,7 +148,8 @@ async def resolve_joker_search(
             found_in |= {
                 int(x) for x in json.loads(raw_fi)
             }
-        except (TypeError, json.JSONDecodeError, ValueError):
+        except (TypeError, json.JSONDecodeError, ValueError) as exc:
+            get_logger().warning("silent_swallow.line=149.exc={}", exc)
             pass
     for prow in ctx["players"]:
         role = prow.get("role")
@@ -160,7 +163,8 @@ async def resolve_joker_search(
             continue
         try:
             target = int(raw_t)
-        except ValueError:
+        except ValueError as exc:
+            get_logger().warning("silent_swallow.line=163.exc={}", exc)
             continue
         if ctx.get("bard_redirect") is not None:
             target = int(ctx["bard_redirect"])

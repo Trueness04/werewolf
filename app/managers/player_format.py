@@ -22,6 +22,7 @@ from app.managers.player_format_roster import (  # noqa: F401
     send_win_list,
     set_user_custom_emoji,
 )
+from app.managers.logger_manager import get_logger
 
 
 def player_name(item: dict[str, Any]) -> str:
@@ -110,7 +111,8 @@ async def load_game_players(
         return []
     try:
         players = json.loads(raw)
-    except json.JSONDecodeError:
+    except json.JSONDecodeError as exc:
+        get_logger().warning("silent_swallow.line=113.exc={}", exc)
         return []
     db_names = await _names_from_db(chat_id, keys)
     out: list[dict[str, Any]] = []
