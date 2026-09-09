@@ -342,14 +342,7 @@ class LobbyManager:
         if not lines:
             return header
         sep = self._texts.get(
-            "name_separator",
-            "fa",
-            bundle="webapp",
-        )
+            "name_separator", "fa", bundle="webapp")
         return self._texts.get(
-            "lobby_summary",
-            "fa",
-            header,
-            sep.join(lines),
-            bundle="webapp",
-        )
+            "lobby_summary", "fa", header,
+            sep.join(lines), bundle="webapp")
