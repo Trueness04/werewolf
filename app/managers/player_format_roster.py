@@ -37,9 +37,10 @@ def _cell(name: str) -> str:
 
 def ltr(text: str) -> str:
     """Force LTR rendering for any text (FA/EN alike)."""
+    value = str(text or "")
+    return value + chr(8206)
 
 PLAYER_CUSTOM_EMOJI: dict[int, str] = {}
-
 ROLE_CUSTOM_EMOJI: dict[str, str] = {}
 
 async def _load_custom_emojis(
