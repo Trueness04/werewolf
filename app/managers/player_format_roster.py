@@ -4,14 +4,12 @@ from __future__ import annotations
 
 import json
 
-_webapp_texts = None
 from typing import Any
 
 from app.managers.text_managers import TextManager
 
 _texts = TextManager()
-SEP_NL = chr(10)
-NL = SEP_NL
+NL = chr(10)
 ROW_FMT = chr(124).join(
     chr(32) + "{" + str(i) + "}" + chr(32)
     for i in range(5)
@@ -20,7 +18,6 @@ ROW_FMT = chr(124).join(
 from app.cache.redis_client import get_redis
 from app.cache.redis_keys import RedisKeySpace
 from app.managers.chat_bridge import ChatBridge
-from app.managers.text_managers import TextManager
 from importlib import import_module
 from app.managers.logger_manager import get_logger
 
@@ -37,9 +34,9 @@ def _cell(name: str) -> str:
     )
 
 def ltr(text: str) -> str:
-    """Force LTR rendering for any text (FA/EN alike)."""
+    """Full LTR isolate (LRI…PDI) for FA/EN text."""
     value = str(text or "")
-    return value + chr(8206)
+    return chr(0x2066) + value + chr(0x2069)
 
 PLAYER_CUSTOM_EMOJI: dict[int, str] = {}
 ROLE_CUSTOM_EMOJI: dict[str, str] = {}
@@ -56,8 +53,9 @@ async def _load_custom_emojis(
         if not key:
             continue
         val = await redis.get(key)
-        if val:
-            PLAYER_CUSTOM_EMOJI[uid] = str(val)
+        PLAYER_CUSTOM_EMOJI[uid] = (
+            str(val) if val else ""
+        )
 
 async def set_user_custom_emoji(
     user_id: int,
@@ -111,12 +109,18 @@ def _role_label(
 def _roster_markdown(
     head: str,
     rows: list,
+    head_key: str = "roster_table_head",
 ) -> str:
-    """Rich-Markdown LTR table; blank titles.
+    """Rich-Markdown LTR table; data-sourced titles.
     Row: (custom, name, win, status, role)."""
     if not rows:
         return head
-    table = NL.join(
+    titles = _texts.get(
+        head_key,
+        "fa",
+        bundle="webapp",
+    )
+    table = titles + NL.join(
         ROW_FMT.format(
             _cell(c),
             _cell(ltr(n)),
@@ -133,85 +137,6 @@ def _roster_markdown(
             table,
             bundle="webapp",
         )
-
-async def send_win_list(
-    bridge: ChatBridge,
-    texts: TextManager,
-    chat_id: int,
-    lang: str,
-    players: list[dict[str, Any]],
-    winner: str,
-) -> None:
-    """End-game table: every seat, role revealed, win flag."""
-    from app.managers.player_format import (
-        player_name,
-    )
-
-    redis = await get_redis()
-    await _load_custom_emojis(players)
-    roles_map = json.loads(
-        await redis.get(
-            RedisKeySpace().game_roles(chat_id)
-        )
-        or "{}"
-    )
-    registry = RoleRegistry()
-    from app.managers.nix_medals import (
-        user_medal,
-    )
-
-    rows = []
-    for item in players:
-        uid = int(item["user_id"])
-        rid = (
-            str(roles_map.get(str(uid), ""))
-            or ""
-        )
-        role_cell = (
-            _role_label(
-                texts,
-                lang,
-                rid,
-                registry,
-            )
-            if rid
-            else ""
-        )
-        medal, _label = await user_medal(uid)
-        custom = PLAYER_CUSTOM_EMOJI.get(uid, "")
-        alive = bool(item.get("alive", True))
-        neutral = bool(item.get("neutral", False))
-        if neutral:
-            status = chr(0x1F3C3) if (
-                item.get("fugitive")
-            ) else chr(0x1F634)
-        else:
-            status = (
-                chr(0x1F642) if alive
-                else chr(0x1FAA6)
-            )
-        rows.append(
-            (
-                custom,
-                f"{player_name(item)}.[{medal}]",
-                "",
-                status,
-                role_cell,
-            )
-        )
-    head = (
-        "#Players.("
-    )
-    md = _roster_markdown(head, rows)
-    if not await bridge.send_rich(chat_id, md):
-        for _c, nm, w, s, r in rows:
-            line = (
-                f"{w}.{nm}.{s}.{r}".rstrip()
-            )
-            await bridge.send_text(
-                chat_id,
-                ltr(line),
-            )
 
 async def announce_roster(
     bridge: ChatBridge,
@@ -297,7 +222,17 @@ async def announce_roster(
         )
     try:
         rich_md = _roster_markdown(
-            f"#Players.{len(players)}",
+            _texts.get(
+                "roster_count",
+                "fa",
+                sum(
+                    1
+                    for p in players
+                    if p.get("alive", True)
+                ),
+                len(players),
+                bundle="webapp",
+            ),
             rows,
         )
     except Exception:

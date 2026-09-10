@@ -52,13 +52,17 @@ async def clean_orphaned_keys() -> dict[str, int]:
         # lobby (mid-start grace) — deleting those wipes
         # the lobby mid-distribution (Amin 0909 bug).
         if chat_id not in active_chats:
-            data = await redis.hgetall(key)
-            distributed = data.get("Roles_Distributed")
-            started = data.get(
-                keys.field("start_new_game")
-            )
-            if not distributed and not started:
-                continue
+            # Check key type first — only read hashes as hgetall
+            key_type = await redis.type(key)
+            if key_type == "hash":
+                data = await redis.hgetall(key)
+                distributed = data.get("Roles_Distributed")
+                started = data.get(
+                    keys.field("start_new_game")
+                )
+                if not distributed and not started:
+                    continue
+            # Delete orphaned keys regardless of type
             await redis.delete(key)
             stats["games"] += 1
 

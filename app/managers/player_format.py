@@ -19,8 +19,10 @@ from app.managers.player_format_roster import (  # noqa: F401
     ROLE_CUSTOM_EMOJI,
     announce_roster,
     ltr,
-    send_win_list,
     set_user_custom_emoji,
+)
+from app.managers.player_format_winlist import (  # noqa: F401
+    send_win_list,
 )
 from app.managers.logger_manager import get_logger
 
@@ -48,7 +50,7 @@ def mention_html(user_id: int, name: str) -> str:
     if int(user_id) <= 0:
         return f"<b>{safe}</b>"
     tpl = str(load_json(URL_TEMPLATES)["user_mention_html"])
-    return tpl.format(user_id=int(user_id), name=safe)
+    return tpl.format(user_id=int(user_id), name=ltr(safe))
 
 
 def mention_lines(

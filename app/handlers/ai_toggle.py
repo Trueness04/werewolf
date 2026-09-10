@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-import json
-
 from telegram import Update
 from telegram.ext import ContextTypes
 
@@ -16,12 +14,27 @@ _texts = TextManager()
 
 
 def _load_words(key: str) -> frozenset:
-    raw = _texts.get(key, "fa", bundle="ai")
+    """Read full word list from the ai bundle.
+
+    TextManager.get() picks ONE random item from list
+    entries, so the raw entry is resolved directly.
+    """
     try:
-        items = json.loads(raw)
-        return frozenset(str(x).lower() for x in items)
+        entry = _texts._resolve_entry(
+            key,
+            "fa",
+            "ai",
+            None,
+        )
+        if not isinstance(entry, list):
+            return frozenset()
+        return frozenset(
+            str(item).lower() for item in entry
+        )
     except Exception as exc:
-        get_logger().warning("silent_swallow.line=22.exc={}", exc)
+        get_logger().warning(
+            "ai_toggle.load_words.exc={}", exc
+        )
         return frozenset()
 
 

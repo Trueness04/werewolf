@@ -127,4 +127,13 @@ def medal_for(
 
 def is_reserved_emoji(text: str) -> bool:
     """True if any char is a reserved role/medal emoji."""
-    return any(ch in RESERVED_EMOJI for ch in text)
+    reserved_codepoints = frozenset(
+        chr(0x1F947)
+        + chr(0x26AB)
+        + chr(0x1F642)
+        + chr(0x2620)
+    )
+    return any(
+        ch in RESERVED_EMOJI or ch in reserved_codepoints
+        for ch in text
+    )

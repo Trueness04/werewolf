@@ -9,7 +9,10 @@
   "players_list_body": "{header}\\n{body}",
   "magic_panel_text": "<b>{title}</b>\\n\\n{body}",
   "night_dm_body": "{0}\n{1}",
-  "roster_table_head": "|.|.|.|.|.|\\n|:-:|:----|:-:|:-:|:----|\\n",
+  "roster_table_head": "| Custom | Players | · | Status | Role |\n|:-:|:----|:-:|:-:|:----|\n",
+  "roster_alive": "🙂",
+  "roster_dead": "☠️",
+  "roster_count": "#Players ({0}/{1})",
   "rank_newlevel_fallback": "{template}\\n{fallback}",
   "ai_system_join": "{system}\\n{extra}",
   "http_reverse_negative": "reverse would go negative",
@@ -33,5 +36,6 @@
   "roster_head_join": "{0}\n\n{1}",
   "senior_panel_text": "<b>{0}</b>\n\n{1}",
   "lobby_summary": "{0}\n{1}",
-  "name_separator": "\n"
+  "name_separator": "\n",
+  "win_table_head": "| Custom | Players | Win | Status | Role |\n|:-:|:----|:-:|:-:|:----|\n"
 }
