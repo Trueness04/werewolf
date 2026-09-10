@@ -107,8 +107,9 @@ def _sender_worker(q: _q.Queue) -> None:
                     if rec is None:
                         break
                     batch.append(rec)
-            except _q.Empty as exc:
-                logger.warning("silent_swallow.line=110.exc={}", exc)
+            except _q.Empty:
+                # Idle queue — expected, never logged (was
+                # flooding the mirror loop).
                 pass
             await _send_batch(batch)
             await asyncio.sleep(5)
