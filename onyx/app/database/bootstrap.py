@@ -139,6 +139,7 @@ async def _ensure_group_columns() -> None:
 async def _ensure_user_columns() -> None:
     """Add rank/xp/stats columns on existing users table."""
     settings = get_settings()
+    cfg = _cfg()
     engine = create_async_engine(settings.database_url)
     stmts = (
         str(cfg["sql_user_xp"]),
