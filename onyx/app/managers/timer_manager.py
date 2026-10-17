@@ -20,6 +20,10 @@ from app.managers.game_event import (
 from app.managers.game_state_manager import (
     GameStateManager,
 )
+from app.managers.ai_reconcile import (
+    drop_ai_members,
+    purge_legacy_ai_keys,
+)
 from app.managers.initial_flow import InitialFlow
 from app.managers.json_loader import load_json
 from app.managers.lobby_manager import LobbyManager
@@ -242,6 +246,13 @@ class TimerManager:
         )
         mode_name = str(mode or "Normal")
         info = _get_mode(mode_name)
+        legacy = await drop_ai_members(self._keys, chat_id)
+        if legacy > 0:
+            log_game_event(
+                "ai_legacy_reconciled",
+                chat_id=chat_id,
+                removed=legacy,
+            )
         count = await self._lobby.count_players(chat_id)
         if (
             self._settings.debug_mode
@@ -257,6 +268,8 @@ class TimerManager:
             )
         await self.update_player_list(chat_id, lang)
         await self._flush_deletes(chat_id)
+        if legacy > 0:
+            await purge_legacy_ai_keys(chat_id)
         if count < info.min_players:
             await self._state.close_lobby(
                 chat_id,

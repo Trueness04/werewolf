@@ -127,8 +127,7 @@ async def _ensure_group_columns() -> None:
         str(cfg["sql_add_secret_vote"]),
         str(cfg["sql_add_mute_die"]),
         str(cfg["sql_add_text_mode"]),
-        "ALTER TABLE groups ADD COLUMN IF NOT EXISTS "
-        "sponsor_lock BOOLEAN DEFAULT FALSE",
+        str(cfg["sql_add_sponsor_lock"]),
     )
     async with engine.begin() as conn:
         for stmt in stmts:
@@ -142,14 +141,13 @@ async def _ensure_user_columns() -> None:
     settings = get_settings()
     engine = create_async_engine(settings.database_url)
     stmts = (
-        "ALTER TABLE users ADD COLUMN IF NOT EXISTS xp INTEGER DEFAULT 0",
-        "ALTER TABLE users ADD COLUMN IF NOT EXISTS rank INTEGER DEFAULT 1",
-        "ALTER TABLE users ADD COLUMN IF NOT EXISTS games_played INTEGER DEFAULT 0",
-        "ALTER TABLE users ADD COLUMN IF NOT EXISTS wins INTEGER DEFAULT 0",
-        "ALTER TABLE users ADD COLUMN IF NOT EXISTS bio TEXT",
-        "ALTER TABLE users ADD COLUMN IF NOT EXISTS username VARCHAR(128)",
-        "ALTER TABLE web_reports ADD COLUMN IF NOT EXISTS "
-        "status VARCHAR(16) DEFAULT 'open'",
+        str(cfg["sql_user_xp"]),
+        str(cfg["sql_user_rank"]),
+        str(cfg["sql_user_games_played"]),
+        str(cfg["sql_user_wins"]),
+        str(cfg["sql_user_bio"]),
+        str(cfg["sql_user_username"]),
+        str(cfg["sql_report_status"]),
     )
     async with engine.begin() as conn:
         for stmt in stmts:

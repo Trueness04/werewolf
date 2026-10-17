@@ -48,9 +48,9 @@ def _iter_py_files(
     root: Path,
     skip: set[str],
 ) -> list[Path]:
-    """List Python sources under app, AI + launcher."""
+    """List Python sources under app + launcher."""
     files: list[Path] = []
-    roots = (root / "app", root / "AI")
+    roots = (root / "app",)
     for base in roots:
         if not base.is_dir():
             continue
@@ -77,7 +77,7 @@ def collect_scan_targets(
 
 
 def collect_all_py_files() -> list[Path]:
-    """Return project Python files (app, AI, launcher)."""
+    """Return project Python files (app, launcher)."""
     return _iter_py_files(ROOT, set())
 
 

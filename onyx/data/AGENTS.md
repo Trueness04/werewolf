@@ -13,7 +13,6 @@
 onyx/
 ├── app/
 ├── data/
-├── AI/
 └── launcher.py
 ```
 
@@ -23,7 +22,6 @@ onyx/
 | مسیر | نقش |
 |------|-----|
 | `app/` | کد بات |
-| `AI/` | ایجنت مصنوعی لابی |
 | `data/` | config، text، env، docs، tests، archive، logs |
 | `launcher.py` | تنها `.py` در ریشه |
 

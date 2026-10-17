@@ -5,7 +5,6 @@ redis>=5.0
 pydantic-settings>=2.0
 loguru>=0.7
 jdatetime>=5.0
-openai>=1.40
 pytest>=8.0
 pytest-asyncio>=0.23
 fastapi>=0.110
