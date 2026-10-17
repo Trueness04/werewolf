@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 data/env/.env
 data/env/.venv/
 webapp/ui/node_modules/
@@ -14,3 +15,8 @@ data/logs/*
 *.ps1
 _textwork/snapshots/
 _textwork/
+=======
+.nexus-agents/
+>>>>>>> origin/backup/original-history
+
+.nexus-agents/

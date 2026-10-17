@@ -1,0 +1,5 @@
+{
+  "violation": "[gatekeeper:{rule}] {message}",
+  "summary_fail": "Gatekeeper FAILED ({count} issue(s)).",
+  "summary_ok": "Gatekeeper OK."
+}
