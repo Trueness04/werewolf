@@ -87,26 +87,6 @@ class RedisKeySpace:
         template = str(self._raw["game_flags"])
         return template.format(chat_id=chat_id)
 
-    def ai_players(self, chat_id: int) -> str:
-        """Set of AI user ids in a game."""
-        template = str(self._raw["game_ai_players"])
-        return template.format(chat_id=chat_id)
-
-    def ai_personas(self, chat_id: int) -> str:
-        """Hash user_id -> persona_id."""
-        template = str(self._raw["game_ai_personas"])
-        return template.format(chat_id=chat_id)
-
-    def ai_chat_queue(self, chat_id: int) -> str:
-        """List of pending AI chat JSON lines."""
-        template = str(self._raw["game_ai_chat_queue"])
-        return template.format(chat_id=chat_id)
-
-    def ai_chat_count(self, chat_id: int) -> str:
-        """Hash user_id -> messages sent this day."""
-        template = str(self._raw["game_ai_chat_count"])
-        return template.format(chat_id=chat_id)
-
     def night_count(self, chat_id: int) -> str:
         """Night counter key."""
         template = str(self._raw["game_night_count"])

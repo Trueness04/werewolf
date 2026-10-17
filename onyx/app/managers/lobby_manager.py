@@ -60,13 +60,7 @@ class LobbyManager:
             game_id = int(row.id)
         redis = await get_redis()
         key = self._keys.game_hash(chat_id)
-        await redis.delete(
-            key,
-            self._keys.ai_players(chat_id),
-            self._keys.ai_personas(chat_id),
-            self._keys.ai_chat_queue(chat_id),
-            self._keys.ai_chat_count(chat_id),
-        )
+        await redis.delete(key)
         timer = int(time()) + int(
             self._settings.join_duration_seconds
         )

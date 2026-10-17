@@ -55,15 +55,6 @@ class Settings(BaseSettings):
     )
     join_cost_coins: int = Field(alias="JOIN_COST_COINS")
     debug_mode: bool = Field(alias="DEBUG_MODE")
-    enable_bot_to_bot: bool = Field(
-        alias="ENABLE_BOT_TO_BOT",
-    )
-    bot_to_bot_max_messages: int = Field(
-        alias="BOT_TO_BOT_MAX_MESSAGES",
-    )
-    bot_to_bot_timeout_seconds: int = Field(
-        alias="BOT_TO_BOT_TIMEOUT_SECONDS",
-    )
     night_duration_seconds: int = Field(
         alias="NIGHT_DURATION_SECONDS",
     )
@@ -83,26 +74,6 @@ class Settings(BaseSettings):
         alias="SHERIFF_SHOT_SECONDS",
     )
     secret_vote: bool = Field(alias="SECRET_VOTE")
-    ai_bot_token: str = Field(
-        default="",
-        alias="AI_BOT_TOKEN",
-    )
-    ai_bot_username: str = Field(
-        default="",
-        alias="AI_BOT_USERNAME",
-    )
-    nvidia_api_key: str = Field(
-        default="",
-        alias="NVIDIA_API_KEY",
-    )
-    nvidia_base_url: str = Field(
-        default="",
-        alias="NVIDIA_BASE_URL",
-    )
-    nvidia_model: str = Field(
-        default="",
-        alias="NVIDIA_MODEL",
-    )
     webapp_url: str = Field(
         default="",
         alias="WEBAPP_URL",

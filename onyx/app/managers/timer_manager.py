@@ -138,19 +138,6 @@ class TimerManager:
                 lang=lang,
             )
         count = await self._lobby.count_players(chat_id)
-        if self._settings.enable_bot_to_bot and count > 0:
-            from AI.lobby_fill import ensure_ai_from_redis
-
-            await ensure_ai_from_redis(
-                chat_id,
-                self._bridge,
-                self._lobby,
-                self._keys,
-                self._texts,
-            )
-            count = await self._lobby.count_players(
-                chat_id,
-            )
         if await self._at_capacity(chat_id, count):
             await self._lobby.force_timer_end(chat_id)
 
@@ -256,20 +243,7 @@ class TimerManager:
         mode_name = str(mode or "Normal")
         info = _get_mode(mode_name)
         count = await self._lobby.count_players(chat_id)
-        if count > 0 and self._settings.enable_bot_to_bot:
-            from AI.lobby_fill import ensure_ai_from_redis
-
-            await ensure_ai_from_redis(
-                chat_id,
-                self._bridge,
-                self._lobby,
-                self._keys,
-                self._texts,
-            )
-            count = await self._lobby.count_players(
-                chat_id,
-            )
-        elif (
+        if (
             self._settings.debug_mode
             and count < info.min_players
             and count > 0
