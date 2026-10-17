@@ -1,1 +1,0 @@
-"""Mighty mode role stubs."""
