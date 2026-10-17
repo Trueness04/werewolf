@@ -8,7 +8,6 @@ from typing import Any
 from telegram import Update
 from telegram.ext import ContextTypes
 
-from AI.lobby_fill import ensure_ai_lobby_fill
 from app.cache.redis_client import get_redis
 from app.cache.redis_keys import RedisKeySpace
 from app.config.paths import CALLBACK_TEMPLATES
@@ -226,20 +225,6 @@ async def _do_force(
         )
         return
     lobby = deps.lobby_mgr()
-    keys = RedisKeySpace()
-    redis = await get_redis()
-    mode = await redis.hget(
-        keys.game_hash(chat_id),
-        keys.field("game_mode"),
-    )
-    await ensure_ai_lobby_fill(
-        chat_id,
-        str(mode or "Normal"),
-        bridge=bridge,
-        lobby=lobby,
-        keys=keys,
-        texts=tm,
-    )
     await lobby.set_timer(chat_id, int(time()) - 1)
     await TimerManager(bridge).finish_join(chat_id, lang)
     await answer_safe(

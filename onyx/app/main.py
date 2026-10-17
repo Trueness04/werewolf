@@ -98,7 +98,6 @@ from app.managers.phase_ticker import (
     tick_end_checks,
 )
 from app.managers.timer_manager import TimerManager
-from AI.runner import tick_ai_agents
 
 
 def _register_handlers(app: Application) -> None:
@@ -358,7 +357,6 @@ async def _tick_loop(
         try:
             bridge = ChatBridge(app.bot)
             await TimerManager(bridge).tick_all()
-            await tick_ai_agents(bridge)
             await tick_end_checks(bridge)
             await tick_active_nights(bridge)
             await tick_active_days(bridge)
