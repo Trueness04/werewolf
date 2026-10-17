@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
-from app.class.roles.white_wolf import WhiteWolfRole
+from ..base_role import BaseRole
 
 
-class MightyWhiteWolfRole(WhiteWolfRole):
+class MightyWhiteWolfRole(BaseRole):
     """Alias class; night resolve is pipeline-driven."""
 
     pass

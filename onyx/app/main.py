@@ -347,12 +347,22 @@ async def _post_init(app: Application) -> None:
     )
 
 
+async def _reconcile_legacy_ai(app: Application) -> None:
+    """Drain pre-upgrade AI lobbies/games at startup."""
+    from app.managers.ai_reconcile import reconcile_ai_chats
+
+    settings: Settings = app.bot_data["settings"]
+    bridge = ChatBridge(app.bot)
+    await reconcile_ai_chats(bridge, settings.default_lang)
+
+
 async def _tick_loop(
     app: Application,
     interval: float,
 ) -> None:
     """Async loop for join + night + day + vote."""
     log = get_logger()
+    await _reconcile_legacy_ai(app)
     while True:
         try:
             bridge = ChatBridge(app.bot)

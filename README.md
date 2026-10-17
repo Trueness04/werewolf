@@ -2,8 +2,8 @@
 
 Telegram Werewolf (Mafia) game bot — a Python rewrite of a legacy PHP codebase.
 Onyx runs the full werewolf gameplay loop inside Telegram groups (lobby → night →
-day → vote/lynch → win resolution), backed by PostgreSQL and Redis, with an AI
-lobby agent and a React Telegram Mini App for social/economy features.
+day → vote/lynch → win resolution), backed by PostgreSQL and Redis, with a
+React Telegram Mini App for social/economy features.
 
 ## Project Layout
 
@@ -21,7 +21,6 @@ onyx/
 │   ├── config/             # Settings & paths
 │   ├── filters/            # Custom PTB message filters
 │   └── keyboards/          # Inline / reply keyboard builders
-├── AI/             # AI lobby agent (personas, brain, LLM client, runner)
 ├── webapp/         # FastAPI backend + React Telegram Mini App
 │   ├── main.py             # FastAPI app (serves API + built UI)
 │   ├── api/                # Routes: auth, meta, social, admin
@@ -54,8 +53,6 @@ onyx/
 - **Webapp** handles out-of-bot features: shop, charging, magic store, hero,
   achievements, ranks, profile. The wallet stays in the bot (`/mycoin`,
   `/sendcoin`); the shop links out to the Mini App.
-- **AI module** provides bot-to-bot lobby agents (configurable via
-  `AI_BOT_TOKEN` / `AI_BOT_USERNAME` and `data/config/ai_agents.json`).
 
 ## Tech Stack
 
@@ -129,7 +126,6 @@ pytest data/tests
 | `SUDO_IDS` | Sudo administrator user IDs | — |
 | `DEFAULT_LANG` / `FALLBACK_LANG` | i18n languages | `fa` / `en` |
 | `DEBUG_MODE` | Verbose logging | `false` |
-| `ENABLE_BOT_TO_BOT` / `AI_BOT_TOKEN` / `AI_BOT_USERNAME` | AI lobby agent | — |
 
 Phase timing (`NIGHT_DURATION_SECONDS`, `DAY_DURATION_SECONDS`,
 `VOTE_DURATION_SECONDS`), lobby limits (`JOIN_DURATION_SECONDS`, `MAX_PLAYERS`,
@@ -141,7 +137,7 @@ in `.env` — see `data/env/example.env` for the full list.
 This project enforces strict structural and style rules, documented in
 [`onyx/data/AGENTS.md`](onyx/data/AGENTS.md):
 
-- Root `onyx/` may contain **only** `app/`, `data/`, `AI/`, `webapp/` and
+- Root `onyx/` may contain **only** `app/`, `data/`, `webapp/` and
   `launcher.py`.
 - ≤ 350 lines per file, ≤ 78 characters per line.
 - Long string literals only inside `data/`.

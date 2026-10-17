@@ -17,6 +17,7 @@ from app.managers.chat_bridge import ChatBridge
 from app.managers.game_event import log_game_event
 from app.managers.json_loader import load_json
 from app.managers.text_managers import TextManager
+from app.managers.ai_reconcile import purge_legacy_ai_keys
 from app.managers.win_census import WinCensus
 
 
@@ -230,6 +231,7 @@ class EndGameManager:
             self._keys.timer_end,
         ):
             await redis.delete(method(chat_id))
+        await purge_legacy_ai_keys(chat_id)
         for active in (
             self._keys.active_join_chats(),
             self._keys.active_night_chats(),

@@ -18,6 +18,7 @@ from app.database.models.player import PlayerRow
 from app.database.session import session_scope
 from app.managers.game_event import log_game_event
 from app.managers.json_loader import load_json
+from app.managers.ai_reconcile import purge_legacy_ai_keys
 from app.managers.text_managers import TextManager
 
 
@@ -61,6 +62,7 @@ class LobbyManager:
         redis = await get_redis()
         key = self._keys.game_hash(chat_id)
         await redis.delete(key)
+        await purge_legacy_ai_keys(chat_id)
         timer = int(time()) + int(
             self._settings.join_duration_seconds
         )
