@@ -1,0 +1,17 @@
+{
+  "states": {
+    "NO_GAME": 0,
+    "RUNNING": 1,
+    "JOINING": 2,
+    "CHALLENGE_JOINING": 3
+  },
+  "redis_phases": {
+    "join": "join",
+    "night": "night",
+    "day": "day",
+    "vote": "vote",
+    "challenge_join": "challenge_join"
+  },
+  "running_phases": ["night", "day", "vote"],
+  "group_active_value": "active"
+}

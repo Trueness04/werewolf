@@ -1,0 +1,25 @@
+{
+  "warnings": [
+    {
+      "seconds": 60,
+      "min_left": 58,
+      "max_left": 62,
+      "unit_key": "minuts",
+      "include_number": false
+    },
+    {
+      "seconds": 30,
+      "min_left": 28,
+      "max_left": 32,
+      "unit_key": "Secend",
+      "include_number": true
+    },
+    {
+      "seconds": 10,
+      "min_left": 8,
+      "max_left": 11,
+      "unit_key": "Secend",
+      "include_number": true
+    }
+  ]
+}

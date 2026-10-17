@@ -1,0 +1,14 @@
+{
+  "gatekeeper.structure.missing_dir": "Required directory missing: {path}",
+  "gatekeeper.structure.missing_file": "Required file missing: {path}",
+  "gatekeeper.structure.extra_root": "Forbidden top-level path: {path}",
+  "gatekeeper.hardcoding.literal": "Long literal at {file}:{line} ({rule})",
+  "gatekeeper.hardcoding.pattern": "Hardcoding pattern at {file}:{line} ({rule})",
+  "gatekeeper.file_too_long": "File too long: {file} ({lines}/{max})",
+  "gatekeeper.line_too_long": "Line too long: {file}:{line} ({length}/{max})",
+  "gatekeeper.data_load_failed": "Cannot load gatekeeper data: {path}",
+  "gatekeeper.failed": "Gatekeeper checks failed. Aborting startup.",
+  "gatekeeper.ok": "All gatekeeper checks passed.",
+  "settings.env_missing": "Environment file not found: {path}",
+  "settings.load_failed": "Failed to load settings from environment."
+}

@@ -1,0 +1,22 @@
+{
+  "hero_price": 20,
+  "hero_kinds": [
+    {"id": "all", "title_fa": "آل"},
+    {"id": "bashkoch", "title_fa": "بشکوچ"},
+    {"id": "zar", "title_fa": "زار"},
+    {"id": "efrit", "title_fa": "عفریت"},
+    {"id": "qoqnos", "title_fa": "ققنوس"},
+    {"id": "isonade", "title_fa": "ایسُناده"}
+  ],
+  "tournament": {
+    "default_stake": 10,
+    "min_stake": 0,
+    "max_members": 32,
+    "title_default": "تورنمنت اونیکس"
+  },
+  "online": {
+    "status": "open",
+    "min_players": 5,
+    "message_fa": "وارد صف شو؛ وقتی به حداقل بازیکن رسیدیم، گروه بازی ساخته می‌شود."
+  }
+}

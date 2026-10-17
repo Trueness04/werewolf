@@ -1,0 +1,15 @@
+{
+  "ranks": [
+    {"rank": 1, "icon": "rank_01", "title_fa": "تازه‌وارد"},
+    {"rank": 5, "icon": "rank_05", "title_fa": "روستایی"},
+    {"rank": 10, "icon": "rank_10", "title_fa": "شکارچی"},
+    {"rank": 20, "icon": "rank_20", "title_fa": "نگهبان"},
+    {"rank": 30, "icon": "rank_30", "title_fa": "فرمانده"},
+    {"rank": 40, "icon": "rank_40", "title_fa": "حکمران ارشد"}
+  ],
+  "medals": [
+    {"id": "Mason_Brother", "icon": "medal_mason"},
+    {"id": "Lone_Wolf", "icon": "medal_lone_wolf"},
+    {"id": "Explorer", "icon": "medal_explorer"}
+  ]
+}

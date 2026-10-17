@@ -1,0 +1,35 @@
+{
+  "default": "general",
+  "packs": {
+    "general": {
+      "display_key": "general",
+      "catalog": "general",
+      "enabled": true
+    },
+    "nightclub": {
+      "display_key": "flavor_nightclub",
+      "catalog": "nightclub",
+      "enabled": true
+    },
+    "nsfw": {
+      "display_key": "flavor_nsfw",
+      "catalog": "nsfw",
+      "enabled": true
+    },
+    "mafia_nsfw": {
+      "display_key": "flavor_mafia_nsfw",
+      "catalog": "mafia_nsfw",
+      "enabled": true
+    },
+    "rude": {
+      "display_key": "flavor_rude",
+      "catalog": "rude",
+      "enabled": true
+    },
+    "Forgetfulness": {
+      "display_key": "Forgetfulness",
+      "catalog": "Forgetfulness",
+      "enabled": true
+    }
+  }
+}
